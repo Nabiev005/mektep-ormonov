@@ -1,0 +1,129 @@
+.scheduleContainer {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.title {
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 30px;
+}
+
+.tabsContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  overflow-x: auto; /* Телефондо сыдырылат */
+  padding-bottom: 10px;
+}
+
+.tabs {
+  display: flex;
+  background: #eee;
+  padding: 5px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.tab, .activeTab {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+
+.activeTab { color: white; }
+.tab { color: #666; }
+
+.underline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--primary-color);
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.tableWrapper {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: #f8f9fa;
+  padding: 18px;
+  text-align: left;
+  color: var(--primary-color);
+  font-weight: 700;
+  border-bottom: 2px solid #eee;
+}
+
+.table td {
+  padding: 18px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.row:hover {
+  background-color: #fcfcfc;
+}
+
+.subject {
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.roomBadge {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* --- АДАПТИВКА (Телефондор үчүн) --- */
+@media (max-width: 768px) {
+  .table thead {
+    display: none; /* Таблицанын башын жашырабыз */
+  }
+
+  .table td {
+    display: block; /* Ар бир клетка өзүнчө сап болот */
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+    border-bottom: 1px solid #eee;
+  }
+
+  .table td::before {
+    content: attr(data-label); /* HTML'деги data-label'ди алат */
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    text-align: left;
+    font-weight: 700;
+    color: #888;
+  }
+
+  .row {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+  }
+}

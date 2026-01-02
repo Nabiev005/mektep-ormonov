@@ -1,0 +1,118 @@
+.header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5%;
+}
+
+.logo a {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Компьютер үчүн навигация */
+.desktopNav {
+  display: flex;
+  gap: 30px;
+}
+
+.desktopNav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  transition: opacity 0.3s;
+}
+
+.desktopNav a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: var(--accent-color);
+  transition: width 0.3s;
+}
+
+.desktopNav a:hover::after {
+  width: 100%;
+}
+
+/* Гамбургер стили */
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.line {
+  width: 30px;
+  height: 3px;
+  background-color: white;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+/* Мобилдик меню */
+.mobileNav {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 75%;
+  height: 100vh;
+  background-color: var(--primary-color);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  font-size: 1.5rem;
+}
+
+.mobileNav a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Адаптивдүүлүк (768px'ден кичине экрандарга) */
+@media (max-width: 768px) {
+  .desktopNav {
+    display: none;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .mobileNav {
+    display: flex;
+    box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+  }
+
+  /* Гамбургердин X белгисине айланышы */
+  .open1 { transform: rotate(45deg) translate(7px, 7px); }
+  .open2 { opacity: 0; }
+  .open3 { transform: rotate(-45deg) translate(6px, -6px); }
+}

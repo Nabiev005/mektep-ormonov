@@ -1,0 +1,60 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import styles from './Header.module.css';
+
+const Header: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Менюну жабуу функциясы
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  return (
+    <header className={styles.header}>
+      <div className={styles.container}>
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className={styles.logo}
+        >
+          <Link to="/">🏫 Зайил Ормонов</Link>
+        </motion.div>
+
+        {/* Компьютердик меню */}
+        <nav className={styles.desktopNav}>
+          <Link to="/">Башкы бет</Link>
+          <Link to="/about">Биз жөнүндө</Link>
+          <Link to="/news">Жаңылыктар</Link>
+          <Link to="/contact">Байланыш</Link>
+        </nav>
+
+        {/* Гамбургер баскычы (Мобилдик үчүн) */}
+        <button className={styles.burger} onClick={toggleMenu}>
+          <div className={`${styles.line} ${isOpen ? styles.open1 : ''}`}></div>
+          <div className={`${styles.line} ${isOpen ? styles.open2 : ''}`}></div>
+          <div className={`${styles.line} ${isOpen ? styles.open3 : ''}`}></div>
+        </button>
+
+        {/* Мобилдик меню (Анимация менен) */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+              className={styles.mobileNav}
+            >
+              <Link to="/" onClick={toggleMenu}>Башкы бет</Link>
+              <Link to="/about" onClick={toggleMenu}>Биз жөнүндө</Link>
+              <Link to="/news" onClick={toggleMenu}>Жаңылыктар</Link>
+              <Link to="/contact" onClick={toggleMenu}>Байланыш</Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </header>
+  );
+};
+
+export default Header;

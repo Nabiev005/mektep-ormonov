@@ -1,0 +1,90 @@
+.aboutPage {
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.title {
+  text-align: center;
+  font-size: 2.8rem;
+  color: var(--primary-color);
+  margin-bottom: 50px;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  margin-bottom: 80px;
+}
+
+.textBlock {
+  flex: 1;
+}
+
+.textBlock h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.textBlock p {
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.imageBlock {
+  flex: 1;
+}
+
+.imageBlock img {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+/* Values Section */
+.values {
+  background-color: #f8f9fa;
+  padding: 80px 0;
+}
+
+.subTitle {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 50px;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.valueCard {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.icon {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+}
+
+/* Адаптивка */
+@media (max-width: 900px) {
+  .contentWrapper {
+    flex-direction: column;
+  }
+  .imageBlock {
+    order: -1; /* Сүрөт тексттин үстүнө чыгат */
+  }
+}

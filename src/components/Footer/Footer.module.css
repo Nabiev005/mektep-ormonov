@@ -1,0 +1,106 @@
+.footer {
+  background-color: #1a2a3a; /* Караңгы көк түс */
+  color: white;
+  padding: 60px 0 20px;
+  margin-top: auto; /* Контент аз болсо да ылдый жабышат */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5%;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr; /* Блоктордун өлчөмү */
+  gap: 40px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.about p {
+  line-height: 1.6;
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+
+.links h3, .contact h3 {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--accent-color);
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.links li {
+  margin-bottom: 10px;
+}
+
+.links a {
+  color: white;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: 0.3s;
+}
+
+.links a:hover {
+  opacity: 1;
+  padding-left: 5px;
+  color: var(--accent-color);
+}
+
+.contact p {
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.socials {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.socials span {
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.socials span:hover {
+  background: var(--primary-color);
+}
+
+.bottomBar {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+/* Адаптивдүүлүк */
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr; /* Телефондо баары бир катар тизилет */
+    text-align: center;
+  }
+  
+  .links h3, .contact h3 {
+    display: block;
+    border-bottom: none;
+  }
+  
+  .socials {
+    justify-content: center;
+  }
+}   
