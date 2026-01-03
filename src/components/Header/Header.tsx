@@ -24,8 +24,10 @@ const Header: React.FC = () => {
         <nav className={styles.desktopNav}>
           <Link to="/">Башкы бет</Link>
           <Link to="/about">Биз жөнүндө</Link>
+          <Link to="teachers">Биздин Мугалимдер</Link>
           <Link to="/news">Жаңылыктар</Link>
           <Link to="/contact">Байланыш</Link>
+          <Link to="admin-panel">Админ</Link>
         </nav>
 
         {/* Гамбургер баскычы (Мобилдик үчүн) */}
@@ -45,8 +47,10 @@ const Header: React.FC = () => {
               transition={{ type: 'spring', stiffness: 100, damping: 20 }}
               className={styles.mobileNav}
             >
+              <Link to="admin-panel" onClick={toggleMenu}>Админ</Link>
               <Link to="/" onClick={toggleMenu}>Башкы бет</Link>
               <Link to="/about" onClick={toggleMenu}>Биз жөнүндө</Link>
+              <Link to="teachers" onClick={toggleMenu}>Биздин Мугалимдер</Link>
               <Link to="/news" onClick={toggleMenu}>Жаңылыктар</Link>
               <Link to="/contact" onClick={toggleMenu}>Байланыш</Link>
             </motion.div>
