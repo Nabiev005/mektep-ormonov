@@ -299,3 +299,94 @@
   color: #718096;
   white-space: pre-line;
 }
+
+/* "Толук маалымат" баскычы */
+.viewBtn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: #f0f7ff;
+  color: #3182ce;
+  border: 1px solid #bee3f8;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.viewBtn:hover {
+  background: #3182ce;
+  color: white;
+}
+
+/* Модалдык терезенин стилдери */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.modalContent {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.closeBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.modalImg {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.modalBody {
+  padding: 25px;
+}
+
+.modalBody h2 {
+  margin-bottom: 10px;
+  color: #1a202c;
+  font-size: 1.5rem;
+}
+
+.modalDate {
+  color: #718096;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.modalDesc {
+  color: #4a5568;
+  line-height: 1.6;
+  white-space: pre-wrap; /* Тексттин форматтарын сактайт */
+}

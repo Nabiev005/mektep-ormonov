@@ -22,7 +22,11 @@ const Dashboard: React.FC = () => {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null); 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // Алдын ала көрүү үчүн
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // МОДАЛ ҮЧҮН ЖАҢЫ ШТАТТАР
+  const [selectedItem, setSelectedItem] = useState<ListItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const [className, setClassName] = useState('1-класс');
   const [day, setDay] = useState('Дүйшөмбү');
@@ -38,7 +42,6 @@ const Dashboard: React.FC = () => {
     "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"
   ];
 
-  // Сүрөт тандалганда превью түзүү
   useEffect(() => {
     if (!imageFile) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -124,6 +127,12 @@ const Dashboard: React.FC = () => {
         alert("Өчүрүүдө ката кетти!");
       }
     }
+  };
+
+  // МОДАЛДЫ АЧУУ
+  const handleOpenModal = (item: ListItem) => {
+    setSelectedItem(item);
+    setIsModalOpen(true);
   };
 
   return (
@@ -214,6 +223,7 @@ const Dashboard: React.FC = () => {
                         <img src={item.imageUrl} alt={item.title} />
                         <div className={styles.adminCardInfo}>
                           <h4>{item.title}</h4>
+                          <button onClick={() => handleOpenModal(item)} className={styles.viewBtn}>Толук маалымат 👁️</button>
                           <button onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>Өчүрүү 🗑️</button>
                         </div>
                       </>
@@ -230,6 +240,29 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </motion.div>
+        </AnimatePresence>
+
+        {/* МОДАЛДЫК ТЕРЕЗЕ */}
+        <AnimatePresence>
+          {isModalOpen && selectedItem && (
+            <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className={styles.modalContent} 
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className={styles.closeBtn} onClick={() => setIsModalOpen(false)}>&times;</button>
+                <img src={selectedItem.imageUrl} alt={selectedItem.title} className={styles.modalImg} />
+                <div className={styles.modalBody}>
+                  <h2>{selectedItem.title}</h2>
+                  <p className={styles.modalDate}>📅 {selectedItem.date}</p>
+                  <div className={styles.modalDesc}>{selectedItem.description}</div>
+                </div>
+              </motion.div>
+            </div>
+          )}
         </AnimatePresence>
       </main>
     </div>
