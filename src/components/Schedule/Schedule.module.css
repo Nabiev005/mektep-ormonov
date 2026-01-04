@@ -127,3 +127,36 @@
     border-radius: 10px;
   }
 }
+
+.classSelector {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.classSelector select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.lessonsCard {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.lessonsList {
+  font-family: inherit;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  white-space: pre-wrap; /* Тексттин форматын сактайт */
+  color: #333;
+}
+
+.infoText {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}

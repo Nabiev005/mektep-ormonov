@@ -27,6 +27,7 @@ const Header: React.FC = () => {
           <Link to="teachers">Биздин Мугалимдер</Link>
           <Link to="/news">Жаңылыктар</Link>
           <Link to="/contact">Байланыш</Link>
+          <Link to="/schedule">Расписание</Link>
           <Link to="admin-panel">Админ</Link>
         </nav>
 
@@ -51,6 +52,7 @@ const Header: React.FC = () => {
               <Link to="/" onClick={toggleMenu}>Башкы бет</Link>
               <Link to="/about" onClick={toggleMenu}>Биз жөнүндө</Link>
               <Link to="teachers" onClick={toggleMenu}>Биздин Мугалимдер</Link>
+              <Link to="/schedule" onClick={toggleMenu}>Расписание</Link>
               <Link to="/news" onClick={toggleMenu}>Жаңылыктар</Link>
               <Link to="/contact" onClick={toggleMenu}>Байланыш</Link>
             </motion.div>

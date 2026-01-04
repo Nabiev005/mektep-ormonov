@@ -1,12 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { scheduleData } from '../../data/scheduleData';
+import { db } from '../../firebase';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import styles from './Schedule.module.css';
 
-const Schedule: React.FC = () => {
-  const [selectedDay, setSelectedDay] = useState(scheduleData[0].day);
+interface Lesson {
+  id: string;
+  className: string;
+  day: string;
+  lessons: string;
+}
 
-  const currentDayData = scheduleData.find(d => d.day === selectedDay);
+const Schedule: React.FC = () => {
+  const days = ["Дүйшөмбү", "Шейшемби", "Шаршемби", "Бейшемби", "Жума", "Ишемби"];
+  const classes = [
+    "1-класс", "2-класс", "3-класс", "4-класс", "5-класс", 
+    "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"
+  ];
+
+  const [selectedDay, setSelectedDay] = useState("Дүйшөмбү");
+  const [selectedClass, setSelectedClass] = useState("1-класс");
+  const [schedule, setSchedule] = useState<Lesson[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true);
+    // Тандалган класс жана күн боюнча базадан издөө
+    const q = query(
+      collection(db, "schedule"), 
+      where("className", "==", selectedClass),
+      where("day", "==", selectedDay)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Lesson[];
+      setSchedule(data);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [selectedClass, selectedDay]);
 
   return (
     <div className={styles.scheduleContainer}>
@@ -18,17 +55,25 @@ const Schedule: React.FC = () => {
         Сабактардын расписаниеси
       </motion.h2>
 
-      {/* Күндөр тандалуучу бөлүк */}
+      <div className={styles.classSelector}>
+        <label>Классты тандаңыз: </label>
+        <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)}>
+          {classes.map(cls => (
+            <option key={cls} value={cls}>{cls}</option>
+          ))}
+        </select>
+      </div>
+
       <div className={styles.tabsContainer}>
         <div className={styles.tabs}>
-          {scheduleData.map((item) => (
+          {days.map((day) => (
             <button 
-              key={item.day}
-              className={selectedDay === item.day ? styles.activeTab : styles.tab}
-              onClick={() => setSelectedDay(item.day)}
+              key={day}
+              className={selectedDay === day ? styles.activeTab : styles.tab}
+              onClick={() => setSelectedDay(day)}
             >
-              {item.day}
-              {selectedDay === item.day && (
+              {day}
+              {selectedDay === day && (
                 <motion.div layoutId="underline" className={styles.underline} />
               )}
             </button>
@@ -36,36 +81,26 @@ const Schedule: React.FC = () => {
         </div>
       </div>
 
-      {/* Таблица бөлүгү анимация менен */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={selectedDay}
+          key={selectedDay + selectedClass}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2 }}
           className={styles.tableWrapper}
         >
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Убактысы</th>
-                <th>Предмет</th>
-                <th>Мугалим</th>
-                <th>Кабинет</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentDayData?.lessons.map((lesson) => (
-                <tr key={lesson.id} className={styles.row}>
-                  <td data-label="Убактысы">{lesson.time}</td>
-                  <td data-label="Предмет" className={styles.subject}>{lesson.subject}</td>
-                  <td data-label="Мугалим">{lesson.teacher}</td>
-                  <td data-label="Кабинет"><span className={styles.roomBadge}>{lesson.room}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {loading ? (
+            <p className={styles.infoText}>Жүктөлүүдө...</p>
+          ) : schedule.length > 0 ? (
+            <div className={styles.lessonsCard}>
+              <h3>{selectedClass} - {selectedDay}</h3>
+              <pre className={styles.lessonsList}>{schedule[0].lessons}</pre>
+            </div>
+          ) : (
+            <div className={styles.noDataCard}>
+              <p className={styles.infoText}>📭 Бул күн үчүн расписание кошула элек.</p>
+            </div>
+          )}
         </motion.div>
       </AnimatePresence>
     </div>
