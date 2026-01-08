@@ -17,7 +17,10 @@ const Header: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           className={styles.logo}
         >
-          <Link to="/">🏫 Зайил Ормонов</Link>
+          <Link to="/">
+          <img src="" alt="" />
+          🏫 Зайил Ормонов
+          </Link>
         </motion.div>
 
         {/* Компьютердик меню */}

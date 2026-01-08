@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../../firebase';
-import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Admin.module.css';
@@ -14,46 +14,62 @@ interface ListItem {
   day?: string;
   lessons?: string;
   date?: string;
+  category?: string;
 }
 
 const Dashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('news');
-  
+  const [activeTab, setActiveTab] = useState('stats');
+  const [searchTerm, setSearchTerm] = useState(''); // Издөө үчүн
+  const [editingId, setEditingId] = useState<string | null>(null); // Оңдоп жаткан элементтин IDси
+
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
+  const [category, setCategory] = useState('achievements');
   const [imageFile, setImageFile] = useState<File | null>(null); 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
-  // МОДАЛ ҮЧҮН ЖАҢЫ ШТАТТАР
   const [selectedItem, setSelectedItem] = useState<ListItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
   const [className, setClassName] = useState('1-класс');
   const [day, setDay] = useState('Дүйшөмбү');
   const [lessons, setLessons] = useState('');
-
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<ListItem[]>([]);
+  const [stats, setStats] = useState({ news: 0, teachers: 0, schedule: 0 });
 
   const IMGBB_API_KEY = '9aed8b9d3a6c54c6a68db494ac681c35';
+  const classList = ["1-класс", "2-класс", "3-класс", "4-класс", "5-класс", "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"];
 
-  const classList = [
-    "1-класс", "2-класс", "3-класс", "4-класс", "5-класс", 
-    "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"
-  ];
+  const fetchStats = async () => {
+    try {
+      const newsCount = await getCountFromServer(collection(db, 'news'));
+      const teachersCount = await getCountFromServer(collection(db, 'teachers'));
+      const scheduleCount = await getCountFromServer(collection(db, 'schedule'));
+      setStats({
+        news: newsCount.data().count,
+        teachers: teachersCount.data().count,
+        schedule: scheduleCount.data().count
+      });
+    } catch (e) {
+      console.error("Статистика алууда ката:", e);
+    }
+  };
 
   useEffect(() => {
     if (!imageFile) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPreviewUrl(null);
+      if (!editingId) setPreviewUrl(null);
       return;
     }
     const url = URL.createObjectURL(imageFile);
     setPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
-  }, [imageFile]);
+  }, [imageFile, editingId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchStats();
+    if (activeTab === 'stats') return;
+
     const q = query(collection(db, activeTab));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({
@@ -61,8 +77,6 @@ const Dashboard: React.FC = () => {
         ...doc.data()
       })) as ListItem[];
       setItems(data);
-    }, (error) => {
-      console.error("Firebase катасы:", error);
     });
     return () => unsubscribe();
   }, [activeTab]);
@@ -78,42 +92,70 @@ const Dashboard: React.FC = () => {
     return data.data.url;
   };
 
+  // Оңдоо режимин иштетүү
+  const handleEdit = (item: ListItem) => {
+    setEditingId(item.id);
+    if (activeTab === 'schedule') {
+      setClassName(item.className || '1-класс');
+      setDay(item.day || 'Дүйшөмбү');
+      setLessons(item.lessons || '');
+    } else {
+      setTitle(item.title || '');
+      setDesc(item.description || '');
+      setCategory(item.category || 'achievements');
+      setPreviewUrl(item.imageUrl || null);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let finalData: any = {};
+      
       if (activeTab === 'schedule') {
-        await addDoc(collection(db, "schedule"), {
+        finalData = {
           className, day, lessons,
-          createdAt: serverTimestamp()
-        });
-        setLessons('');
+          updatedAt: serverTimestamp()
+        };
       } else {
-        let finalImageUrl = "";
+        let currentImageUrl = previewUrl;
         if (imageFile) {
-          finalImageUrl = await uploadImage(imageFile);
-        } else {
-          alert("Сураныч, сүрөт тандаңыз!");
-          setLoading(false);
-          return;
+          currentImageUrl = await uploadImage(imageFile);
         }
 
-        await addDoc(collection(db, activeTab), {
+        finalData = {
           title,
           description: desc,
-          imageUrl: finalImageUrl,
-          date: new Date().toLocaleDateString('ky-KG'),
-          createdAt: serverTimestamp()
-        });
-        setTitle(''); setDesc(''); setImageFile(null);
-        if (document.getElementById('fileInput')) {
-            (document.getElementById('fileInput') as HTMLInputElement).value = "";
-        }
+          category: activeTab === 'news' ? category : 'teacher',
+          imageUrl: currentImageUrl,
+          updatedAt: serverTimestamp()
+        };
+      }
+
+      if (editingId) {
+        // Маалыматты жаңыртуу
+        await updateDoc(doc(db, activeTab, editingId), finalData);
+        setEditingId(null);
+      } else {
+        // Жаңы маалымат кошуу
+        finalData.createdAt = serverTimestamp();
+        finalData.date = new Date().toLocaleDateString('ky-KG');
+        await addDoc(collection(db, activeTab), finalData);
+      }
+      
+      // Форманы тазалоо
+      setTitle(''); setDesc(''); setLessons(''); setImageFile(null); setPreviewUrl(null);
+      if (document.getElementById('fileInput')) {
+        (document.getElementById('fileInput') as HTMLInputElement).value = "";
       }
       alert("Ийгиликтүү сакталды! ✨");
+      fetchStats();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      alert("Ката кетти! Кайра аракет кылыңыз.");
+      alert("Ката кетти!");
     }
     setLoading(false);
   };
@@ -122,6 +164,7 @@ const Dashboard: React.FC = () => {
     if (window.confirm("Бул маалыматты өчүрөсүзбү?")) {
       try {
         await deleteDoc(doc(db, activeTab, id));
+        fetchStats();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         alert("Өчүрүүдө ката кетти!");
@@ -129,130 +172,174 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // МОДАЛДЫ АЧУУ
-  const handleOpenModal = (item: ListItem) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
-  };
+  // Издөө логикасы
+  const filteredItems = items.filter(item => {
+    const searchStr = (item.title || item.className || '').toLowerCase();
+    return searchStr.includes(searchTerm.toLowerCase());
+  });
 
   return (
     <div className={styles.adminWrapper}>
       <motion.aside initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className={styles.sidebar}>
         <h2>⚙️ Админ</h2>
-        <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => setActiveTab('news')}>📰 Жаңылыктар</div>
-        <div className={`${styles.menuItem} ${activeTab === 'teachers' ? styles.activeMenu : ''}`} onClick={() => setActiveTab('teachers')}>👨‍🏫 Мугалимдер</div>
-        <div className={`${styles.menuItem} ${activeTab === 'schedule' ? styles.activeMenu : ''}`} onClick={() => setActiveTab('schedule')}>📅 Расписание</div>
+        <div className={`${styles.menuItem} ${activeTab === 'stats' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('stats'); setEditingId(null);}}>📊 Статистика</div>
+        <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('news'); setEditingId(null);}}>📰 Жаңылыктар</div>
+        <div className={`${styles.menuItem} ${activeTab === 'teachers' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('teachers'); setEditingId(null);}}>👨‍🏫 Мугалимдер</div>
+        <div className={`${styles.menuItem} ${activeTab === 'schedule' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('schedule'); setEditingId(null);}}>📅 Расписание</div>
         <button onClick={() => signOut(auth)} className={styles.logoutBtn}>🚪 Чыгуу</button>
       </motion.aside>
 
       <main className={styles.mainContent}>
         <AnimatePresence mode="wait">
-          <motion.div key={activeTab} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
-            <h1>
-              {activeTab === 'news' && 'Жаңылыктарды башкаруу'}
-              {activeTab === 'teachers' && 'Мугалимдерди башкаруу'}
-              {activeTab === 'schedule' && 'Расписаниени башкаруу'}
-            </h1>
+          {activeTab === 'stats' ? (
+            <motion.div key="stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <h1>Мектептин статистикасы</h1>
+              <div className={styles.statsPageGrid}>
+                <div className={styles.statInfoCard}>
+                  <h3>Системадагы маалыматтар</h3>
+                  <div className={styles.barChartContainer}>
+                    <div className={styles.barWrapper}>
+                      <div className={styles.barLine} style={{ height: `${Math.min(stats.news * 10, 100)}%`, background: '#3182ce' }}></div>
+                      <span>Жаңылык</span>
+                    </div>
+                    <div className={styles.barWrapper}>
+                      <div className={styles.barLine} style={{ height: `${Math.min(stats.teachers * 10, 100)}%`, background: '#38a169' }}></div>
+                      <span>Мугалим</span>
+                    </div>
+                    <div className={styles.barWrapper}>
+                      <div className={styles.barLine} style={{ height: `${Math.min(stats.schedule * 5, 100)}%`, background: '#e53e3e' }}></div>
+                      <span>Сабак</span>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.statSummary}>
+                  <div className={styles.miniCard}><h4>{stats.news}</h4><p>Жаңылыктар</p></div>
+                  <div className={styles.miniCard}><h4>{stats.teachers}</h4><p>Мугалимдер</p></div>
+                  <div className={styles.miniCard}><h4>{stats.schedule}</h4><p>Сабактар</p></div>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div key={activeTab} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
+              <h1>{editingId ? '✏️ Маалыматты оңдоо' : '➕ Жаңы кошуу'}</h1>
 
-            <form onSubmit={handleSubmit} className={styles.glassCard}>
-              {activeTab === 'schedule' ? (
-                <>
-                  <div className={styles.inputGroup}>
-                    <label>Классты тандаңыз</label>
-                    <select value={className} onChange={(e) => setClassName(e.target.value)} className={styles.selectInput}>
-                      {classList.map(cls => <option key={cls} value={cls}>{cls}</option>)}
-                    </select>
-                  </div>
-                  <div className={styles.inputGroup}>
-                    <label>Апта күнү</label>
-                    <select value={day} onChange={(e) => setDay(e.target.value)} className={styles.selectInput}>
-                      {["Дүйшөмбү", "Шейшемби", "Шаршемби", "Бейшемби", "Жума", "Ишемби"].map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                  </div>
-                  <div className={styles.inputGroup}>
-                    <label>Сабактардын тизмеси</label>
-                    <textarea rows={6} value={lessons} onChange={(e) => setLessons(e.target.value)} required placeholder="Мисалы:&#10;1. Эне тили..." />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className={styles.inputGroup}>
-                    <label>{activeTab === 'news' ? 'Жаңылыктын темасы' : 'Мугалимдин аты-жөнү'}</label>
-                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-                  </div>
-                  <div className={styles.inputGroup}>
-                    <label>Маалымат</label>
-                    <textarea rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} required />
-                  </div>
-                  <div className={styles.inputGroup}>
-                    <label>Сүрөт жүктөө</label>
-                    <div className={styles.fileUploadWrapper}>
-                      <input 
-                        id="fileInput"
-                        type="file" 
-                        accept="image/*" 
-                        onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)} 
-                        className={styles.fileInputHidden}
-                        required 
-                      />
+              <form onSubmit={handleSubmit} className={styles.glassCard}>
+                {activeTab === 'schedule' ? (
+                  <>
+                    <div className={styles.inputGroup}>
+                      <label>Классты тандаңыз</label>
+                      <select value={className} onChange={(e) => setClassName(e.target.value)} className={styles.selectInput}>
+                        {classList.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                      </select>
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label>Апта күнү</label>
+                      <select value={day} onChange={(e) => setDay(e.target.value)} className={styles.selectInput}>
+                        {["Дүйшөмбү", "Шейшемби", "Шаршемби", "Бейшемби", "Жума", "Ишемби"].map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label>Сабактардын тизмеси</label>
+                      <textarea rows={6} value={lessons} onChange={(e) => setLessons(e.target.value)} required placeholder="1. Математика..." />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.inputGroup}>
+                      <label>{activeTab === 'news' ? 'Жаңылыктын темасы' : 'Мугалимдин аты-жөнү'}</label>
+                      <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                    </div>
+                    {activeTab === 'news' && (
+                      <div className={styles.inputGroup}>
+                        <label>Бөлүмдү тандаңыз</label>
+                        <select value={category} onChange={(e) => setCategory(e.target.value)} className={styles.selectInput}>
+                          <option value="achievements">🏆 Жетишкендиктер</option>
+                          <option value="meetings">🤝 Чогулуштар</option>
+                          <option value="sports">🏀 Спорттук оюндар</option>
+                        </select>
+                      </div>
+                    )}
+                    <div className={styles.inputGroup}>
+                      <label>Маалымат</label>
+                      <textarea rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} required />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label>Сүрөт</label>
+                      <input id="fileInput" type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)} className={styles.fileInputHidden} />
                       <label htmlFor="fileInput" className={styles.fileUploadLabel}>
-                        {imageFile ? `📁 ${imageFile.name.substring(0, 20)}...` : "📁 Сүрөттү тандаңыз"}
+                        {imageFile ? `📁 ${imageFile.name.substring(0, 20)}...` : editingId ? "📷 Сүрөттү алмаштыруу" : "📁 Сүрөттү тандаңыз"}
                       </label>
-                      
                       {previewUrl && (
                         <div className={styles.previewContainer}>
                           <img src={previewUrl} alt="Preview" className={styles.imagePreview} />
                         </div>
                       )}
                     </div>
-                  </div>
-                </>
-              )}
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={styles.submitBtn} disabled={loading}>
-                {loading ? "Күтө туруңуз..." : "Базага сактоо ✨"}
-              </motion.button>
-            </form>
+                  </>
+                )}
+                <div className={styles.formActions}>
+                  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={styles.submitBtn} disabled={loading}>
+                    {loading ? "Күтө туруңуз..." : editingId ? "Жаңыртуу 💾" : "Базага сактоо ✨"}
+                  </motion.button>
+                  {editingId && (
+                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrl(null); }} className={styles.cancelBtn}>
+                      Жокко чыгаруу
+                    </button>
+                  )}
+                </div>
+              </form>
 
-            <div className={styles.listSection}>
-              <h3>Тизме ({items.length})</h3>
-              <div className={styles.adminGrid}>
-                {items.map((item) => (
-                  <div key={item.id} className={styles.adminCard}>
-                    {activeTab !== 'schedule' ? (
-                      <>
-                        <img src={item.imageUrl} alt={item.title} />
+              <div className={styles.listSection}>
+                <div className={styles.listHeader}>
+                  <h3>Тизме ({filteredItems.length})</h3>
+                  <input 
+                    type="text" 
+                    placeholder="🔍 Тизмеден издөө..." 
+                    className={styles.searchInput}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                
+                <div className={styles.adminGrid}>
+                  {filteredItems.map((item) => (
+                    <motion.div layout key={item.id} className={styles.adminCard}>
+                      {activeTab !== 'schedule' ? (
+                        <>
+                          <img src={item.imageUrl} alt={item.title} />
+                          <div className={styles.adminCardInfo}>
+                            <h4>{item.title}</h4>
+                            <div className={styles.cardActions}>
+                              <button onClick={() => handleEdit(item)} className={styles.editBtn}>Оңдоо ✏️</button>
+                              <button onClick={() => {setSelectedItem(item); setIsModalOpen(true);}} className={styles.viewBtn}>👁️</button>
+                              <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
                         <div className={styles.adminCardInfo}>
-                          <h4>{item.title}</h4>
-                          <button onClick={() => handleOpenModal(item)} className={styles.viewBtn}>Толук маалымат 👁️</button>
-                          <button onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>Өчүрүү 🗑️</button>
+                          <h4 className={styles.classBadge}>{item.className}</h4>
+                          <p className={styles.dayText}>{item.day}</p>
+                          <div className={styles.lessonPreview}>{item.lessons?.substring(0, 30)}...</div>
+                          <div className={styles.cardActions}>
+                            <button onClick={() => handleEdit(item)} className={styles.editBtn}>Оңдоо ✏️</button>
+                            <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
+                          </div>
                         </div>
-                      </>
-                    ) : (
-                      <div className={styles.adminCardInfo}>
-                        <h4 className={styles.classBadge}>{item.className}</h4>
-                        <p className={styles.dayText}>{item.day}</p>
-                        <div className={styles.lessonPreview}>{item.lessons?.substring(0, 30)}...</div>
-                        <button onClick={() => handleDelete(item.id)} className={styles.deleteBtn}>Өчүрүү 🗑️</button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
         </AnimatePresence>
-
-        {/* МОДАЛДЫК ТЕРЕЗЕ */}
+        
+        {/* Модалдык терезе (өзгөрүүсүз калды) */}
         <AnimatePresence>
           {isModalOpen && selectedItem && (
             <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
-              <motion.div 
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className={styles.modalContent} 
-                onClick={(e) => e.stopPropagation()}
-              >
+              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <button className={styles.closeBtn} onClick={() => setIsModalOpen(false)}>&times;</button>
                 <img src={selectedItem.imageUrl} alt={selectedItem.title} className={styles.modalImg} />
                 <div className={styles.modalBody}>

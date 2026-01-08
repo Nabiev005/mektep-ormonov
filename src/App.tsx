@@ -11,6 +11,7 @@ import Teachers from './pages/Teachers/Teachers';
 import NewsPage from './pages/News/News';
 import About from './pages/About/About'; 
 import Schedule from './components/Schedule/Schedule'; 
+import TeacherPanel from './pages/Teacher/TeacherPanel';
 import Dashboard from './pages/Admin/Dashboard'; 
 import Login from './pages/Admin/Login'; // ЛОГИН БАРАГЫН ИМПОРТТОО
 import Footer from './components/Footer/Footer';
@@ -42,6 +43,7 @@ const AnimatedRoutes = () => {
         <Route path="/news" element={<NewsPage />} />
         <Route path="/teachers" element={<Teachers />} />
         <Route path="/schedule" element={<Schedule />} />
+        <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />
         
         {/* АДМИН ПАНЕЛЬ: Эгер кирсе Dashboard, кирбесе Login чыгат */}

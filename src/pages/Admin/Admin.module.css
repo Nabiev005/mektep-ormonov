@@ -390,3 +390,163 @@
   line-height: 1.6;
   white-space: pre-wrap; /* Тексттин форматтарын сактайт */
 }
+
+.statsPageGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.statInfoCard {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.barChartContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 250px;
+  margin-top: 30px;
+  border-bottom: 2px solid #edf2f7;
+  padding-bottom: 10px;
+}
+
+.barWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 60px;
+}
+
+.barLine {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  transition: height 1s ease-in-out;
+  min-height: 5px;
+}
+
+.barWrapper span {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #718096;
+}
+
+.statSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.miniCard {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border-left: 5px solid #3182ce;
+}
+
+.miniCard h4 { font-size: 1.8rem; margin: 0; color: #2d3748; }
+.miniCard p { margin: 5px 0 0; color: #718096; font-size: 0.9rem; }
+
+@media (max-width: 768px) {
+  .statsPageGrid { grid-template-columns: 1fr; }
+  .barChartContainer { height: 180px; }
+}
+
+/* Издөө талаасы */
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.searchInput {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  width: 100%;
+  max-width: 300px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.searchInput:focus {
+  border-color: #3182ce;
+}
+
+/* Формадагы баскычтар */
+.formActions {
+  display: flex;
+  gap: 10px;
+}
+
+.cancelBtn {
+  padding: 15px;
+  background: #edf2f7;
+  color: #4a5568;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.cancelBtn:hover {
+  background: #e2e8f0;
+}
+
+/* Карточкадагы баскычтардын блогу */
+.cardActions {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.editBtn {
+  flex: 2;
+  padding: 8px;
+  background: #ebf8ff;
+  color: #3182ce;
+  border: 1px solid #bee3f8;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.viewBtn {
+  flex: 1;
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.deleteBtnMini {
+  flex: 1;
+  background: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.editBtn:hover { background: #3182ce; color: white; }
+
+@media (max-width: 600px) {
+  .listHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .searchInput {
+    max-width: 100%;
+  }
+}

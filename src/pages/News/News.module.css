@@ -106,3 +106,47 @@
     padding: 20px;
   }
 }
+
+
+.tabsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+  flex-wrap: wrap; /* Мобилдик телефондордо баскычтар сынып түшүүсү үчүн */
+}
+
+.tab {
+  padding: 12px 24px;
+  border: 2px solid #edf2f7;
+  background: white;
+  border-radius: 50px;
+  font-weight: 600;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  border-color: #3182ce;
+  color: #3182ce;
+}
+
+.activeTab {
+  padding: 12px 24px;
+  border: 2px solid #3182ce;
+  background: #3182ce;
+  color: white;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(49, 130, 206, 0.3);
+}
+
+.noData {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  color: #a0aec0;
+  font-size: 1.1rem;
+}
