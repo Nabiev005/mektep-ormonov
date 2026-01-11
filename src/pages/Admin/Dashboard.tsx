@@ -19,8 +19,8 @@ interface ListItem {
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('stats');
-  const [searchTerm, setSearchTerm] = useState(''); // Издөө үчүн
-  const [editingId, setEditingId] = useState<string | null>(null); // Оңдоп жаткан элементтин IDси
+  const [searchTerm, setSearchTerm] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
   const [lessons, setLessons] = useState('');
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<ListItem[]>([]);
-  const [stats, setStats] = useState({ news: 0, teachers: 0, schedule: 0 });
+  const [stats, setStats] = useState({ news: 0, teachers: 0, schedule: 0, bestStudents: 0 });
 
   const IMGBB_API_KEY = '9aed8b9d3a6c54c6a68db494ac681c35';
   const classList = ["1-класс", "2-класс", "3-класс", "4-класс", "5-класс", "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"];
@@ -44,10 +44,13 @@ const Dashboard: React.FC = () => {
       const newsCount = await getCountFromServer(collection(db, 'news'));
       const teachersCount = await getCountFromServer(collection(db, 'teachers'));
       const scheduleCount = await getCountFromServer(collection(db, 'schedule'));
+      const bestStudentsCount = await getCountFromServer(collection(db, 'best-students'));
+      
       setStats({
         news: newsCount.data().count,
         teachers: teachersCount.data().count,
-        schedule: scheduleCount.data().count
+        schedule: scheduleCount.data().count,
+        bestStudents: bestStudentsCount.data().count
       });
     } catch (e) {
       console.error("Статистика алууда ката:", e);
@@ -92,7 +95,6 @@ const Dashboard: React.FC = () => {
     return data.data.url;
   };
 
-  // Оңдоо режимин иштетүү
   const handleEdit = (item: ListItem) => {
     setEditingId(item.id);
     if (activeTab === 'schedule') {
@@ -129,24 +131,21 @@ const Dashboard: React.FC = () => {
         finalData = {
           title,
           description: desc,
-          category: activeTab === 'news' ? category : 'teacher',
+          category: activeTab === 'news' ? category : activeTab === 'best-students' ? 'student' : 'teacher',
           imageUrl: currentImageUrl,
           updatedAt: serverTimestamp()
         };
       }
 
       if (editingId) {
-        // Маалыматты жаңыртуу
         await updateDoc(doc(db, activeTab, editingId), finalData);
         setEditingId(null);
       } else {
-        // Жаңы маалымат кошуу
         finalData.createdAt = serverTimestamp();
         finalData.date = new Date().toLocaleDateString('ky-KG');
         await addDoc(collection(db, activeTab), finalData);
       }
       
-      // Форманы тазалоо
       setTitle(''); setDesc(''); setLessons(''); setImageFile(null); setPreviewUrl(null);
       if (document.getElementById('fileInput')) {
         (document.getElementById('fileInput') as HTMLInputElement).value = "";
@@ -172,7 +171,6 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Издөө логикасы
   const filteredItems = items.filter(item => {
     const searchStr = (item.title || item.className || '').toLowerCase();
     return searchStr.includes(searchTerm.toLowerCase());
@@ -185,6 +183,7 @@ const Dashboard: React.FC = () => {
         <div className={`${styles.menuItem} ${activeTab === 'stats' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('stats'); setEditingId(null);}}>📊 Статистика</div>
         <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('news'); setEditingId(null);}}>📰 Жаңылыктар</div>
         <div className={`${styles.menuItem} ${activeTab === 'teachers' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('teachers'); setEditingId(null);}}>👨‍🏫 Мугалимдер</div>
+        <div className={`${styles.menuItem} ${activeTab === 'best-students' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('best-students'); setEditingId(null);}}>🌟 Мыктылар</div>
         <div className={`${styles.menuItem} ${activeTab === 'schedule' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('schedule'); setEditingId(null);}}>📅 Расписание</div>
         <button onClick={() => signOut(auth)} className={styles.logoutBtn}>🚪 Чыгуу</button>
       </motion.aside>
@@ -207,21 +206,49 @@ const Dashboard: React.FC = () => {
                       <span>Мугалим</span>
                     </div>
                     <div className={styles.barWrapper}>
-                      <div className={styles.barLine} style={{ height: `${Math.min(stats.schedule * 5, 100)}%`, background: '#e53e3e' }}></div>
-                      <span>Сабак</span>
+                      <div className={styles.barLine} style={{ height: `${Math.min(stats.bestStudents * 10, 100)}%`, background: '#ecc94b' }}></div>
+                      <span>Мыктылар</span>
+                    </div>
+                  </div>
+
+                  {/* ТОЛУКТОО: Ыкчам аракеттер */}
+                  <div className={styles.quickActionsSection}>
+                    <h4>🚀 Ыкчам аракеттер</h4>
+                    <div className={styles.actionBtns}>
+                      <button onClick={() => setActiveTab('news')}>+ Жаңылык</button>
+                      <button onClick={() => setActiveTab('best-students')}>+ Мыкты окуучу</button>
+                      <button onClick={() => setActiveTab('teachers')}>+ Мугалим</button>
                     </div>
                   </div>
                 </div>
+
                 <div className={styles.statSummary}>
                   <div className={styles.miniCard}><h4>{stats.news}</h4><p>Жаңылыктар</p></div>
                   <div className={styles.miniCard}><h4>{stats.teachers}</h4><p>Мугалимдер</p></div>
-                  <div className={styles.miniCard}><h4>{stats.schedule}</h4><p>Сабактар</p></div>
+                  <div className={styles.miniCard}><h4>{stats.bestStudents}</h4><p>Мыктылар</p></div>
+                  
+                  {/* ТОЛУКТОО: Системанын абалы */}
+                  <div className={styles.systemStatusCard}>
+                    <h4>💻 Статус</h4>
+                    <div className={styles.statusItem}>
+                      <span>Админ:</span>
+                      <p>{auth.currentUser?.email?.split('@')[0]}</p>
+                    </div>
+                    <div className={styles.statusItem}>
+                      <span>Абалы:</span>
+                      <p className={styles.onlineStatus}>● Онлайн</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
           ) : (
             <motion.div key={activeTab} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
-              <h1>{editingId ? '✏️ Маалыматты оңдоо' : '➕ Жаңы кошуу'}</h1>
+              <h1>
+                {editingId ? '✏️ Оңдоо' : 
+                 activeTab === 'best-students' ? '➕ Жаңы мыкты окуучу' : 
+                 activeTab === 'teachers' ? '➕ Жаңы мугалим' : '➕ Жаңы кошуу'}
+              </h1>
 
               <form onSubmit={handleSubmit} className={styles.glassCard}>
                 {activeTab === 'schedule' ? (
@@ -246,7 +273,10 @@ const Dashboard: React.FC = () => {
                 ) : (
                   <>
                     <div className={styles.inputGroup}>
-                      <label>{activeTab === 'news' ? 'Жаңылыктын темасы' : 'Мугалимдин аты-жөнү'}</label>
+                      <label>
+                        {activeTab === 'news' ? 'Жаңылыктын темасы' : 
+                         activeTab === 'best-students' ? 'Окуучунун аты-жөнү' : 'Мугалимдин аты-жөнү'}
+                      </label>
                       <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
                     </div>
                     {activeTab === 'news' && (
@@ -260,7 +290,7 @@ const Dashboard: React.FC = () => {
                       </div>
                     )}
                     <div className={styles.inputGroup}>
-                      <label>Маалымат</label>
+                      <label>{activeTab === 'best-students' ? 'Жетишкендиктери' : 'Маалымат'}</label>
                       <textarea rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} required />
                     </div>
                     <div className={styles.inputGroup}>
@@ -335,7 +365,6 @@ const Dashboard: React.FC = () => {
           )}
         </AnimatePresence>
         
-        {/* Модалдык терезе (өзгөрүүсүз калды) */}
         <AnimatePresence>
           {isModalOpen && selectedItem && (
             <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>

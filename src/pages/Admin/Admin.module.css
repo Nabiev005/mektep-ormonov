@@ -550,3 +550,440 @@
     max-width: 100%;
   }
 }
+
+/* Статистикадагы окуучулар үчүн сары түс */
+.miniCard:nth-child(3) {
+  border-left: 5px solid #ecc94b;
+}
+
+/* Эгер Табтар мобилдикте көп болуп кетсе, сыдырма (scroll) кошуу */
+@media (max-width: 768px) {
+  .sidebar {
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    gap: 10px;
+  }
+  .menuItem {
+    white-space: nowrap;
+  }
+}
+
+/* Ыкчам аракеттер блогу */
+.quickActionsSection {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #edf2f7;
+}
+
+.quickActionsSection h4 {
+  margin-bottom: 15px;
+  color: #2d3748;
+}
+
+.actionBtns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.actionBtns button {
+  padding: 10px 18px;
+  background: #f7fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #4a5568;
+  transition: 0.3s;
+}
+
+.actionBtns button:hover {
+  background: #3182ce;
+  color: white;
+  border-color: #3182ce;
+  transform: translateY(-2px);
+}
+
+/* Системалык статус картасы */
+.systemStatusCard {
+  background: #1a202c;
+  color: white;
+  padding: 20px;
+  border-radius: 20px;
+  margin-top: 10px;
+}
+
+.systemStatusCard h4 {
+  font-size: 1rem;
+  margin-bottom: 15px;
+  color: #a0aec0;
+  border-bottom: 1px solid #2d3748;
+  padding-bottom: 10px;
+}
+
+.statusItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.statusItem span {
+  color: #718096;
+}
+
+.onlineStatus {
+  color: #48bb78;
+  font-weight: bold;
+  animation: blink 2s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Мобилдик адаптация */
+@media (max-width: 480px) {
+  .actionBtns {
+    flex-direction: column;
+  }
+  .actionBtns button {
+    width: 100%;
+  }
+}
+
+/* Жалпы жөндөөлөр */
+:root {
+  --primary: #3182ce;
+  --primary-hover: #2b6cb0;
+  --bg-main: #f8fafc;
+  --white: #ffffff;
+  --text-dark: #1a202c;
+  --text-gray: #4a5568;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-lg: 20px;
+  --radius-md: 12px;
+}
+
+.adminWrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-dark);
+}
+
+/* --- SIDEBAR (Desktop) --- */
+.sidebar {
+  width: 260px;
+  background: var(--white);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.03);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 100;
+}
+
+.sidebar h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 35px;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+.menuItem {
+  padding: 12px 16px;
+  margin-bottom: 6px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+}
+
+.menuItem:hover {
+  background: #f1f5f9;
+  transform: translateX(4px);
+}
+
+.activeMenu {
+  background: var(--primary) !important;
+  color: white !important;
+  box-shadow: 0 10px 15px -3px rgba(49, 130, 206, 0.3);
+}
+
+.logoutBtn {
+  margin-top: auto;
+  padding: 12px;
+  background: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.logoutBtn:hover {
+  background: #feb2b2;
+  color: #9b2c2c;
+}
+
+/* --- НЕГИЗГИ БӨЛҮК --- */
+.mainContent {
+  flex: 1;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mainContent h1 {
+  margin-bottom: 25px;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* Glass Card */
+.glassCard {
+  background: var(--white);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  margin-bottom: 30px;
+}
+
+.inputGroup {
+  margin-bottom: 20px;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-gray);
+}
+
+.inputGroup input, 
+.inputGroup textarea, 
+.selectInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #f1f5f9;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  background: #f8fafc;
+  transition: 0.2s;
+}
+
+.inputGroup input:focus, 
+.inputGroup textarea:focus {
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.1);
+  outline: none;
+}
+
+/* Баскычтар */
+.submitBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(49, 130, 206, 0.2);
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Тизмедеги Grid */
+.adminGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.adminCard {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: 0.3s;
+}
+
+.adminCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.adminCard img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.adminCardInfo {
+  padding: 18px;
+}
+
+/* --- СТАТИСТИКА БӨЛҮМҮ --- */
+.statsPageGrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+}
+
+.statInfoCard {
+  background: white;
+  padding: 25px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.barChartContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 200px;
+  padding: 20px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.miniCard {
+  background: white;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- МОБИЛДИК АДАПТАЦИЯ (ЖАҢЫЛАНДЫ) --- */
+@media (max-width: 992px) {
+  .statsPageGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .adminWrapper {
+    flex-direction: column;
+  }
+
+  /* Sidebar мобилдикте жогору жакта горизонталь сыдырма болот */
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    padding: 10px;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    gap: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+
+  .sidebar h2 {
+    display: none; /* Мобилдикте логотипти жашыруу же кичирейтүү */
+  }
+
+  .menuItem {
+    white-space: nowrap;
+    margin-bottom: 0;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  .logoutBtn {
+    margin-top: 0;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .mainContent {
+    padding: 20px 15px;
+  }
+
+  .glassCard {
+    padding: 20px;
+  }
+
+  .adminGrid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+
+  .formActions {
+    flex-direction: column;
+  }
+}
+
+/* Модалдык терезени мобилдикке ылайыктоо */
+.modalContent {
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .cardActions {
+    flex-wrap: wrap;
+  }
+  
+  .editBtn, .deleteBtnMini, .viewBtn {
+    font-size: 0.75rem;
+    padding: 10px 5px;
+  }
+}
+
+/* Жагымдуу анимация (Блик эффектиси) */
+.onlineStatus {
+  position: relative;
+  padding-left: 15px;
+}
+
+.onlineStatus::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #48bb78;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(72, 187, 120, 0.4);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
+}

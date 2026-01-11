@@ -5,8 +5,8 @@ import styles from './Header.module.css';
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // Dropdown үчүн
 
-  // Менюну жабуу функциясы
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
@@ -18,8 +18,7 @@ const Header: React.FC = () => {
           className={styles.logo}
         >
           <Link to="/">
-          <img src="" alt="" />
-          🏫 Зайил Ормонов
+            🏫 Зайил Ормонов
           </Link>
         </motion.div>
 
@@ -27,21 +26,44 @@ const Header: React.FC = () => {
         <nav className={styles.desktopNav}>
           <Link to="/">Башкы бет</Link>
           <Link to="/about">Биз жөнүндө</Link>
-          <Link to="teachers">Биздин Мугалимдер</Link>
+          
+          {/* Dropdown Меню башталды */}
+          <div 
+            className={styles.dropdown}
+            onMouseEnter={() => setIsDropdownOpen(true)}
+            onMouseLeave={() => setIsDropdownOpen(false)}
+          >
+            <span className={styles.dropdownLabel}>Биздин жамаат ▾</span>
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className={styles.dropdownContent}
+                >
+                  <Link to="/teachers">Биздин Мугалимдер</Link>
+                  <Link to="/best-students">Биздин Мыкты Окуучулар</Link>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          {/* Dropdown Меню бүттү */}
+
           <Link to="/news">Жаңылыктар</Link>
           <Link to="/contact">Байланыш</Link>
           <Link to="/schedule">Расписание</Link>
           <Link to="admin-panel">Админ</Link>
         </nav>
 
-        {/* Гамбургер баскычы (Мобилдик үчүн) */}
+        {/* Гамбургер баскычы */}
         <button className={styles.burger} onClick={toggleMenu}>
           <div className={`${styles.line} ${isOpen ? styles.open1 : ''}`}></div>
           <div className={`${styles.line} ${isOpen ? styles.open2 : ''}`}></div>
           <div className={`${styles.line} ${isOpen ? styles.open3 : ''}`}></div>
         </button>
 
-        {/* Мобилдик меню (Анимация менен) */}
+        {/* Мобилдик меню */}
         <AnimatePresence>
           {isOpen && (
             <motion.div 
@@ -54,7 +76,8 @@ const Header: React.FC = () => {
               <Link to="admin-panel" onClick={toggleMenu}>Админ</Link>
               <Link to="/" onClick={toggleMenu}>Башкы бет</Link>
               <Link to="/about" onClick={toggleMenu}>Биз жөнүндө</Link>
-              <Link to="teachers" onClick={toggleMenu}>Биздин Мугалимдер</Link>
+              <Link to="/teachers" onClick={toggleMenu}>Биздин Мугалимдер</Link>
+              <Link to="/best-students" onClick={toggleMenu}>Биздин Мыкты Окуучулар</Link>
               <Link to="/schedule" onClick={toggleMenu}>Расписание</Link>
               <Link to="/news" onClick={toggleMenu}>Жаңылыктар</Link>
               <Link to="/contact" onClick={toggleMenu}>Байланыш</Link>
