@@ -236,7 +236,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className={styles.statusItem}>
                       <span>Абалы:</span>
-                      <p className={styles.onlineStatus}>● Онлайн</p>
+                      <p className={styles.onlineStatus}>Онлайн</p>
                     </div>
                   </div>
                 </div>

@@ -1,57 +1,107 @@
+/* Негизги контейнер */
 .botWrapper {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 25px;
+  right: 25px;
   z-index: 9999;
+  font-family: 'Inter', sans-serif;
 }
 
+/* Чат ачуучу баскыч (FAB) */
 .fab {
   width: 60px;
   height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3182ce, #2b6cb0);
+  border-radius: 20px;
+  background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
   color: white;
   border: none;
-  font-size: 24px;
+  font-size: 26px;
   cursor: pointer;
   box-shadow: 0 10px 25px rgba(49, 130, 206, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.fabActive {
+  background: #2d3748;
+  transform: rotate(90deg);
+}
+
+/* Чат терезеси - ӨЛЧӨМДӨРҮ ОҢДОЛДУ */
 .chatWindow {
   position: absolute;
-  bottom: 80px;
+  bottom: 75px;
   right: 0;
-  width: 350px;
-  max-height: 500px;
-  /* Glassmorphism Effect */
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
+  width: 320px; /* Мурун 360px болчу, кичирейтилди */
+  height: 480px; /* Мурун 550px болчу, оптималдаштырылды */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
+/* Башы (Header) */
 .chatHeader {
-  background: rgba(49, 130, 206, 0.8);
-  padding: 15px;
-  color: white;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
   display: flex;
   justify-content: space-between;
-  font-weight: 700;
+  align-items: center;
 }
 
-.chatHeader button {
+.headerTitle {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #2d3748;
+}
+
+.closeBtn {
   background: none;
   border: none;
-  color: white;
-  font-size: 20px;
+  font-size: 24px;
+  color: #a0aec0;
   cursor: pointer;
 }
 
+/* Онлайн статус индикатору */
+.statusGroup {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  display: inline-block;
+}
+
+.onlineDot {
+  width: 100%; height: 100%;
+  background: #48bb78;
+  border-radius: 50%;
+}
+
+.dotWave {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #48bb78;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  opacity: 0.5;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Чаттын ичи */
 .chatBody {
   flex: 1;
   padding: 15px;
@@ -59,141 +109,104 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 250px;
 }
 
+/* Сүрөттөр (Билдирүүлөр) */
 .botMsg, .userMsg {
   padding: 10px 14px;
-  border-radius: 15px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   max-width: 85%;
+  line-height: 1.4;
 }
 
 .botMsg {
   background: white;
   color: #2d3748;
+  border-radius: 15px 15px 15px 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
   align-self: flex-start;
-  border-bottom-left-radius: 2px;
 }
 
 .userMsg {
-  background: #3182ce;
+  background: linear-gradient(135deg, #3182ce, #2b6cb0);
   color: white;
+  border-radius: 15px 15px 4px 15px;
   align-self: flex-end;
-  border-bottom-right-radius: 2px;
 }
 
-.questionGrid {
+/* Жазып жатат (Typing) */
+.typingIndicator {
+  display: flex; gap: 4px; padding: 4px 0;
+}
+
+.typingIndicator span {
+  width: 6px; height: 6px;
+  background: #cbd5e0;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out both;
+}
+
+@keyframes typing {
+  0%, 80%, 100% { transform: scale(0.3); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* Төмөнкү суроолор бөлүмү */
+.questionSection {
   padding: 15px;
   background: rgba(255, 255, 255, 0.5);
   border-top: 1px solid rgba(0,0,0,0.05);
 }
 
-.questionGrid p {
-  font-size: 0.75rem;
-  color: #718096;
-  margin-bottom: 8px;
+.divider {
+  margin-bottom: 10px;
+  font-size: 0.7rem;
+  color: #a0aec0;
   font-weight: 600;
-}
-
-.qBtn {
-  width: 100%;
-  text-align: left;
-  padding: 8px 12px;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  margin-bottom: 5px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.qBtn:hover {
-  background: #ebf8ff;
-  border-color: #3182ce;
-  color: #3182ce;
-}
-
-/* Мобилдик адаптация */
-@media (max-width: 480px) {
-  .chatWindow {
-    width: 300px;
-    right: -10px;
-  }
-}
-
-/* ... мурунку стилдер калат, төмөнкүлөрдү толуктап же алмаштырып кой ... */
-
-.onlineDot {
-  width: 8px;
-  height: 8px;
-  background: #48bb78;
-  border-radius: 50%;
-  margin-right: 8px;
-  box-shadow: 0 0 8px #48bb78;
-}
-
-.headerInfo {
-  display: flex;
-  align-items: center;
-}
-
-.typingIndicator {
-  display: flex;
-  gap: 4px;
-  padding: 4px 0;
-}
-
-.typingIndicator span {
-  width: 6px;
-  height: 6px;
-  background: #3182ce;
-  border-radius: 50%;
-  display: inline-block;
-  animation: typing 1.4s infinite ease-in-out both;
-}
-
-.typingIndicator span:nth-child(1) { animation-delay: -0.32s; }
-.typingIndicator span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes typing {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1); }
+  text-transform: uppercase;
 }
 
 .btnScrollArea {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 150px;
+  gap: 5px;
+  max-height: 120px;
   overflow-y: auto;
-  padding-right: 5px;
+}
+
+.qBtn {
+  width: 100%;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid rgba(49, 130, 206, 0.1);
+  border-radius: 10px;
+  text-align: left;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.qBtn:hover {
+  background: #f0f7ff;
+  border-color: #3182ce;
+  color: #3182ce;
+}
+
+/* Мобилдик версия */
+@media (max-width: 480px) {
+  .chatWindow {
+    width: 290px;
+    height: 420px;
+    right: -5px;
+    bottom: 70px;
+  }
 }
 
 /* Скроллду кооздоо */
-.btnScrollArea::-webkit-scrollbar {
+.chatBody::-webkit-scrollbar, .btnScrollArea::-webkit-scrollbar {
   width: 4px;
 }
-.btnScrollArea::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.1);
-  border-radius: 10px;
-}
-
-.chatBody::-webkit-scrollbar {
-  width: 5px;
-}
-.chatBody::-webkit-scrollbar-thumb {
+.chatBody::-webkit-scrollbar-thumb, .btnScrollArea::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.05);
   border-radius: 10px;
-}
-
-.botMsg {
-  background: rgba(255, 255, 255, 0.9) !important;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  border: 1px solid rgba(255,255,255,0.5);
-}
-
-.userMsg {
-  background: linear-gradient(135deg, #3182ce, #2b6cb0) !important;
 }
