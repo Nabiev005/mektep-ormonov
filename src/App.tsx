@@ -8,7 +8,6 @@ import Header from './components/Header/Header';
 import Home from './pages/Home/Home';
 import Contact from './pages/Contact/Contact';
 import Teachers from './pages/Teachers/Teachers';
-// БУЛ ЖЕРГЕ МЫКТЫЛАР БАРАКЧАСЫН КОШОБУЗ (Эгер папкасы башка болсо, жолун түзөтүп кой)
 import BestStudents from './pages/BestStudents/BestStudents'; 
 import NewsPage from './pages/News/News';
 import About from './pages/About/About'; 
@@ -17,6 +16,10 @@ import TeacherPanel from './pages/Teacher/TeacherPanel';
 import Dashboard from './pages/Admin/Dashboard'; 
 import Login from './pages/Admin/Login'; 
 import Footer from './components/Footer/Footer';
+
+// ЖАҢЫ КОШУЛГАН КОМПОНЕНТ
+import AIChatBot from './components/AIChatBot/AIChatBot'; 
+
 import styles from './App.module.css';
 
 const AnimatedRoutes = () => {
@@ -43,10 +46,7 @@ const AnimatedRoutes = () => {
         <Route path="/about" element={<About />} />
         <Route path="/news" element={<NewsPage />} />
         <Route path="/teachers" element={<Teachers />} />
-        
-        {/* МЫНА БУЛ ЖЕРГЕ ЖАҢЫ РОУТ КОШУЛДУ */}
         <Route path="/best-students" element={<BestStudents />} />
-        
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />
@@ -65,9 +65,16 @@ function App() {
     <Router>
       <div className={styles.appContainer}>
         <Header />
+        
         <main className={styles.mainContent}>
           <AnimatedRoutes />
         </main>
+
+        {/* AI Чат-ботFooter'ден кийин же мурун айырмасы жок, 
+          анткени ал 'fixed' позициясында турат.
+        */}
+        <AIChatBot />
+
         <Footer />
       </div>
     </Router>
