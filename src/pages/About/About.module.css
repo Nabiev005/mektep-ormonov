@@ -15,37 +15,62 @@
   margin-bottom: 50px;
 }
 
-.contentWrapper {
+/* Мектеп тарыхы КАРТОЧКАСЫ */
+.historyCard {
   display: flex;
-  gap: 50px;
-  align-items: center;
-  margin-bottom: 80px;
+  background: white;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  align-items: stretch;
+  margin-bottom: 60px;
 }
 
-.textBlock {
-  flex: 1;
+.historyInfo {
+  flex: 1.5;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.textBlock h2 {
+.historyInfo h2 {
   font-size: 1.8rem;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #333;
 }
 
-.textBlock p {
-  line-height: 1.8;
+.historyInfo p {
+  line-height: 1.7;
   color: #555;
   margin-bottom: 15px;
+  font-size: 1.05rem;
 }
 
-.imageBlock {
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 20px 0;
+}
+
+.historyImageWrapper {
   flex: 1;
+  background: #ffffff;
+  overflow: hidden;
 }
 
-.imageBlock img {
+.historyImageWrapper img {
   width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  height: 100%;
+  object-fit: cover;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transition: transform 0.6s ease;
+}
+
+.historyCard:hover .historyImageWrapper img {
+  transform: scale(1.05);
 }
 
 /* Values Section */
@@ -79,12 +104,105 @@
   margin-bottom: 20px;
 }
 
+.biographySection {
+  padding: 80px 0;
+  background: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
+}
+
+.bioCard {
+  display: flex;
+  background: white;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  align-items: center;
+}
+
+.bioImageWrapper {
+  flex: 1;
+  width: 100%;
+  height: 450px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  filter: saturate(1.1) contrast(1.05); 
+}
+
+.bioImageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 10%; 
+  transition: transform 0.5s ease, filter 0.5s ease;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.bioInfo {
+  flex: 1.5;
+  padding: 50px;
+}
+
+.scrollLabel {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: #007aff;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.bioName {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #1c1c1e;
+}
+
+.bioDescription {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #48484a;
+  margin-bottom: 30px;
+}
+
+.bioFeatures {
+  display: grid;
+  gap: 15px;
+}
+
+.featureItem {
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  border-left: 4px solid #007aff;
+}
+
+.bioImageWrapper:hover img {
+  transform: scale(1.05);
+  filter: saturate(1.2) brightness(1.05);
+}
+
 /* Адаптивка */
-@media (max-width: 900px) {
-  .contentWrapper {
+@media (max-width: 992px) {
+  .bioCard, .historyCard {
     flex-direction: column;
   }
-  .imageBlock {
-    order: -1; /* Сүрөт тексттин үстүнө чыгат */
+  .bioImageWrapper, .historyImageWrapper {
+    width: 100%;
+    height: 350px;
+  }
+  .historyImageWrapper {
+    order: -1; /* Мобилдикте сүрөт тексттин үстүндө болот */
+  }
+  .bioInfo, .historyInfo {
+    padding: 30px;
+  }
+  .bioName {
+    font-size: 1.8rem;
   }
 }

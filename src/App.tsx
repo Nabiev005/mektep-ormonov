@@ -17,8 +17,9 @@ import Dashboard from './pages/Admin/Dashboard';
 import Login from './pages/Admin/Login'; 
 import Footer from './components/Footer/Footer';
 
-// ЖАҢЫ КОШУЛГАН КОМПОНЕНТ
+// ЖАҢЫ КОШУЛГАН КОМПОНЕНТТЕР
 import AIChatBot from './components/AIChatBot/AIChatBot'; 
+import Resources from './pages/Resources/Resources'; // <-- Ресурстар баракчасын коштук
 
 import styles from './App.module.css';
 
@@ -47,6 +48,7 @@ const AnimatedRoutes = () => {
         <Route path="/news" element={<NewsPage />} />
         <Route path="/teachers" element={<Teachers />} />
         <Route path="/best-students" element={<BestStudents />} />
+        <Route path="/resources" element={<Resources />} /> {/* <-- ЖАҢЫ МАРШРУТ */}
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />
@@ -70,9 +72,7 @@ function App() {
           <AnimatedRoutes />
         </main>
 
-        {/* AI Чат-ботFooter'ден кийин же мурун айырмасы жок, 
-          анткени ал 'fixed' позициясында турат.
-        */}
+        {/* AI Чат-бот */}
         <AIChatBot />
 
         <Footer />

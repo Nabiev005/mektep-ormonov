@@ -1,15 +1,55 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  HiOutlineVolumeUp, 
+  HiOutlineTrash, 
+  HiOutlineX, 
+  HiOutlineClipboardCopy,
+  HiChatAlt2
+} from "react-icons/hi";
 import styles from './AIChatBot.module.css';
 
 const AIChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [history, setHistory] = useState<{ type: 'bot' | 'user', text: string }[]>([
-    { type: 'bot', text: 'Салам! Мен Кан айылындагы мектептин санарип жардамчысымын. Сизге кандай маалымат керек?' }
+  
+  const getCurrentTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const [history, setHistory] = useState<{ type: 'bot' | 'user', text: string, time: string }[]>([
+    { 
+      type: 'bot', 
+      text: 'Салам! Мен Кан айылындагы мектептин санарип жардамчысымын. Сизге кандай маалымат керек?',
+      time: getCurrentTime()
+    }
   ]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 1. Мектеп статусу (Өчүрүлгөн жок)
+  const getSchoolStatus = () => {
+    const hour = new Date().getHours();
+    if (hour < 8) return "Мектеп азырынча жабык. Саат 08:00до ачылат. ✨";
+    if (hour >= 8 && hour < 14) return "Азыр сабактар кызуу жүрүп жаткан убагы. 📚";
+    return "Мектепте сабактар бүттү. Эртең күтөбүз! 🌙";
+  };
+
+  // 2. Үн чыгаруу (Жаңыланган дизайн менен)
+  const speakText = (text: string) => {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ky-KY'; 
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // 3. Текст көчүрүү (Жаңыланган дизайн менен)
+  const copyText = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
+  // 4. Чатты тазалоо (Жаңы функция)
+  const clearChat = () => {
+    setHistory([{ type: 'bot', text: 'Чат тазаланды. Сурооңузду күтөм...', time: getCurrentTime() }]);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -20,22 +60,31 @@ const AIChatBot: React.FC = () => {
   }, [history, isTyping, isOpen]);
 
   const qaDatabase = [
-    { q: "📍 Мектеп кайда?", a: "Биздин мектептин дареги: Баткен району, Алтын бешик аймагы, Кан айылы. Сизди ар дайым күтөбүз!" },
-    { q: "💻 Сайт тууралуу", a: "Бул заманбап платформаны мектебибиздин сыймыктуу бүтүрүүчүсү Набиев Айбек иштеп чыккан. Ал учурда Бишкектеги TechnoPark IT компаниясында Frontend разработчик. 🚀" },
-    { q: "📅 Расписание", a: "Расписание бөлүмүнө өтүп, классыңызды тандаңыз. Маалыматтар дайыма жаңыланып турат." },
-    { q: "📞 Байланыш", a: "Биз менен байланышуу үчүн: +996 (702) 95-22-00 номерине чалсаңыз болот." }
+    { q: "📍 Мектеп кайда?", a: "Биздин мектептин дареги: Баткен району, Кан айылы. Сизди ар дайым күтөбүз!" },
+    { q: "⏰ Азыркы абал?", a: getSchoolStatus() },
+    { q: "📅 Расписание", a: "Расписание бөлүмүнө өтүп, классыңызды тандаңыз.", action: "schedule" },
+    { q: "📞 Директорго жазуу", a: "Азыр сизди директордун WhatsApp номерине багыттайм...", action: "whatsapp" }
   ];
 
-  const handleQuestion = (question: string, answer: string) => {
+  const handleQuestion = (question: string, answer: string, action?: string) => {
     if (isTyping) return;
-    setHistory(prev => [...prev, { type: 'user', text: question }]);
+    const time = getCurrentTime();
+    setHistory(prev => [...prev, { type: 'user', text: question, time }]);
     
     setTimeout(() => {
       setIsTyping(true);
       setTimeout(() => {
-        setHistory(prev => [...prev, { type: 'bot', text: answer }]);
+        setHistory(prev => [...prev, { type: 'bot', text: answer, time }]);
         setIsTyping(false);
-      }, 1200);
+
+        if (action === "whatsapp") {
+          setTimeout(() => window.open("https://wa.me/996770125632", "_blank"), 1000);
+        }
+        if (action === "schedule") {
+          const el = document.getElementById('schedule-section');
+          el?.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 1000);
     }, 300);
   };
 
@@ -44,59 +93,60 @@ const AIChatBot: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-           initial={{ opacity: 0, y: 40, scale: 0.9, filter: "blur(10px)" }}
-           animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-           exit={{ opacity: 0, y: 40, scale: 0.9, filter: "blur(10px)" }}
+           initial={{ opacity: 0, y: 50, scale: 0.8 }}
+           animate={{ opacity: 1, y: 0, scale: 1 }}
+           exit={{ opacity: 0, y: 50, scale: 0.8 }}
            className={styles.chatWindow}
           >
             <div className={styles.chatHeader}>
               <div className={styles.headerInfo}>
-                <div className={styles.statusGroup}>
-                  <div className={styles.onlineDot} />
-                  <div className={styles.dotWave} />
+                <div className={styles.avatarBox}>🤖</div>
+                <div className={styles.headerText}>
+                  <span className={styles.headerTitle}>Санарип Жардамчы</span>
+                  <div className={styles.statusIndicator}><span></span> онлайн</div>
                 </div>
-                <span className={styles.headerTitle}>✨ Санарип Жардамчы</span>
               </div>
-              <button className={styles.closeBtn} onClick={() => setIsOpen(false)}>&times;</button>
+              <div className={styles.headerActions}>
+                <button className={styles.toolBtn} onClick={clearChat} title="Тазалоо"><HiOutlineTrash /></button>
+                <button className={styles.toolBtn} onClick={() => setIsOpen(false)}><HiOutlineX /></button>
+              </div>
             </div>
 
             <div className={styles.chatBody}>
               {history.map((msg, index) => (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  key={index} 
-                  className={msg.type === 'bot' ? styles.botMsg : styles.userMsg}
-                >
-                  {msg.text}
-                </motion.div>
+                <div key={index} className={msg.type === 'bot' ? styles.botGroup : styles.userGroup}>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={msg.type === 'bot' ? styles.botBubble : styles.userBubble}
+                  >
+                    <p>{msg.text}</p>
+                    <div className={styles.bubbleMetadata}>
+                      <span className={styles.msgTime}>{msg.time}</span>
+                      {msg.type === 'bot' && (
+                        <div className={styles.msgTools}>
+                          <HiOutlineVolumeUp onClick={() => speakText(msg.text)} className={styles.iconAction} />
+                          <HiOutlineClipboardCopy onClick={() => copyText(msg.text)} className={styles.iconAction} />
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
               ))}
-
               {isTyping && (
-                <div className={styles.botMsg}>
-                  <div className={styles.typingIndicator}>
-                    <span></span><span></span><span></span>
-                  </div>
+                <div className={styles.typingBox}>
+                  <span></span><span></span><span></span>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
             <div className={styles.questionSection}>
-              <div className={styles.divider}>
-                <span>Тез суроолор</span>
-              </div>
-              <div className={styles.btnScrollArea}>
+              <div className={styles.chipScroll}>
                 {qaDatabase.map((item, idx) => (
-                  <motion.button 
-                    whileHover={{ x: 5 }}
-                    key={idx} 
-                    onClick={() => handleQuestion(item.q, item.a)}
-                    className={styles.qBtn}
-                    disabled={isTyping}
-                  >
+                  <button key={idx} onClick={() => handleQuestion(item.q, item.a, item.action)} className={styles.qChip}>
                     {item.q}
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </div>
@@ -105,12 +155,12 @@ const AIChatBot: React.FC = () => {
       </AnimatePresence>
 
       <motion.button 
-        animate={!isOpen ? { scale: [1, 1.05, 1] } : {}}
-        transition={{ repeat: Infinity, duration: 2 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
         className={`${styles.fab} ${isOpen ? styles.fabActive : ''}`}
       >
-        <span className={styles.icon}>{isOpen ? '✕' : '💬'}</span>
+        {isOpen ? <HiOutlineX /> : <HiChatAlt2 />}
       </motion.button>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import styles from './BestStudents.module.css';
 
 interface Student {
@@ -12,10 +12,52 @@ interface Student {
   date?: string;
 }
 
+// Ар бир окуучунун картасы үчүн өзүнчө компонент (Flip логикасы менен)
+const StudentCard = ({ student }: { student: Student }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  return (
+    <div 
+      className={styles.cardContainer}
+      onMouseEnter={() => setIsFlipped(true)}
+      onMouseLeave={() => setIsFlipped(false)}
+      onClick={() => setIsFlipped(!isFlipped)}
+    >
+      <motion.div
+        className={styles.cardInner}
+        initial={false}
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* АЛДЫҢКЫ БЕТИ */}
+        <div className={styles.cardFront}>
+          <div className={styles.imageWrapper}>
+            <img src={student.imageUrl} alt={student.title} />
+          </div>
+          <div className={styles.frontInfo}>
+            <h3>{student.title}</h3>
+            <span className={styles.badge}>Мектеп Сыймыгы</span>
+          </div>
+        </div>
+
+        {/* АРТКЫ БЕТИ */}
+        <div className={styles.cardBack}>
+          <div className={styles.backContent}>
+            <h4>Жетишкендиктери</h4>
+            <div className={styles.divider}></div>
+            <p>{student.description}</p>
+            {student.date && <span className={styles.date}>📅 {student.date}</span>}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 const BestStudents: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'best-students'), orderBy('updatedAt', 'desc'));
@@ -30,66 +72,29 @@ const BestStudents: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div className={styles.loader}>Жүктөлүүдө...</div>;
+  if (loading) return (
+    <div className={styles.loaderContainer}>
+      <div className={styles.spinner}></div>
+      <p>Окуучулар жүктөлүүдө...</p>
+    </div>
+  );
 
   return (
     <div className={styles.container}>
-      <motion.h1 
+      <motion.div 
         initial={{ opacity: 0, y: -20 }} 
         animate={{ opacity: 1, y: 0 }}
-        className={styles.title}
+        className={styles.headerSection}
       >
-        🌟 Биздин мыкты окуучуларыбыз
-      </motion.h1>
+        <h1 className={styles.title}>🌟 Биздин мыкты окуучуларыбыз</h1>
+        <p className={styles.subtitle}>Билими жана таланты менен мектебибиздин атын чыгарган сыймыктарыбыз</p>
+      </motion.div>
 
       <div className={styles.grid}>
         {students.map((student) => (
-          <motion.div 
-            key={student.id} 
-            className={styles.card}
-            whileHover={{ y: -5 }}
-          >
-            <div className={styles.imageWrapper}>
-              <img src={student.imageUrl} alt={student.title} />
-            </div>
-            <div className={styles.info}>
-              <h3>{student.title}</h3>
-              <p>{student.description.substring(0, 100)}...</p>
-              <button 
-                className={styles.moreBtn}
-                onClick={() => setSelectedStudent(student)}
-              >
-                Толук маалымат
-              </button>
-            </div>
-          </motion.div>
+          <StudentCard key={student.id} student={student} />
         ))}
       </div>
-
-      {/* МОДАЛДЫК ТЕРЕЗЕ */}
-      <AnimatePresence>
-        {selectedStudent && (
-          <div className={styles.modalOverlay} onClick={() => setSelectedStudent(null)}>
-            <motion.div 
-              className={styles.modalContent}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button className={styles.closeBtn} onClick={() => setSelectedStudent(null)}>&times;</button>
-              <img src={selectedStudent.imageUrl} alt={selectedStudent.title} className={styles.modalImg} />
-              <div className={styles.modalBody}>
-                <h2>{selectedStudent.title}</h2>
-                <span className={styles.modalDate}>📅 {selectedStudent.date}</span>
-                <div className={styles.fullDesc}>
-                  {selectedStudent.description}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

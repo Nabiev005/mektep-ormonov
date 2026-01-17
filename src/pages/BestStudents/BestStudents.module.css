@@ -1,44 +1,70 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
-  min-height: 80vh;
+  padding: 60px 20px;
+  min-height: 100vh;
+}
+
+.headerSection {
+  text-align: center;
+  margin-bottom: 60px;
 }
 
 .title {
-  text-align: center;
-  font-size: 2.5rem;
-  color: #2d3748;
-  margin-bottom: 40px;
+  font-size: 2.8rem;
+  color: #1a202c;
   font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  margin-bottom: 15px;
+  background: linear-gradient(90deg, #2d3748, #4a90e2);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Сетка (Grid) - компьютерде 3, планшетте 2, телефондо 1 мамыча */
+.subtitle {
+  color: #718096;
+  font-size: 1.1rem;
+}
+
+/* 3D Flip Card Styles */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 30px;
-  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 35px;
+  perspective: 1500px; /* 3D эффектти күчөтөт */
 }
 
-/* Карточканын дизайны */
-.card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
+.cardContainer {
+  height: 420px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cardFront, .cardBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 30px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* АЛДЫҢКЫ БЕТИ */
+.cardFront {
+  background: white;
   display: flex;
   flex-direction: column;
 }
 
-/* Сүрөт үчүн контейнер */
 .imageWrapper {
   width: 100%;
-  height: 250px;
+  height: 75%;
   overflow: hidden;
 }
 
@@ -46,192 +72,91 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
 }
 
-.card:hover .imageWrapper img {
-  transform: scale(1.1);
-}
-
-/* Текст жазылган бөлүгү */
-.info {
+.frontInfo {
   padding: 20px;
   text-align: center;
 }
 
-.info h3 {
-  margin: 0 0 10px 0;
-  font-size: 1.4rem;
-  color: #1a202c;
-  font-weight: 700;
+.frontInfo h3 {
+  font-size: 1.3rem;
+  color: #2d3748;
+  margin-bottom: 8px;
 }
 
-.info p {
-  color: #4a5568;
-  font-size: 1rem;
-  line-height: 1.5;
-  margin-bottom: 15px;
-}
-
-.date {
-  display: inline-block;
-  font-size: 0.85rem;
-  color: #718096;
-  background: #f7fafc;
-  padding: 5px 12px;
+.badge {
+  font-size: 0.75rem;
+  background: #ebf8ff;
+  color: #3182ce;
+  padding: 4px 12px;
   border-radius: 50px;
-  font-weight: 500;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-/* Жүктөлүп жаткандагы анимация */
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50vh;
-  font-size: 1.5rem;
-  color: #4a90e2;
-  font-weight: bold;
-}
-
-.empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  font-size: 1.2rem;
-  color: #a0aec0;
-  padding: 50px;
-}
-
-/* --- АДАПТИВАЦИЯ (Мобилдик телефондор үчүн) --- */
-
-@media (max-width: 768px) {
-  .title {
-    font-size: 1.8rem;
-    margin-bottom: 30px;
-  }
-
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-  }
-
-  .imageWrapper {
-    height: 200px;
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding: 20px 15px;
-  }
-
-  .title {
-    font-size: 1.5rem;
-  }
-
-  .info h3 {
-    font-size: 1.2rem;
-  }
-}
-
-/* Баскычтын стили */
-.moreBtn {
-  background: #4a90e2;
+/* АРТКЫ БЕТИ (Айнек эффект) */
+.cardBack {
+  background: linear-gradient(135deg, #4a90e2 0%, #2b6cb0 100%);
   color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s;
-  margin-top: 10px;
-}
-
-.moreBtn:hover {
-  background: #357abd;
-}
-
-/* Модалдык терезенин фону */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  transform: rotateY(180deg);
+  padding: 30px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 1000;
-  padding: 20px;
-  backdrop-filter: blur(5px);
+  justify-content: center;
 }
 
-/* Модалдын ичи */
-.modalContent {
+.backContent {
+  text-align: center;
+}
+
+.backContent h4 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.divider {
+  width: 50px;
+  height: 3px;
   background: white;
-  width: 100%;
-  max-width: 600px;
-  border-radius: 25px;
-  overflow: hidden;
-  position: relative;
-  max-height: 90vh;
+  margin: 0 auto 20px;
+  border-radius: 2px;
+}
+
+.backContent p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-height: 200px;
   overflow-y: auto;
 }
 
-.closeBtn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 30px;
-  background: white;
+/* Loader */
+.loaderContainer {
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #edf2f7;
+  border-top: 5px solid #3182ce;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  border: none;
-  cursor: pointer;
-  z-index: 10;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  animation: spin 1s linear infinite;
 }
 
-.modalImg {
-  width: 100%;
-  height: 350px;
-  object-fit: cover;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.modalBody {
-  padding: 30px;
-}
-
-.modalBody h2 {
-  margin-bottom: 10px;
-  color: #2d3748;
-}
-
-.modalDate {
-  display: block;
-  margin-bottom: 20px;
-  color: #718096;
-  font-size: 0.9rem;
-}
-
-.fullDesc {
-  line-height: 1.8;
-  color: #4a5568;
-  font-size: 1.1rem;
-  white-space: pre-wrap; /* Тексттин боштуктарын сактайт */
-}
-
-/* Мобилдик телефондор үчүн модал */
-@media (max-width: 480px) {
-  .modalContent {
-    max-height: 95vh;
-  }
-  .modalImg {
-    height: 250px;
-  }
-  .modalBody {
-    padding: 20px;
-  }
+/* Адаптивдүүлүк */
+@media (max-width: 768px) {
+  .title { font-size: 2rem; }
+  .cardContainer { height: 380px; }
 }

@@ -987,3 +987,181 @@
   70% { box-shadow: 0 0 0 10px rgba(72, 187, 120, 0); }
   100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); }
 }
+
+.certificateLayout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.certForm {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.certPreviewWrapper {
+  overflow-x: auto;
+  padding: 10px;
+  background: #f0f2f5;
+  border-radius: 12px;
+}
+
+.certificateTemplate {
+  width: 842px; /* A4 Landscape width in px at 96dpi approx */
+  height: 595px;
+  background: white;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.certBorderOuter {
+  border: 8px double #b8860b;
+  height: 100%;
+  padding: 5px;
+}
+
+.certBorderInner {
+  border: 2px solid #b8860b;
+  height: 100%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background: radial-gradient(circle, #fff 0%, #fffef0 100%);
+}
+
+.certEmblem {
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+.certGoldTitle {
+  font-family: 'Times New Roman', serif;
+  font-size: 3.5rem;
+  color: #b8860b;
+  margin: 5px 0;
+}
+
+.certRecipient {
+  font-size: 2.5rem;
+  font-family: 'Brush Script MT', cursive;
+  color: #1a365d;
+  border-bottom: 2px solid #ddd;
+  margin: 10px 0;
+  padding: 0 30px;
+}
+
+.certBadge {
+  background: #b8860b;
+  color: white;
+  padding: 5px 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.certFooter {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: auto;
+  padding: 0 20px;
+}
+
+.signLine {
+  border-top: 1px solid #000;
+  min-width: 150px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.certStamp {
+  width: 80px;
+  height: 80px;
+  border: 2px dashed #b8860b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b8860b;
+  opacity: 0.5;
+}
+
+/* --- АДАПТИВКҮҮЛҮК (RESPONSIVE) --- */
+
+@media (max-width: 1100px) {
+  .certificateLayout {
+    grid-template-columns: 1fr; /* Планшетте бир катар болуп калат */
+  }
+
+  .certPreviewWrapper {
+    display: flex;
+    justify-content: center;
+    overflow-x: auto; /* Сертификат чоң болсо, туурасынан сыдырылат */
+  }
+}
+
+@media (max-width: 768px) {
+  .certificateTemplate {
+    /* Мобилдик телефондо сертификаттын превьюсун кичирейтип көрсөтүү */
+    transform: scale(0.7); 
+    transform-origin: top center;
+    margin-bottom: -150px; /* Масштабдан кийинки боштукту толтуруу */
+  }
+  
+  .certGoldTitle {
+    font-size: 2.5rem;
+  }
+  
+  .certRecipient {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .certificateTemplate {
+    transform: scale(0.45); /* Кичинекей экрандарда көбүрөөк кичирейтүү */
+    margin-bottom: -300px;
+  }
+  
+  .certForm {
+    padding: 15px;
+  }
+}
+
+/* --- КОШУМЧА ЖАКШЫРТУУЛАР --- */
+
+.certPreviewWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #e2e8f0;
+  padding: 20px;
+  min-height: 400px;
+  border: 1px solid #cbd5e0;
+}
+
+/* Тексттер ашып кетпеши үчүн */
+.certText, .certRecipient, .certEventName {
+  text-align: center;
+  word-wrap: break-word;
+  max-width: 90%;
+}
+
+.certSchoolName {
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* PDF жүктөө баскычы мобилдикте толук туурасы менен */
+@media (max-width: 600px) {
+  .submitBtn {
+    width: 100%;
+    padding: 15px;
+  }
+}

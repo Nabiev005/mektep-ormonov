@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Hom from "../../assets/Home.jpg"
+import Hom from "../../assets/Home.jpg";
+import ZayilPhoto from "../../assets/ormonov.png";
 import styles from './About.module.css';
 
 const About: React.FC = () => {
@@ -11,7 +12,7 @@ const About: React.FC = () => {
       exit={{ opacity: 0 }}
       className={styles.aboutPage}
     >
-      {/* 1. Бөлүм: Мектептин тарыхы */}
+      {/* 1. Бөлүм: Мектептин тарыхы - КАРТОЧКА СТИЛИНДЕ */}
       <section className={styles.intro}>
         <div className={styles.container}>
           <motion.h1 
@@ -21,22 +22,56 @@ const About: React.FC = () => {
           >
             Биздин тарых жана миссия
           </motion.h1>
-          <div className={styles.contentWrapper}>
-            <div className={styles.textBlock}>
+
+          <div className={styles.historyCard}>
+            <div className={styles.historyInfo}>
+              <span className={styles.scrollLabel}>Биздин мектеп</span>
               <h2>Мектептин негизделиши</h2>
               <p>
-                    Жаңы мектептин курулушу жана ачылышы
-                    Баткен районунун Кан айылында орто мектеп заман талабына ылайык жаңы имаратта 2015-2017 жылдары курулуп бүттү. Курулуш 2015-жылы башталган жана республикалык бюджеттен акча бөлүнүп жасалган.
-                    Бул жаңы имарат эски мектептин ордуна курулган — мурдагы эски мектеп 1936-жылы салынган болчу.
+                Зайил Ормонов атындагы орто мектеп заман талабына ылайык жаңы имаратта
+                2015–2017-жылдары республикалык бюджеттин эсебинен курулуп, пайдаланууга берилген.
+                Жаңы мектеп имараты 1936-жылы курулган эски имараттын ордуна салынган.
               </p>
+              <div className={styles.divider}></div>
+              <h2>Мүмкүнчүлүктөр</h2>
               <p>
-                Мектептин мүмкүнчүлүктөрү Мектеп 225 орунга ылайыкташкан,
-                 ошону менен бирге спорт залы, ашкана жана жуунучу жайлар бар. 
-                Мектеп заманбап талаптар боюнча түзүлгөн — окуучулар үчүн жагымдуу билим берүү шарты каралган.
+                Мектеп 225 окуучуга ылайыкташтырылган. Имаратта заманбап окуу класстары, 
+                спорт залы, ашкана жана окуучулар үчүн коопсуз, жагымдуу билим берүү шарттары түзүлгөн.
               </p>
             </div>
-            <div className={styles.imageBlock}>
-              <img src={Hom} alt="School History" />
+            <div className={styles.historyImageWrapper}>
+              <img src={Hom} alt="Мектеп имараты" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- ЖАҢЫ КОШУЛГАН БӨЛҮМ: Зайил Ормоновдун биографиясы --- */}
+      <section className={styles.biographySection}>
+        <div className={styles.container}>
+          <div className={styles.bioCard}>
+            <div className={styles.bioImageWrapper}>
+              <div className={styles.bioPlaceholder}>
+                <img src={ZayilPhoto} alt="Зайил Ормонов" />
+              </div>
+            </div>
+            <div className={styles.bioInfo}>
+              <span className={styles.scrollLabel}>Инсандык мурас</span>
+              <h2 className={styles.bioName}>Зайил Ормонов</h2>
+              <p className={styles.bioDescription}>
+                Зайил Ормонов — агартуучулукка өмүрүн арнаган инсан. Ал Кан айылынын 
+                билим берүү тармагынын түптөлүшүнө зор салым кошуп, бир нече муундарга 
+                татыктуу тарбия берген. Анын ак эмгеги жана коомго кошкон салымы үчүн 
+                мектепке анын ысымы ыйгарылган.
+              </p>
+              <div className={styles.bioFeatures}>
+                <div className={styles.featureItem}>
+                  <strong>Максаты:</strong> Айыл жаштарын сабаттуу жана мекенчил кылып тарбиялоо.
+                </div>
+                <div className={styles.featureItem}>
+                  <strong>Мурасы:</strong> Билим алууга болгон умтулуу жана эмгекчилдик.
+                </div>
+              </div>
             </div>
           </div>
         </div>

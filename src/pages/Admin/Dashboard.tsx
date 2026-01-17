@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db, auth } from '../../firebase';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Admin.module.css';
+// PDF үчүн китепканалар
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface ListItem {
   id: string;
@@ -35,6 +38,17 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<ListItem[]>([]);
   const [stats, setStats] = useState({ news: 0, teachers: 0, schedule: 0, bestStudents: 0 });
+
+  // --- СЕРТИФИКАТ ҮЧҮН ШТАТТАР ---
+  const certificateRef = useRef<HTMLDivElement>(null);
+  const [certData, setCertData] = useState({
+    name: '',
+    reason: '',
+    longDescription: '',
+    event: '',
+    director: 'Ормонов З.',
+    date: new Date().toLocaleDateString('ky-KG')
+  });
 
   const IMGBB_API_KEY = '9aed8b9d3a6c54c6a68db494ac681c35';
   const classList = ["1-класс", "2-класс", "3-класс", "4-класс", "5-класс", "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"];
@@ -71,7 +85,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStats();
-    if (activeTab === 'stats') return;
+    if (activeTab === 'stats' || activeTab === 'certificate') return;
 
     const q = query(collection(db, activeTab));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -83,6 +97,25 @@ const Dashboard: React.FC = () => {
     });
     return () => unsubscribe();
   }, [activeTab]);
+
+  // СЕРТИФИКАТТЫ ЖҮКТӨӨ ФУНКЦИЯСЫ
+  const downloadCertificate = async () => {
+    if (!certificateRef.current) return;
+    setLoading(true);
+    try {
+      const canvas = await html2canvas(certificateRef.current, { scale: 3, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const width = pdf.internal.pageSize.getWidth();
+      const height = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+      pdf.save(`Сертификат_${certData.name}.pdf`);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      alert("PDF жүктөөдө ката кетти");
+    }
+    setLoading(false);
+  };
 
   const uploadImage = async (file: File) => {
     const formData = new FormData();
@@ -185,6 +218,7 @@ const Dashboard: React.FC = () => {
         <div className={`${styles.menuItem} ${activeTab === 'teachers' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('teachers'); setEditingId(null);}}>👨‍🏫 Мугалимдер</div>
         <div className={`${styles.menuItem} ${activeTab === 'best-students' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('best-students'); setEditingId(null);}}>🌟 Мыктылар</div>
         <div className={`${styles.menuItem} ${activeTab === 'schedule' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('schedule'); setEditingId(null);}}>📅 Расписание</div>
+        <div className={`${styles.menuItem} ${activeTab === 'certificate' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('certificate'); setEditingId(null);}}>📜 Сертификат жасоо</div>
         <button onClick={() => signOut(auth)} className={styles.logoutBtn}>🚪 Чыгуу</button>
       </motion.aside>
 
@@ -210,14 +244,12 @@ const Dashboard: React.FC = () => {
                       <span>Мыктылар</span>
                     </div>
                   </div>
-
-                  {/* ТОЛУКТОО: Ыкчам аракеттер */}
                   <div className={styles.quickActionsSection}>
                     <h4>🚀 Ыкчам аракеттер</h4>
                     <div className={styles.actionBtns}>
                       <button onClick={() => setActiveTab('news')}>+ Жаңылык</button>
                       <button onClick={() => setActiveTab('best-students')}>+ Мыкты окуучу</button>
-                      <button onClick={() => setActiveTab('teachers')}>+ Мугалим</button>
+                      <button onClick={() => setActiveTab('certificate')}>📜 Сертификат жасоо</button>
                     </div>
                   </div>
                 </div>
@@ -226,8 +258,6 @@ const Dashboard: React.FC = () => {
                   <div className={styles.miniCard}><h4>{stats.news}</h4><p>Жаңылыктар</p></div>
                   <div className={styles.miniCard}><h4>{stats.teachers}</h4><p>Мугалимдер</p></div>
                   <div className={styles.miniCard}><h4>{stats.bestStudents}</h4><p>Мыктылар</p></div>
-                  
-                  {/* ТОЛУКТОО: Системанын абалы */}
                   <div className={styles.systemStatusCard}>
                     <h4>💻 Статус</h4>
                     <div className={styles.statusItem}>
@@ -237,6 +267,56 @@ const Dashboard: React.FC = () => {
                     <div className={styles.statusItem}>
                       <span>Абалы:</span>
                       <p className={styles.onlineStatus}>Онлайн</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ) : activeTab === 'certificate' ? (
+            <motion.div key="certificate" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <h1>📜 Сертификат генератору</h1>
+              <div className={styles.certificateLayout}>
+                <div className={styles.certForm}>
+                  <div className={styles.inputGroup}>
+                    <label>Аты-жөнү (Кимге)</label>
+                    <input type="text" value={certData.name} onChange={(e) => setCertData({...certData, name: e.target.value})} placeholder="Асанов Үсөн" />
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label>Номинация / Себеби</label>
+                    <input type="text" value={certData.reason} onChange={(e) => setCertData({...certData, reason: e.target.value})} placeholder="I ОРУН" />
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label>Толук маалымат</label>
+                    <textarea rows={3} value={certData.longDescription} onChange={(e) => setCertData({...certData, longDescription: e.target.value})} placeholder="Бул сертификат окуудагы ийгиликтери үчүн берилет..." />
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label>Иш-чаранын аталышы</label>
+                    <input type="text" value={certData.event} onChange={(e) => setCertData({...certData, event: e.target.value})} placeholder="'Алтын Күз' конкурсу" />
+                  </div>
+                  <button onClick={downloadCertificate} className={styles.submitBtn} disabled={loading || !certData.name}>
+                    {loading ? "Даярдалууда..." : "PDF Жүктөө ⬇️"}
+                  </button>
+                </div>
+
+                {/* ВИЗУАЛДЫК ПРЕВЬЮ */}
+                <div className={styles.certPreviewWrapper}>
+                  <div ref={certificateRef} className={styles.certificateTemplate}>
+                    <div className={styles.certBorderOuter}>
+                      <div className={styles.certBorderInner}>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Emblem_of_Kyrgyzstan.svg/1200px-Emblem_of_Kyrgyzstan.svg.png" alt="Герб" className={styles.certEmblem} />
+                        <span className={styles.certSchoolName}>ЗАЙИЛ ОРМОНОВ АТЫНДАГЫ ОРТО МЕКТЕБИ</span>
+                        <h2 className={styles.certGoldTitle}>СЕРТИФИКАТ</h2>
+                        <p className={styles.certGivenTo}>Бул сертификат берилет:</p>
+                        <h3 className={styles.certRecipient}>{certData.name || "Аты-жөнү"}</h3>
+                        <div className={styles.certBadge}>{certData.reason || "Номинация"}</div>
+                        <p className={styles.certText}>{certData.longDescription || "Сыйлоо тексти ушул жерде болот."}</p>
+                        <p className={styles.certEventName}>{certData.event}</p>
+                        <div className={styles.certFooter}>
+                          <div><p>Директор:</p><p className={styles.signLine}>{certData.director}</p></div>
+                          <div className={styles.certStamp}>М.О.</div>
+                          <div><p>Дата:</p><p><strong>{certData.date}</strong></p></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
