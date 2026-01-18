@@ -22,6 +22,7 @@ import AIChatBot from './components/AIChatBot/AIChatBot';
 import Resources from './pages/Resources/Resources';
 import ParentsCorner from './pages/ParentsCorner/ParentsCorner';
 import Gallery from './pages/Gallery/Gallery';
+import Library from './pages/Library/Library';
 
 import styles from './App.module.css';
 
@@ -53,6 +54,7 @@ const AnimatedRoutes = () => {
         <Route path="/resources" element={<Resources />} /> {/* <-- ЖАҢЫ МАРШРУТ */}
         <Route path="/parents-corner" element={<ParentsCorner />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/library" element={<Library />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />

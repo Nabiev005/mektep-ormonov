@@ -8,7 +8,6 @@ const Header: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
 
-  // Баракча алмашса менюну жабуу
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsOpen(false);
@@ -55,12 +54,12 @@ const Header: React.FC = () => {
                   exit={{ opacity: 0, y: 10, filter: "blur(10px)" }}
                   className={styles.dropdownContent}
                 >
-                  <Link to="/teachers">Мугалимдер</Link>
-                  <Link to="/best-students">Мыкты окуучулар</Link>
-                  {/* ЖАҢЫ КОШУЛДУ */}
-                  <Link to="/parents-corner">Ата-энелер бурчу</Link> 
+                  <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
+                  <Link to="/best-students">🌟 Мыкты окуучулар</Link>
+                  <Link to="/library">📚 Китепкана</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                  <Link to="/parents-corner">👨‍👩‍👧‍👦 Ата-энелер бурчу</Link> 
                   <Link to="/gallery">📸 Мектеп галереясы</Link>
-                  <Link to="/resources">Пайдалуу ресурстар</Link>
+                  <Link to="/resources">🔗 Пайдалуу ресурстар</Link>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -79,7 +78,7 @@ const Header: React.FC = () => {
           <div className={`${styles.line} ${isOpen ? styles.open3 : ''}`}></div>
         </button>
 
-        {/* Мобилдик меню (Floating Card Style) */}
+        {/* Мобилдик меню */}
         <AnimatePresence>
           {isOpen && (
             <motion.div 
@@ -95,7 +94,7 @@ const Header: React.FC = () => {
                 <div className={styles.mobileDivider}>Мектеп жашоосу</div>
                 <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
-                {/* ЖАҢЫ КОШУЛДУ */}
+                <Link to="/library">📚 Китепкана</Link> {/* ЖАҢЫ КОШУЛДУ */}
                 <Link to="/parents-corner">👨‍👩‍👧 Ата-энелер бурчу</Link> 
                 <Link to="/resources">📚 Пайдалуу ресурстар</Link>
                 <Link to="/gallery">📸 Мектеп галереясы</Link>

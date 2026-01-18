@@ -33,3 +33,15 @@ export interface Teacher {
   photoUrl: string;
   bio?: string;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  grade: number; // Классы
+  pdfUrl: string; // Файлга шилтеме
+  category: string; // Мисалы: "Так илимдер", "Гуманитардык"
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  createdAt: any;
+}
