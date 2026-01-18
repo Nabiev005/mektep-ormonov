@@ -19,7 +19,9 @@ import Footer from './components/Footer/Footer';
 
 // ЖАҢЫ КОШУЛГАН КОМПОНЕНТТЕР
 import AIChatBot from './components/AIChatBot/AIChatBot'; 
-import Resources from './pages/Resources/Resources'; // <-- Ресурстар баракчасын коштук
+import Resources from './pages/Resources/Resources';
+import ParentsCorner from './pages/ParentsCorner/ParentsCorner';
+import Gallery from './pages/Gallery/Gallery';
 
 import styles from './App.module.css';
 
@@ -49,6 +51,8 @@ const AnimatedRoutes = () => {
         <Route path="/teachers" element={<Teachers />} />
         <Route path="/best-students" element={<BestStudents />} />
         <Route path="/resources" element={<Resources />} /> {/* <-- ЖАҢЫ МАРШРУТ */}
+        <Route path="/parents-corner" element={<ParentsCorner />} />
+        <Route path="/gallery" element={<Gallery />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />

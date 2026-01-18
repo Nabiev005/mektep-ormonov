@@ -1165,3 +1165,165 @@
     padding: 15px;
   }
 }
+
+/* =====================================================
+   ✅ MODERN + RESPONSIVE ENHANCEMENT
+   ❌ ЭЧ НЕРСЕ ӨЧҮРҮЛБӨЙТ
+   ➕ БОЛГОНУ ҮСТҮНӨН ОҢДОЛОТ
+   ===================================================== */
+
+/* 🔒 Horizontal overflow'ду толук жабуу */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* 📦 Бардык элементтер туура эсептелсин */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* -------------------------------
+   📱 Sidebar – мобилдикте идеал
+-------------------------------- */
+@media (max-width: 768px) {
+  .sidebar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .menuItem,
+  .logoutBtn {
+    flex-shrink: 0;
+  }
+}
+
+/* -------------------------------
+   📐 Main content эч качан чыгып кетпейт
+-------------------------------- */
+.mainContent {
+  min-width: 0;
+  width: 100%;
+}
+
+/* -------------------------------
+   🧾 Form элементтери responsive
+-------------------------------- */
+.inputGroup,
+.inputGroup input,
+.inputGroup textarea,
+.selectInput,
+.fileUploadLabel {
+  max-width: 100%;
+}
+
+/* -------------------------------
+   🧩 Grid – бардык экранда туура
+-------------------------------- */
+@media (max-width: 1024px) {
+  .adminGrid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .adminGrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* -------------------------------
+   🎛 Card ичиндеги кнопкалар
+-------------------------------- */
+@media (max-width: 480px) {
+  .cardActions {
+    flex-direction: column;
+  }
+
+  .cardActions button {
+    width: 100%;
+  }
+}
+
+/* -------------------------------
+   🪟 Modal – экрандан ашпайт
+-------------------------------- */
+@media (max-width: 600px) {
+  .modalOverlay {
+    padding: 10px;
+  }
+
+  .modalContent {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* -------------------------------
+   📊 Stats – сынып кетпейт
+-------------------------------- */
+@media (max-width: 768px) {
+  .barWrapper {
+    width: 40px;
+  }
+}
+
+/* -------------------------------
+   📜 Certificate preview – PERFECT SCALE
+-------------------------------- */
+.certPreviewWrapper {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .certificateTemplate {
+    transform: scale(0.8);
+    transform-origin: top center;
+    margin-bottom: -120px;
+  }
+}
+
+/* Phone */
+@media (max-width: 480px) {
+  .certificateTemplate {
+    transform: scale(0.45);
+    margin-bottom: -280px;
+  }
+}
+
+/* -------------------------------
+   🔎 Search + header таза көрүнүш
+-------------------------------- */
+@media (max-width: 600px) {
+  .listHeader {
+    align-items: stretch;
+  }
+}
+
+/* -------------------------------
+   ✨ ЗАМАНБАП ЖЫМЫРТКЫ АНИМАЦИЯ
+-------------------------------- */
+button,
+.menuItem,
+.adminCard {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* -------------------------------
+   🧠 Accessibility (заманбап стандарт)
+-------------------------------- */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(49,130,206,0.35);
+  border-radius: 8px;
+}

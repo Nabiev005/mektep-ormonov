@@ -178,7 +178,7 @@
   transition: 0.3s ease;
 }
 
-/* --- МОБИЛДИК МЕНЮ (Сүрөттөгүдөй заманбап карта) --- */
+/* --- МОБИЛДИК МЕНЮ (Жаңыртылган скролл менен) --- */
 .mobileNav {
   position: fixed;
   top: 90px;
@@ -190,12 +190,28 @@
   padding: 25px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+  /* ЖАҢЫ КОШУЛГОН СТИЛДЕР: */
+  max-height: calc(100vh - 120px); /* Экрандын бийиктигине жараша чектөө */
+  overflow-y: auto;               /* Ички скроллду иштетүү */
+  scrollbar-width: none;          /* Firefox үчүн скроллбарды жашыруу */
+}
+
+/* Webkit браузерлери үчүн (Chrome, Safari) скроллбарды кооздоо же жашыруу */
+.mobileNav::-webkit-scrollbar {
+  width: 4px;
+}
+.mobileNav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
 }
 
 .mobileNavLinks {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  /* Төмөнкү жагындагы боштук акыркы элементти жакшы көрсөтөт */
+  padding-bottom: 10px; 
 }
 
 .mobileNavLinks a {
