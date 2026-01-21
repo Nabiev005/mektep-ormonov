@@ -249,3 +249,34 @@
 .open1 { transform: translateY(7px) rotate(45deg); }
 .open2 { opacity: 0; }
 .open3 { transform: translateY(-7px) rotate(-45deg); }
+
+
+/* --- АЙЫЛДЫН ТООЛОРУ ЖАНА АЙГҮЛ ГҮЛҮ ЭФФЕКТИСИ --- */
+
+/* Header'дин фонун тоолордун элеси менен кооздоо */
+.header {
+  /* Эски background'ду өзгөртөбүз: градиент + тоо силуэти */
+  background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), 
+              url('../../assets/school-bg.png'); /* Бул жерге тоонун сүрөтүн койсо болот */
+  background-size: cover;
+  background-position: center;
+  height: 100px; /* Бийиктигин бир аз дагы чоңойттук */
+  border-bottom: 2px solid #fff; /* Айгүл гүлүнүн жашыл түсү сыяктуу сызык */
+}
+
+
+
+/* Гүлдөрдүн акырын термелүү анимациясы */
+@keyframes sway {
+  0% { transform: rotate(-5deg); }
+  50% { transform: rotate(10deg); }
+  100% { transform: rotate(-5deg); }
+}
+
+/* Планшет жана телефондордо гүлдөр өтө чоң болуп кетпеши үчүн */
+@media (max-width: 768px) {
+  .header::before, .header::after {
+    font-size: 1.2rem;
+    bottom: 10px;
+  }
+}

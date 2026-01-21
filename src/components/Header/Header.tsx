@@ -60,6 +60,7 @@ const Header: React.FC = () => {
                   <Link to="/parents-corner">👨‍👩‍👧‍👦 Ата-энелер бурчу</Link> 
                   <Link to="/gallery">📸 Мектеп галереясы</Link>
                   <Link to="/resources">🔗 Пайдалуу ресурстар</Link>
+                  <Link to="/online-lessons">🎥 Онлайн сабактар</Link>
                 </motion.div>
               )}
             </AnimatePresence>

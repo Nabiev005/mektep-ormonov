@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db, auth, storage } from '../../firebase'; // storage кошулду
+import { db, auth, storage } from '../../firebase';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Firebase Storage үчүн
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Admin.module.css';
@@ -13,7 +13,9 @@ interface ListItem {
   title?: string;
   description?: string;
   imageUrl?: string;
-  pdfUrl?: string; // PDF шилтемеси үчүн жаңы талаа
+  pdfUrl?: string;
+  videoUrl?: string; // КОШУЛДУ
+  teacherName?: string; // КОШУЛДУ
   className?: string;
   day?: string;
   lessons?: string;
@@ -31,7 +33,9 @@ const Dashboard: React.FC = () => {
   const [desc, setDesc] = useState('');
   const [category, setCategory] = useState('achievements');
   const [imageFile, setImageFile] = useState<File | null>(null); 
-  const [pdfFile, setPdfFile] = useState<File | null>(null); // PDF файл үчүн жаңы state
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [videoUrl, setVideoUrl] = useState(''); // КОШУЛДУ
+  const [teacherName, setTeacherName] = useState(''); // КОШУЛДУ
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<ListItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,7 +52,8 @@ const Dashboard: React.FC = () => {
     bestStudents: 0, 
     feedback: 0, 
     gallery: 0,
-    library: 0 
+    library: 0,
+    onlineLessons: 0 // КОШУЛДУ
   });
 
   const certificateRef = useRef<HTMLDivElement>(null);
@@ -73,6 +78,7 @@ const Dashboard: React.FC = () => {
       const feedbackCount = await getCountFromServer(collection(db, 'feedback'));
       const galleryCount = await getCountFromServer(collection(db, 'gallery'));
       const libraryCount = await getCountFromServer(collection(db, 'library'));
+      const onlineCount = await getCountFromServer(collection(db, 'online-lessons')); // КОШУЛДУ
       
       setStats({
         news: newsCount.data().count,
@@ -81,7 +87,8 @@ const Dashboard: React.FC = () => {
         bestStudents: bestStudentsCount.data().count,
         feedback: feedbackCount.data().count,
         gallery: galleryCount.data().count,
-        library: libraryCount.data().count
+        library: libraryCount.data().count,
+        onlineLessons: onlineCount.data().count // КОШУЛДУ
       });
     } catch (e) {
       console.error("Статистика алууда ката:", e);
@@ -144,7 +151,6 @@ const Dashboard: React.FC = () => {
     return data.data.url;
   };
 
-  // PDFти Firebase'ге жүктөө функциясы
   const uploadPDFFile = async (file: File) => {
     const storageRef = ref(storage, `library_pdfs/${Date.now()}_${file.name}`);
     const snapshot = await uploadBytes(storageRef, file);
@@ -158,6 +164,11 @@ const Dashboard: React.FC = () => {
       setClassName(item.className || '1-класс');
       setDay(item.day || 'Дүйшөмбү');
       setLessons(item.lessons || '');
+    } else if (activeTab === 'online-lessons') { // КОШУЛДУ
+      setTitle(item.title || '');
+      setTeacherName(item.teacherName || '');
+      setVideoUrl(item.videoUrl || '');
+      setDesc(item.description || '');
     } else {
       setTitle(item.title || '');
       setDesc(item.description || '');
@@ -179,13 +190,17 @@ const Dashboard: React.FC = () => {
           className, day, lessons,
           updatedAt: serverTimestamp()
         };
+      } else if (activeTab === 'online-lessons') { // КОШУЛДУ
+        finalData = {
+          title, teacherName, videoUrl, description: desc,
+          updatedAt: serverTimestamp()
+        };
       } else {
         let currentImageUrl = previewUrl;
         if (imageFile) {
           currentImageUrl = await uploadImage(imageFile);
         }
 
-        // PDF жүктөө логикасы
         let currentPdfUrl = items.find(i => i.id === editingId)?.pdfUrl || "";
         if (activeTab === 'library' && pdfFile) {
           currentPdfUrl = await uploadPDFFile(pdfFile);
@@ -199,7 +214,7 @@ const Dashboard: React.FC = () => {
                     activeTab === 'best-students' ? 'student' : 
                     activeTab === 'library' ? 'book' : 'teacher',
           imageUrl: currentImageUrl,
-          pdfUrl: currentPdfUrl, // Бул жерге PDF шилтемеси сакталат
+          pdfUrl: currentPdfUrl,
           updatedAt: serverTimestamp()
         };
       }
@@ -213,13 +228,12 @@ const Dashboard: React.FC = () => {
         await addDoc(collection(db, activeTab), finalData);
       }
       
-      setTitle(''); setDesc(''); setLessons(''); setImageFile(null); setPdfFile(null); setPreviewUrl(null);
-      if (document.getElementById('fileInput')) {
-        (document.getElementById('fileInput') as HTMLInputElement).value = "";
-      }
-      if (document.getElementById('pdfInput')) {
-        (document.getElementById('pdfInput') as HTMLInputElement).value = "";
-      }
+      setTitle(''); setDesc(''); setLessons(''); setImageFile(null); 
+      setPdfFile(null); setPreviewUrl(null); setVideoUrl(''); setTeacherName(''); // ТАЗАЛОО КОШУЛДУ
+      
+      if (document.getElementById('fileInput')) (document.getElementById('fileInput') as HTMLInputElement).value = "";
+      if (document.getElementById('pdfInput')) (document.getElementById('pdfInput') as HTMLInputElement).value = "";
+      
       alert("Ийгиликтүү сакталды! ✨");
       fetchStats();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -242,7 +256,7 @@ const Dashboard: React.FC = () => {
   };
 
   const filteredItems = items.filter(item => {
-    const searchStr = (item.title || item.className || item.description || '').toLowerCase();
+    const searchStr = (item.title || item.className || item.description || item.teacherName || '').toLowerCase();
     return searchStr.includes(searchTerm.toLowerCase());
   });
 
@@ -252,6 +266,7 @@ const Dashboard: React.FC = () => {
         <h2>⚙️ Админ</h2>
         <div className={`${styles.menuItem} ${activeTab === 'stats' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('stats'); setEditingId(null);}}>📊 Статистика</div>
         <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('news'); setEditingId(null);}}>📰 Жаңылыктар</div>
+        <div className={`${styles.menuItem} ${activeTab === 'online-lessons' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('online-lessons'); setEditingId(null);}}>🎥 Онлайн сабактар</div>
         <div className={`${styles.menuItem} ${activeTab === 'gallery' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('gallery'); setEditingId(null);}}>📸 Галерея</div>
         <div className={`${styles.menuItem} ${activeTab === 'library' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('library'); setEditingId(null);}}>📚 Китепкана</div>
         <div className={`${styles.menuItem} ${activeTab === 'teachers' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('teachers'); setEditingId(null);}}>👨‍🏫 Мугалимдер</div>
@@ -265,7 +280,7 @@ const Dashboard: React.FC = () => {
       <main className={styles.mainContent}>
         <AnimatePresence mode="wait">
           {activeTab === 'stats' ? (
-            <motion.div key=" " initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <motion.div key="stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
               <h1>Мектептин статистикасы</h1>
               <div className={styles.statsPageGrid}>
                 <div className={styles.statInfoCard}>
@@ -276,12 +291,12 @@ const Dashboard: React.FC = () => {
                       <span>Жаңылык</span>
                     </div>
                     <div className={styles.barWrapper}>
-                      <div className={styles.barLine} style={{ height: `${Math.min(stats.library * 5, 100)}%`, background: '#ed8936' }}></div>
-                      <span>Китептер</span>
+                      <div className={styles.barLine} style={{ height: `${Math.min(stats.onlineLessons * 5, 100)}%`, background: '#e53e3e' }}></div>
+                      <span>Видео</span>
                     </div>
                     <div className={styles.barWrapper}>
-                      <div className={styles.barLine} style={{ height: `${Math.min(stats.gallery * 5, 100)}%`, background: '#9f7aea' }}></div>
-                      <span>Галерея</span>
+                      <div className={styles.barLine} style={{ height: `${Math.min(stats.library * 5, 100)}%`, background: '#ed8936' }}></div>
+                      <span>Китептер</span>
                     </div>
                     <div className={styles.barWrapper}>
                       <div className={styles.barLine} style={{ height: `${Math.min(stats.teachers * 5, 100)}%`, background: '#38a169' }}></div>
@@ -292,16 +307,16 @@ const Dashboard: React.FC = () => {
                     <h4>🚀 Ыкчам аракеттер</h4>
                     <div className={styles.actionBtns}>
                       <button onClick={() => setActiveTab('news')}>+ Жаңылык</button>
+                      <button onClick={() => setActiveTab('online-lessons')}>+ Видео сабак</button>
                       <button onClick={() => setActiveTab('library')}>+ Китеп кошуу</button>
-                      <button onClick={() => setActiveTab('gallery')}>+ Сүрөт кошуу</button>
                     </div>
                   </div>
                 </div>
 
                 <div className={styles.statSummary}>
                   <div className={styles.miniCard}><h4>{stats.news}</h4><p>Жаңылыктар</p></div>
+                  <div className={styles.miniCard}><h4>{stats.onlineLessons}</h4><p>Видео сабактар</p></div>
                   <div className={styles.miniCard}><h4>{stats.library}</h4><p>Китептер</p></div>
-                  <div className={styles.miniCard}><h4>{stats.gallery}</h4><p>Сүрөттөр</p></div>
                   <div className={styles.systemStatusCard}>
                     <h4>💻 Статус</h4>
                     <div className={styles.statusItem}>
@@ -386,6 +401,7 @@ const Dashboard: React.FC = () => {
             <motion.div key={activeTab} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
               <h1>
                 {editingId ? '✏️ Оңдоо' : 
+                 activeTab === 'online-lessons' ? '🎥 Жаңы видео сабак' :
                  activeTab === 'best-students' ? '➕ Жаңы мыкты окуучу' : 
                  activeTab === 'teachers' ? '➕ Жаңы мугалим' : 
                  activeTab === 'gallery' ? '📸 Галереяга сүрөт кошуу' : 
@@ -412,6 +428,25 @@ const Dashboard: React.FC = () => {
                       <textarea rows={6} value={lessons} onChange={(e) => setLessons(e.target.value)} required placeholder="1. Математика..." />
                     </div>
                   </>
+                ) : activeTab === 'online-lessons' ? (
+                  <>
+                    <div className={styles.inputGroup}>
+                      <label>Сабактын темасы</label>
+                      <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="Мисалы: Туундунун касиеттери" />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label>Мугалимдин аты-жөнү</label>
+                      <input type="text" value={teacherName} onChange={(e) => setTeacherName(e.target.value)} required />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label>YouTube видео шилтемеси</label>
+                      <input type="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} required placeholder="https://www.youtube.com/watch?v=..." />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label>Кыскача түшүндүрмө</label>
+                      <textarea rows={3} value={desc} onChange={(e) => setDesc(e.target.value)} />
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div className={styles.inputGroup}>
@@ -419,7 +454,7 @@ const Dashboard: React.FC = () => {
                         {activeTab === 'news' ? 'Жаңылыктын темасы' : 
                          activeTab === 'gallery' ? 'Сүрөттүн аталышы' :
                          activeTab === 'best-students' ? 'Окуучунун аты-жөнү' : 
-                         activeTab === 'library' ? 'Китептин аталышы жана автору' : 'Мугалимдин аты-жөнү'}
+                         activeTab === 'library' ? 'Китептын аталышы жана автору' : 'Мугалимдин аты-жөнү'}
                       </label>
                       <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
                     </div>
@@ -438,7 +473,6 @@ const Dashboard: React.FC = () => {
                       <textarea rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} required />
                     </div>
                     
-                    {/* Сүрөт жүктөө бөлүмү */}
                     <div className={styles.inputGroup}>
                       <label>Сүрөт {activeTab === 'library' ? '(Мукабасы)' : ''}</label>
                       <input id="fileInput" type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)} className={styles.fileInputHidden} />
@@ -452,7 +486,6 @@ const Dashboard: React.FC = () => {
                       )}
                     </div>
 
-                    {/* КИТЕПКАНА ҮЧҮН PDF ЖҮКТӨӨ ТАЛААСЫ */}
                     {activeTab === 'library' && (
                       <div className={styles.inputGroup}>
                         <label>Китептин PDF файлы</label>
@@ -469,7 +502,7 @@ const Dashboard: React.FC = () => {
                     {loading ? "Күтө туруңуз..." : editingId ? "Жаңыртуу 💾" : "Базага сактоо ✨"}
                   </motion.button>
                   {editingId && (
-                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrl(null); }} className={styles.cancelBtn}>
+                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrl(null); setVideoUrl(''); setTeacherName(''); }} className={styles.cancelBtn}>
                       Жокко чыгаруу
                     </button>
                   )}
@@ -485,21 +518,7 @@ const Dashboard: React.FC = () => {
                 <div className={styles.adminGrid}>
                   {filteredItems.map((item) => (
                     <motion.div layout key={item.id} className={styles.adminCard}>
-                      {activeTab !== 'schedule' ? (
-                        <>
-                          <img src={item.imageUrl} alt={item.title} />
-                          <div className={styles.adminCardInfo}>
-                            <h4>{item.title}</h4>
-                            {/* Эгер PDF болсо, белги коюп коёт */}
-                            {item.pdfUrl && <span style={{fontSize: '10px', color: '#48bb78'}}>📕 PDF файл жүктөлгөн</span>}
-                            <div className={styles.cardActions}>
-                              <button onClick={() => handleEdit(item)} className={styles.editBtn}>Оңдоо ✏️</button>
-                              <button onClick={() => {setSelectedItem(item); setIsModalOpen(true);}} className={styles.viewBtn}>👁️</button>
-                              <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
+                      {activeTab === 'schedule' ? (
                         <div className={styles.adminCardInfo}>
                           <h4 className={styles.classBadge}>{item.className}</h4>
                           <p className={styles.dayText}>{item.day}</p>
@@ -508,6 +527,28 @@ const Dashboard: React.FC = () => {
                             <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
                           </div>
                         </div>
+                      ) : activeTab === 'online-lessons' ? (
+                        <div className={styles.adminCardInfo}>
+                          <h4>🎥 {item.title}</h4>
+                          <p style={{fontSize: '12px', color: '#cbd5e0'}}>👨‍🏫 {item.teacherName}</p>
+                          <div className={styles.cardActions}>
+                            <button onClick={() => handleEdit(item)} className={styles.editBtn}>Оңдоо ✏️</button>
+                            <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <img src={item.imageUrl} alt={item.title} />
+                          <div className={styles.adminCardInfo}>
+                            <h4>{item.title}</h4>
+                            {item.pdfUrl && <span style={{fontSize: '10px', color: '#48bb78'}}>📕 PDF файл жүктөлгөн</span>}
+                            <div className={styles.cardActions}>
+                              <button onClick={() => handleEdit(item)} className={styles.editBtn}>Оңдоо ✏️</button>
+                              <button onClick={() => {setSelectedItem(item); setIsModalOpen(true);}} className={styles.viewBtn}>👁️</button>
+                              <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
+                            </div>
+                          </div>
+                        </>
                       )}
                     </motion.div>
                   ))}
@@ -523,12 +564,11 @@ const Dashboard: React.FC = () => {
             <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
               <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
                 <button className={styles.closeBtn} onClick={() => setIsModalOpen(false)}>&times;</button>
-                <img src={selectedItem.imageUrl} alt={selectedItem.title} className={styles.modalImg} />
+                {selectedItem.imageUrl && <img src={selectedItem.imageUrl} alt={selectedItem.title} className={styles.modalImg} />}
                 <div className={styles.modalBody}>
                   <h2>{selectedItem.title}</h2>
                   <p className={styles.modalDate}>📅 {selectedItem.date}</p>
                   <div className={styles.modalDesc}>{selectedItem.description}</div>
-                  {/* Модалда PDFти көрүү баскычы */}
                   {selectedItem.pdfUrl && (
                     <a href={selectedItem.pdfUrl} target="_blank" rel="noreferrer" className={styles.submitBtn} style={{display: 'inline-block', marginTop: '10px', textDecoration: 'none', textAlign: 'center'}}>
                       📕 Китепти окуу (PDF)
