@@ -104,7 +104,7 @@ const Header: React.FC = () => {
                 <Link to="/news">📰 Жаңылыктар</Link>
                 <Link to="/contact">📞 Байланыш</Link>
                 
-                <Link to="/admin-panel" className={styles.mobileAdminLink}>🔐 Админ панел</Link>
+                <Link to="/admin-panel" className={styles.mobileAdminLink}>🔐Админ</Link>
               </div>
             </motion.div>
           )}

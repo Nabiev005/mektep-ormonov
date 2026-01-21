@@ -76,6 +76,40 @@ const About: React.FC = () => {
           </div>
         </div>
       </section>
+      {/* ---------------------------------------------------- */}
+
+
+      <section className={styles.biographySection}>
+        <div className={styles.container}>
+          <div className={styles.bioCard}>
+            {/* <div className={styles.bioImageWrapper}>
+              <div className={styles.bioPlaceholder}>
+                <img src={ZayilPhoto} alt="Зайил Ормонов" />
+              </div>
+            </div> */}
+            <div className={styles.bioInfo}>
+              <span className={styles.scrollLabel}>Өмүрү жана Ишмердүүлүгү</span>
+              <h2 className={styles.bioName}>Зайил Ормонов</h2>
+              <p className={styles.bioDescription}>
+                Туулган жылы: Зайил Ормонов 1920-жылы төрөлгөн.
+                Согуш жолу: Ал 1941–1945-жылдардагы Улуу Ата Мекендик согуштун катышуучусу болгон. Фронттон кайтып келгенден кийин, өзүнүн өмүрүн чарбаны калыбына келтирүүгө жана аймакты өнүктүрүүгө арнаган.
+                Ишмердүүлүгү: Ал советтик доордо Баткен районундагы Кан айылдык кеңешинин (мурдагы Советтердин) төрагасы, колхоз башкармалыгынын жетекчиси сыяктуу жооптуу кызматтарда иштеген.
+                Кылган эмгеги: Кан айылынын инфраструктурасын жакшыртууда — айылга таза суу киргизүү, ирригациялык системаларды (арыктарды) казуу жана мектеп имараттарын курууда анын ролу чоң болгон. Ошол кездеги оор шарттарга карабай, тоолуу аймактагы элдин жашоосун жеңилдетүүгө багытталган демилгелерди ишке ашырган.
+              </p>
+              <div className={styles.bioFeatures}>
+                <div className={styles.featureItem}>
+                  <strong>Максаты:</strong> Айыл жаштарын сабаттуу жана мекенчил кылып тарбиялоо.
+                </div>
+                <div className={styles.featureItem}>
+                  <strong>Мурасы:</strong> Билим алууга болгон умтулуу жана эмгекчилдик.
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        
+      </section>
 
       {/* 2. Бөлүм: Биздин баалуулуктар */}
       <section className={styles.values}>

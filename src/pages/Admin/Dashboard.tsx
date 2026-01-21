@@ -265,7 +265,7 @@ const Dashboard: React.FC = () => {
       <main className={styles.mainContent}>
         <AnimatePresence mode="wait">
           {activeTab === 'stats' ? (
-            <motion.div key="stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <motion.div key=" " initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
               <h1>Мектептин статистикасы</h1>
               <div className={styles.statsPageGrid}>
                 <div className={styles.statInfoCard}>
