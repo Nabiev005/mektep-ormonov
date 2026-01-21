@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import { motion,  } from 'framer-motion';
+import { Instagram, Facebook, Youtube, MapPin, Phone, Mail } from 'lucide-react'; // Иконкаларды импорттоо
 import styles from './Footer.module.css';
 
 const Footer: React.FC = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
-        {/* 1. Блок: Логотип жана кыскача маалымат */}
+        {/* 1. Блок: Логотип */}
         <div className={styles.about}>
           <h2 className={styles.logo}>🏫 Зайил Ормонов</h2>
           <p>
@@ -30,13 +30,20 @@ const Footer: React.FC = () => {
         {/* 3. Блок: Байланыш */}
         <div className={styles.contact}>
           <h3>Байланыш</h3>
-          <p>📍 Баткен району, Алтын бешик айыл аймагы Кан айылы.</p>
-          <p>📞 +996 702 952 200</p>
-          <p>📧 info@mektep.kg</p>
+          <p><MapPin size={18} /> Баткен району, Кан айылы.</p>
+          <p><Phone size={18} /> +996 770 125 632</p>
+          <p><Mail size={18} /> info@mektep.kg</p>
+          
           <div className={styles.socials}>
-            <span>Instagram</span>
-            <span>Facebook</span>
-            <span>YouTube</span>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+              <Instagram size={24} />
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+              <Facebook size={24} />
+            </a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+              <Youtube size={24} />
+            </a>
           </div>
         </div>
       </div>
