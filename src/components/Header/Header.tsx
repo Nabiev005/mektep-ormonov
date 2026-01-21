@@ -89,8 +89,7 @@ const Header: React.FC = () => {
             >
               <div className={styles.mobileNavLinks}>
                 <Link to="/">🏠 Башкы бет</Link>
-                <Link to="/about">📖 Биз жөнүндө</Link>
-                
+                <Link to="/about">📖 Биз жөнүндө</Link> 
                 <div className={styles.mobileDivider}>Мектеп жашоосу</div>
                 <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
