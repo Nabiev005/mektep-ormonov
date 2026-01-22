@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import Hom from "../../assets/Home.jpg";
 import ZayilPhoto from "../../assets/ormonov.png";
 import HomePhoto from "../../assets/home1.png"
 import styles from './About.module.css';
