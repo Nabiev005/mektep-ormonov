@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Hom from "../../assets/Home.jpg";
 import ZayilPhoto from "../../assets/ormonov.png";
+import HomePhoto from "../../assets/home1.png"
 import styles from './About.module.css';
 
 const About: React.FC = () => {
@@ -40,7 +41,7 @@ const About: React.FC = () => {
               </p>
             </div>
             <div className={styles.historyImageWrapper}>
-              <img src={Hom} alt="Мектеп имараты" />
+              <img src={HomePhoto} alt="Мектеп имараты" />
             </div>
           </div>
         </div>
