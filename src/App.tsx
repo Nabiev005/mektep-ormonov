@@ -25,6 +25,7 @@ import Gallery from './pages/Gallery/Gallery';
 import Library from './pages/Library/Library';
 import OnlineLessons from './pages/OnlineLessons/OnlineLessons';
 import MediaCenter from './pages/MediaCenter/MediaCenter';
+import DuelGame from './pages/Community/DuelGame/DuelGame';
 
 import styles from './App.module.css';
 
@@ -59,6 +60,7 @@ const AnimatedRoutes = () => {
         <Route path="/library" element={<Library />} />
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/community/media-center" element={<MediaCenter />} />
+        <Route path="/community/duel-game" element={<DuelGame />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />

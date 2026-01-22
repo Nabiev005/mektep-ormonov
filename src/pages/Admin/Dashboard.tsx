@@ -1,6 +1,9 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { db, auth, storage } from '../../firebase';
-import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc, } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,8 +25,12 @@ interface ListItem {
   date?: string;
   category?: string;
   email?: string; 
-  mediaType?: string; // МЕДИА ҮЧҮН КОШУЛДУ
-  author?: string;    // МЕДИА ҮЧҮН КОШУЛДУ
+  mediaType?: string;
+  author?: string;
+  // ДУЭЛЬ ҮЧҮН ЖАҢЫ ПОЛЕЛЕР
+  question?: string;
+  answer?: string;
+  subject?: string;
 }
 
 const Dashboard: React.FC = () => {
@@ -34,8 +41,8 @@ const Dashboard: React.FC = () => {
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [category, setCategory] = useState('achievements');
-  const [mediaType, setMediaType] = useState('podcast'); // МЕДИА ҮЧҮН КОШУЛДУ
-  const [author, setAuthor] = useState('');             // МЕДИА ҮЧҮН КОШУЛДУ
+  const [mediaType, setMediaType] = useState('podcast'); 
+  const [author, setAuthor] = useState('');     
   const [imageFile, setImageFile] = useState<File | null>(null); 
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
@@ -49,6 +56,11 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<ListItem[]>([]);
   
+  // ДУЭЛЬ ҮЧҮН STATE'ТЕР
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [subject, setSubject] = useState('math');
+
   const [stats, setStats] = useState({ 
     news: 0, 
     teachers: 0, 
@@ -58,7 +70,8 @@ const Dashboard: React.FC = () => {
     gallery: 0,
     library: 0,
     onlineLessons: 0,
-    mediaCenter: 0 // МЕДИА СТАТИСТИКА КОШУЛДУ
+    mediaCenter: 0,
+    duelQuestions: 0 // СТАТИСТИКА ҮЧҮН
   });
 
   const certificateRef = useRef<HTMLDivElement>(null);
@@ -73,6 +86,13 @@ const Dashboard: React.FC = () => {
 
   const IMGBB_API_KEY = '9aed8b9d3a6c54c6a68db494ac681c35';
   const classList = ["1-класс", "2-класс", "3-класс", "4-класс", "5-класс", "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"];
+  const subjectList = [
+    { id: 'math', name: 'Математика' },
+    { id: 'history', name: 'Тарых' },
+    { id: 'kyrgyz', name: 'Кыргыз тили' },
+    { id: 'english', name: 'Англис тили' },
+    { id: 'biology', name: 'Биология' }
+  ];
 
   const fetchStats = async () => {
     try {
@@ -84,7 +104,8 @@ const Dashboard: React.FC = () => {
       const galleryCount = await getCountFromServer(collection(db, 'gallery'));
       const libraryCount = await getCountFromServer(collection(db, 'library'));
       const onlineCount = await getCountFromServer(collection(db, 'online-lessons'));
-      const mediaCount = await getCountFromServer(collection(db, 'media-center')); // МЕДИА КОШУЛДУ
+      const mediaCount = await getCountFromServer(collection(db, 'media-center'));
+      const duelCount = await getCountFromServer(collection(db, 'duel-questions')); // КОШУЛДУ
       
       setStats({
         news: newsCount.data().count,
@@ -95,7 +116,8 @@ const Dashboard: React.FC = () => {
         gallery: galleryCount.data().count,
         library: libraryCount.data().count,
         onlineLessons: onlineCount.data().count,
-        mediaCenter: mediaCount.data().count // КОШУЛДУ
+        mediaCenter: mediaCount.data().count,
+        duelQuestions: duelCount.data().count // КОШУЛДУ
       });
     } catch (e) {
       console.error("Статистика алууда ката:", e);
@@ -104,7 +126,6 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!imageFile) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!editingId) setPreviewUrl(null);
       return;
     }
@@ -114,11 +135,10 @@ const Dashboard: React.FC = () => {
   }, [imageFile, editingId]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStats();
     if (activeTab === 'stats' || activeTab === 'certificate') return;
 
-    const q = query(collection(db, activeTab));
+    const q = query(collection(db, activeTab === 'duel-questions' ? 'duel-questions' : activeTab));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -140,7 +160,6 @@ const Dashboard: React.FC = () => {
       const height = pdf.internal.pageSize.getHeight();
       pdf.addImage(imgData, 'PNG', 0, 0, width, height);
       pdf.save(`Сертификат_${certData.name}.pdf`);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert("PDF жүктөөдө ката кетти");
     }
@@ -176,12 +195,16 @@ const Dashboard: React.FC = () => {
       setTeacherName(item.teacherName || '');
       setVideoUrl(item.videoUrl || '');
       setDesc(item.description || '');
-    } else if (activeTab === 'media-center') { // МЕДИА ОҢДОО КОШУЛДУ
+    } else if (activeTab === 'media-center') {
       setTitle(item.title || '');
       setAuthor(item.author || '');
       setMediaType(item.mediaType || 'podcast');
       setVideoUrl(item.videoUrl || '');
       setDesc(item.description || '');
+    } else if (activeTab === 'duel-questions') { // ДУЭЛЬ ОҢДОО
+      setQuestion(item.question || '');
+      setAnswer(item.answer || '');
+      setSubject(item.subject || 'math');
     } else {
       setTitle(item.title || '');
       setDesc(item.description || '');
@@ -195,16 +218,19 @@ const Dashboard: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let finalData: any = {};
       
       if (activeTab === 'schedule') {
         finalData = { className, day, lessons, updatedAt: serverTimestamp() };
       } else if (activeTab === 'online-lessons') {
         finalData = { title, teacherName, videoUrl, description: desc, updatedAt: serverTimestamp() };
-      } else if (activeTab === 'media-center') { // МЕДИА САКТОО КОШУЛДУ
+      } else if (activeTab === 'media-center') {
+        finalData = { title, author, mediaType, videoUrl, description: desc, updatedAt: serverTimestamp() };
+      } else if (activeTab === 'duel-questions') { // ДУЭЛЬ САКТОО
         finalData = { 
-          title, author, mediaType, videoUrl, description: desc, 
+          question, 
+          answer: answer.toLowerCase().trim(), 
+          subject, 
           updatedAt: serverTimestamp() 
         };
       } else {
@@ -234,10 +260,10 @@ const Dashboard: React.FC = () => {
       setTitle(''); setDesc(''); setLessons(''); setImageFile(null); 
       setPdfFile(null); setPreviewUrl(null); setVideoUrl(''); setTeacherName('');
       setAuthor(''); setMediaType('podcast');
+      setQuestion(''); setAnswer(''); // Дуэль тазалоо
       
       alert("Ийгиликтүү сакталды! ✨");
       fetchStats();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       alert("Ката кетти!");
     }
@@ -249,7 +275,6 @@ const Dashboard: React.FC = () => {
       try {
         await deleteDoc(doc(db, activeTab, id));
         fetchStats();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         alert("Өчүрүүдө ката кетти!");
       }
@@ -257,7 +282,7 @@ const Dashboard: React.FC = () => {
   };
 
   const filteredItems = items.filter(item => {
-    const searchStr = (item.title || item.className || item.description || item.teacherName || item.author || '').toLowerCase();
+    const searchStr = (item.title || item.className || item.description || item.teacherName || item.author || item.question || '').toLowerCase();
     return searchStr.includes(searchTerm.toLowerCase());
   });
 
@@ -266,6 +291,7 @@ const Dashboard: React.FC = () => {
       <motion.aside initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className={styles.sidebar}>
         <h2>⚙️ Админ</h2>
         <div className={`${styles.menuItem} ${activeTab === 'stats' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('stats'); setEditingId(null);}}>📊 Статистика</div>
+        <div className={`${styles.menuItem} ${activeTab === 'duel-questions' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('duel-questions'); setEditingId(null);}}>🎮 Дуэль суроолору</div>
         <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('news'); setEditingId(null);}}>📰 Жаңылыктар</div>
         <div className={`${styles.menuItem} ${activeTab === 'media-center' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('media-center'); setEditingId(null);}}>🎙️ Медиа-борбор</div>
         <div className={`${styles.menuItem} ${activeTab === 'online-lessons' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('online-lessons'); setEditingId(null);}}>🎥 Онлайн сабактар</div>
@@ -293,32 +319,26 @@ const Dashboard: React.FC = () => {
                       <span>Жаңылык</span>
                     </div>
                     <div className={styles.barWrapper}>
-                      <div className={styles.barLine} style={{ height: `${Math.min(stats.mediaCenter * 5, 100)}%`, background: '#805ad5' }}></div>
-                      <span>Медиа</span>
+                      <div className={styles.barLine} style={{ height: `${Math.min(stats.duelQuestions * 5, 100)}%`, background: '#48bb78' }}></div>
+                      <span>Суроолор</span>
                     </div>
                     <div className={styles.barWrapper}>
                       <div className={styles.barLine} style={{ height: `${Math.min(stats.onlineLessons * 5, 100)}%`, background: '#e53e3e' }}></div>
                       <span>Видео</span>
                     </div>
-                    <div className={styles.barWrapper}>
-                      <div className={styles.barLine} style={{ height: `${Math.min(stats.library * 5, 100)}%`, background: '#ed8936' }}></div>
-                      <span>Китептер</span>
-                    </div>
                   </div>
                   <div className={styles.quickActionsSection}>
                     <h4>🚀 Ыкчам аракеттер</h4>
                     <div className={styles.actionBtns}>
+                      <button onClick={() => setActiveTab('duel-questions')}>+ Жаңы суроо</button>
                       <button onClick={() => setActiveTab('news')}>+ Жаңылык</button>
-                      <button onClick={() => setActiveTab('media-center')}>+ Медиа (🎙️/📰)</button>
-                      <button onClick={() => setActiveTab('online-lessons')}>+ Видео сабак</button>
                     </div>
                   </div>
                 </div>
 
                 <div className={styles.statSummary}>
+                  <div className={styles.miniCard}><h4>{stats.duelQuestions}</h4><p>Оюн суроолору</p></div>
                   <div className={styles.miniCard}><h4>{stats.news}</h4><p>Жаңылыктар</p></div>
-                  <div className={styles.miniCard}><h4>{stats.mediaCenter}</h4><p>Медиа материалдар</p></div>
-                  <div className={styles.miniCard}><h4>{stats.onlineLessons}</h4><p>Видео сабактар</p></div>
                   <div className={styles.systemStatusCard}>
                     <h4>💻 Статус</h4>
                     <div className={styles.statusItem}>
@@ -330,6 +350,50 @@ const Dashboard: React.FC = () => {
                       <p className={styles.onlineStatus}>Онлайн</p>
                     </div>
                   </div>
+                </div>
+              </div>
+            </motion.div>
+          ) : activeTab === 'duel-questions' ? (
+            <motion.div key="duel-questions" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
+              <h1>{editingId ? '✏️ Суроону оңдоо' : '🎮 Жаңы суроо кошуу'}</h1>
+              <form onSubmit={handleSubmit} className={styles.glassCard}>
+                <div className={styles.inputGroup}>
+                  <label>Предметти тандаңыз</label>
+                  <select value={subject} onChange={(e) => setSubject(e.target.value)} className={styles.selectInput}>
+                    {subjectList.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Суроо</label>
+                  <input type="text" value={question} onChange={(e) => setQuestion(e.target.value)} required placeholder="Мисалы: Кыргызстан качан эгемендүү болгон?" />
+                </div>
+                <div className={styles.inputGroup}>
+                  <label>Жообу (бир сөз же сан)</label>
+                  <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)} required placeholder="Мисалы: 1991" />
+                </div>
+                <div className={styles.formActions}>
+                  <button className={styles.submitBtn} disabled={loading}>{loading ? "Сакталууда..." : "Сактоо ✨"}</button>
+                  {editingId && <button type="button" onClick={() => setEditingId(null)} className={styles.cancelBtn}>Жокко чыгаруу</button>}
+                </div>
+              </form>
+
+              <div className={styles.listSection}>
+                <div className={styles.listHeader}>
+                  <h3>Суроолор тизмеси ({filteredItems.length})</h3>
+                  <input type="text" placeholder="🔍 Издөө..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                </div>
+                <div className={styles.adminGrid}>
+                  {filteredItems.map((item) => (
+                    <div key={item.id} className={styles.adminCard} style={{padding: '15px'}}>
+                      <span className={styles.classBadge}>{subjectList.find(s => s.id === item.subject)?.name}</span>
+                      <p><strong>С:</strong> {item.question}</p>
+                      <p><strong>Ж:</strong> {item.answer}</p>
+                      <div className={styles.cardActions}>
+                        <button onClick={() => handleEdit(item)} className={styles.editBtn}>✏️</button>
+                        <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </motion.div>
@@ -431,7 +495,7 @@ const Dashboard: React.FC = () => {
                       <textarea rows={6} value={lessons} onChange={(e) => setLessons(e.target.value)} required placeholder="1. Математика..." />
                     </div>
                   </>
-                ) : activeTab === 'media-center' ? ( // МЕДИА ФОРМА КОШУЛДУ
+                ) : activeTab === 'media-center' ? (
                   <>
                     <div className={styles.inputGroup}>
                       <label>Медиа түрү</label>
@@ -532,7 +596,7 @@ const Dashboard: React.FC = () => {
                     {loading ? "Күтө туруңуз..." : editingId ? "Жаңыртуу 💾" : "Базага сактоо ✨"}
                   </motion.button>
                   {editingId && (
-                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrl(null); setVideoUrl(''); setTeacherName(''); setAuthor(''); }} className={styles.cancelBtn}>
+                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrl(null); setVideoUrl(''); setTeacherName(''); setAuthor(''); setQuestion(''); setAnswer(''); }} className={styles.cancelBtn}>
                       Жокко чыгаруу
                     </button>
                   )}
@@ -557,7 +621,7 @@ const Dashboard: React.FC = () => {
                             <button onClick={() => handleDelete(item.id)} className={styles.deleteBtnMini}>🗑️</button>
                           </div>
                         </div>
-                      ) : activeTab === 'media-center' ? ( // МЕДИА ТИЗМЕСИ КОШУЛДУ
+                      ) : activeTab === 'media-center' ? (
                         <div className={styles.adminCardInfo}>
                           <h4>{item.mediaType === 'podcast' ? '🎙️' : item.mediaType === 'video' ? '🎥' : '📰'} {item.title}</h4>
                           <p style={{fontSize: '12px', color: '#cbd5e0'}}>👤 {item.author}</p>
@@ -596,25 +660,28 @@ const Dashboard: React.FC = () => {
           )}
         </AnimatePresence>
         
-        {/* Modal */}
+        {/* Modal - Сиздин кодуңуздан уландысы */}
         <AnimatePresence>
           {isModalOpen && selectedItem && (
-            <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
-              <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                <button className={styles.closeBtn} onClick={() => setIsModalOpen(false)}>&times;</button>
-                {selectedItem.imageUrl && <img src={selectedItem.imageUrl} alt={selectedItem.title} className={styles.modalImg} />}
-                <div className={styles.modalBody}>
-                  <h2>{selectedItem.title}</h2>
-                  <p className={styles.modalDate}>📅 {selectedItem.date}</p>
-                  <div className={styles.modalDesc}>{selectedItem.description}</div>
-                  {selectedItem.pdfUrl && (
-                    <a href={selectedItem.pdfUrl} target="_blank" rel="noreferrer" className={styles.submitBtn} style={{display: 'inline-block', marginTop: '10px', textDecoration: 'none', textAlign: 'center'}}>
-                      📕 Китепти окуу (PDF)
-                    </a>
-                  )}
-                </div>
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className={styles.modalOverlay}
+              onClick={() => setIsModalOpen(false)}
+            >
+              <motion.div 
+                className={styles.modalContent} 
+                onClick={e => e.stopPropagation()}
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+              >
+                <img src={selectedItem.imageUrl} alt={selectedItem.title} />
+                <h2>{selectedItem.title}</h2>
+                <p>{selectedItem.description}</p>
+                <button onClick={() => setIsModalOpen(false)}>Жабуу</button>
               </motion.div>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </main>

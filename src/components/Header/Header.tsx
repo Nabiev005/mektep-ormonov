@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +10,6 @@ const Header: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsOpen(false);
     document.body.style.overflow = 'unset';
   }, [location]);
@@ -56,7 +56,8 @@ const Header: React.FC = () => {
                 >
                   <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                   <Link to="/best-students">🌟 Мыкты окуучулар</Link>
-                  <Link to="/community/media-center">🎙️ Медиа-борбор</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                  <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
+                  <Link to="/community/duel-game">🧠 Ким акылдуу? (Live)</Link> {/* ЖАҢЫ КОШУЛДУ */}
                   <Link to="/library">📚 Китепкана</Link>
                   <Link to="/parents-corner">👨‍👩‍👧‍👦 Ата-энелер бурчу</Link> 
                   <Link to="/gallery">📸 Мектеп галереясы</Link>
@@ -92,14 +93,17 @@ const Header: React.FC = () => {
               <div className={styles.mobileNavLinks}>
                 <Link to="/">🏠 Башкы бет</Link>
                 <Link to="/about">📖 Биз жөнүндө</Link> 
+                
                 <div className={styles.mobileDivider}>Мектеп жашоосу</div>
                 <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
-                <Link to="/community/media-center">🎙️ Медиа-борбор</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
+                <Link to="/community/duel-game">🧠 Ким акылдуу? (Оюн)</Link> {/* ЖАҢЫ КОШУЛДУ */}
                 <Link to="/library">📚 Китепкана</Link> 
                 <Link to="/parents-corner">👨‍👩‍👧 Ата-энелер бурчу</Link> 
                 <Link to="/resources">📚 Пайдалуу ресурстар</Link>
                 <Link to="/gallery">📸 Мектеп галереясы</Link>
+                <Link to="/online-lessons">🎥 Онлайн сабактар</Link>
                 
                 <div className={styles.mobileDivider}>Маалымат</div>
                 <Link to="/schedule">📅 Расписание</Link>

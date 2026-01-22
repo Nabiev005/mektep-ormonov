@@ -1,0 +1,194 @@
+.dashboard {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 20px; /* Мобилдик үчүн азайтылды */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.dashHeader { text-align: center; margin-bottom: 30px; }
+.nameInput {
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  font-size: 1rem;
+  width: 100%; /* Мобилдик үчүн 100% */
+  max-width: 300px;
+  margin-top: 10px;
+}
+
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Планшет жана мобилдик үчүн АДАПТИВ */
+@media (max-width: 968px) {
+  .mainLayout {
+    grid-template-columns: 1fr; /* Лидерлер тактасы төмөн түшөт */
+  }
+  
+  .dashboard { padding: 15px; }
+}
+
+.subjectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Кичине экранга ылайык */
+  gap: 15px;
+}
+
+.sCard {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  border: 2px solid #e2e8f0;
+  border-bottom: 6px solid var(--clr);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sCard:hover { transform: translateY(-3px); border-color: var(--clr); }
+.sIcon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+.sBtn { margin-top: 10px; color: var(--clr); font-weight: bold; font-size: 0.9rem; }
+
+.leaderSection {
+  background: white;
+  padding: 20px;
+  border-radius: 24px;
+  border: 2px solid #e2e8f0;
+}
+
+/* ARENA STYLES */
+.arena { background: #0f172a; min-height: 100vh; color: white; padding: 15px; }
+
+.arenaHeader { 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Элементтер батпай калса кийинки сапка түшөт */
+  gap: 10px;
+}
+
+.arenaHeader h2 { font-size: 1.2rem; }
+
+.backBtn { background: #334155; color: white; border: none; padding: 8px 15px; border-radius: 10px; cursor: pointer; }
+
+.battleField { 
+  display: grid; 
+  grid-template-columns: 1fr 350px; 
+  gap: 20px; 
+}
+
+/* Аренанын адаптиви */
+@media (max-width: 850px) {
+  .battleField {
+    grid-template-columns: 1fr; /* Упайлар төмөн түшөт */
+  }
+  
+  .qText { font-size: 2.5rem; } /* Суроонун тамгаларын кичирейтүү */
+  
+  .qCard { padding: 40px 20px; }
+}
+
+.qCard {
+  background: #1e293b;
+  padding: 60px 20px;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.qText { 
+  font-size: 3.5rem; 
+  font-weight: bold; 
+  margin-bottom: 25px; 
+  word-break: break-word; /* Узун текстти экрандан чыгарбайт */
+}
+
+.ansForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.mathInput {
+  width: 100%;
+  max-width: 280px;
+  background: #0f172a;
+  border: 3px solid #334155;
+  color: white;
+  font-size: 2rem;
+  padding: 12px;
+  border-radius: 15px;
+  text-align: center;
+  outline: none;
+}
+
+.mathInput:focus { border-color: #3b82f6; }
+
+.submitBtn {
+  background: #22c55e;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+  width: 100%;
+  max-width: 280px;
+}
+
+.submitBtn:active { transform: scale(0.95); }
+
+/* LIVE SCORE SECTION */
+.liveScore { 
+  background: #1e293b; 
+  padding: 20px; 
+  border-radius: 20px; 
+}
+
+.pScoreRow {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+.pInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.progressTrack {
+  height: 6px;
+  background: #334155;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.isMe {
+  border: 1px solid #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* Телефондордогу атайын жөндөө (өтө кичине экран) */
+@media (max-width: 480px) {
+  .qText { font-size: 2rem; }
+  .mathInput { font-size: 1.5rem; }
+  .sIcon { font-size: 2rem; }
+  .dashboard { padding: 10px; }
+}
