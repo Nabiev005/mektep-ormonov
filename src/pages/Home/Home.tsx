@@ -43,7 +43,7 @@ const Home: React.FC = () => {
           transition={{ duration: 1 }}
           className={styles.heroContent}
         >
-          <h1 className={styles.mainTitle}>Зайыл Ормонов атындагы <br/> орто мектеби</h1>
+          <h1 className={styles.mainTitle}>Зайил Ормонов атындагы <br/> орто мектеби</h1>
           <p className={styles.subtitle}>Биздин мектеп — терең билим жана татыктуу тарбия берүүчү алтын уя.</p>
           <div className={styles.heroButtons}>
             <Link to="/about" className={styles.primaryBtn}>Биз жөнүндө</Link>

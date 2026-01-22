@@ -56,7 +56,8 @@ const Header: React.FC = () => {
                 >
                   <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                   <Link to="/best-students">🌟 Мыкты окуучулар</Link>
-                  <Link to="/library">📚 Китепкана</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                  <Link to="/community/media-center">🎙️ Медиа-борбор</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                  <Link to="/library">📚 Китепкана</Link>
                   <Link to="/parents-corner">👨‍👩‍👧‍👦 Ата-энелер бурчу</Link> 
                   <Link to="/gallery">📸 Мектеп галереясы</Link>
                   <Link to="/resources">🔗 Пайдалуу ресурстар</Link>
@@ -94,7 +95,8 @@ const Header: React.FC = () => {
                 <div className={styles.mobileDivider}>Мектеп жашоосу</div>
                 <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
-                <Link to="/library">📚 Китепкана</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                <Link to="/community/media-center">🎙️ Медиа-борбор</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                <Link to="/library">📚 Китепкана</Link> 
                 <Link to="/parents-corner">👨‍👩‍👧 Ата-энелер бурчу</Link> 
                 <Link to="/resources">📚 Пайдалуу ресурстар</Link>
                 <Link to="/gallery">📸 Мектеп галереясы</Link>

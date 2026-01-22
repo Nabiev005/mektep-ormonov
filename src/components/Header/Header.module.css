@@ -257,7 +257,7 @@
 .header {
   /* Эски background'ду өзгөртөбүз: градиент + тоо силуэти */
   background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.8)), 
-              url('../../assets/school-bg.png'); /* Бул жерге тоонун сүрөтүн койсо болот */
+              url('../../assets/header.png'); /* Бул жерге тоонун сүрөтүн койсо болот */
   background-size: cover;
   background-position: center;
   height: 100px; /* Бийиктигин бир аз дагы чоңойттук */

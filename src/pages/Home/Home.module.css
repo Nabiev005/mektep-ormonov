@@ -6,7 +6,7 @@
 .hero {
   height: 80vh;
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-              url('../../assets/Home.jpg');
+              url('../../assets/home1.png');
   background-size: cover;
   background-position: center;
   display: flex;

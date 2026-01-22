@@ -24,6 +24,7 @@ import ParentsCorner from './pages/ParentsCorner/ParentsCorner';
 import Gallery from './pages/Gallery/Gallery';
 import Library from './pages/Library/Library';
 import OnlineLessons from './pages/OnlineLessons/OnlineLessons';
+import MediaCenter from './pages/MediaCenter/MediaCenter';
 
 import styles from './App.module.css';
 
@@ -57,6 +58,7 @@ const AnimatedRoutes = () => {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/library" element={<Library />} />
         <Route path="/schedule" element={<Schedule />} />
+        <Route path="/community/media-center" element={<MediaCenter />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />
