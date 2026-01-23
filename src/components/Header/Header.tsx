@@ -57,7 +57,8 @@ const Header: React.FC = () => {
                   <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                   <Link to="/best-students">🌟 Мыкты окуучулар</Link>
                   <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
-                  <Link to="/community/duel-game">🧠 Ким акылдуу? (Live)</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                  <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                  <Link to="/community/duel-game">🧠 Ким акылдуу? (Live)</Link>
                   <Link to="/library">📚 Китепкана</Link>
                   <Link to="/parents-corner">👨‍👩‍👧‍👦 Ата-энелер бурчу</Link> 
                   <Link to="/gallery">📸 Мектеп галереясы</Link>
@@ -98,7 +99,8 @@ const Header: React.FC = () => {
                 <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
                 <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
-                <Link to="/community/duel-game">🧠 Ким акылдуу? (Оюн)</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link> {/* ЖАҢЫ КОШУЛДУ */}
+                <Link to="/community/duel-game">🧠 Ким акылдуу? (Оюн)</Link>
                 <Link to="/library">📚 Китепкана</Link> 
                 <Link to="/parents-corner">👨‍👩‍👧 Ата-энелер бурчу</Link> 
                 <Link to="/resources">📚 Пайдалуу ресурстар</Link>

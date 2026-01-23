@@ -26,6 +26,7 @@ import Library from './pages/Library/Library';
 import OnlineLessons from './pages/OnlineLessons/OnlineLessons';
 import MediaCenter from './pages/MediaCenter/MediaCenter';
 import DuelGame from './pages/Community/DuelGame/DuelGame';
+import WarmWordsPage  from "./pages/WarmWords/WarmWords"
 
 import styles from './App.module.css';
 
@@ -61,6 +62,7 @@ const AnimatedRoutes = () => {
         <Route path="/schedule" element={<Schedule />} />
         <Route path="/community/media-center" element={<MediaCenter />} />
         <Route path="/community/duel-game" element={<DuelGame />} />
+        <Route path="/community/warm-words" element={<WarmWordsPage />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
         <Route path="/contact" element={<Contact />} />

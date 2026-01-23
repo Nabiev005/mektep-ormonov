@@ -1,0 +1,108 @@
+.container {
+  min-height: 100vh;
+  padding: 120px 20px;
+  background: #f0f2f5; /* Сүрөттөгүдөй ачык фон же кааласаңыз кара кылсаңыз болот */
+  background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.headerSection {
+  max-width: 600px;
+  margin: 0 auto 50px;
+  text-align: center;
+}
+
+.inputArea {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.inputArea textarea {
+  border: none;
+  outline: none;
+  resize: none;
+  height: 80px;
+  font-size: 1rem;
+}
+
+.sendBtn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.sticker {
+  min-height: 250px;
+  padding: 25px;
+  position: relative;
+  box-shadow: 5px 10px 20px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-bottom-right-radius: 40px; /* Стикердин кагазы кайрылгандай эффект */
+}
+
+.pin {
+  width: 15px;
+  height: 15px;
+  background: #ef4444;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.noteText {
+  font-family: 'Comic Sans MS', cursive; /* Кол жазмага окшош шрифт */
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.deleteBtn {
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  padding: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #ef4444;
+}
+
+.heartIcon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  opacity: 0.1;
+  color: white;
+}
