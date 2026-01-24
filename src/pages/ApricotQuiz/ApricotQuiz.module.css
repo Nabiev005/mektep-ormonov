@@ -1,0 +1,142 @@
+.container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+  text-align: center;
+}
+
+.gameBox {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 30px;
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.treeSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.treeContainer {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.treeVisual {
+  font-size: 8rem;
+  filter: drop-shadow(0 0 30px rgba(76, 175, 80, 0.3));
+  transition: filter 1s ease;
+  z-index: 5;
+}
+
+.leaf {
+  position: absolute;
+  top: 20%;
+  font-size: 1.8rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.healthBar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.healthProgress {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.quizSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.questionText {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+}
+
+.optionsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.optionBtn {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: left;
+}
+
+.correctBtn { background-color: #22c55e !important; }
+.wrongBtn { background-color: #ef4444 !important; }
+
+/* ТЕЛЕФОН ҮЧҮН АДАПТИВДҮҮЛҮК */
+@media (max-width: 768px) {
+  .title { font-size: 1.6rem; }
+  .gameBox { grid-template-columns: 1fr; padding: 20px; }
+  .treeVisual { font-size: 5rem; }
+  .treeContainer { height: 180px; }
+  .leaf { font-size: 1.4rem; }
+  .questionText { font-size: 1.1rem; }
+  .optionBtn { padding: 12px; font-size: 0.9rem; }
+}
+
+.statsBar {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 20px;
+  border-radius: 50px;
+}
+
+.statItem { color: #fbbf24; font-weight: bold; }
+.results { text-align: center; }
+.resultIcon { font-size: 4rem; margin-bottom: 10px; display: block; }
+.restartBtn {
+  margin-top: 15px;
+  padding: 10px 25px;
+  background: #3b82f6;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}
+.confettiOverlay { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+.confettiPiece { position: absolute; width: 8px; height: 8px; border-radius: 2px; }

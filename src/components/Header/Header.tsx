@@ -7,10 +7,14 @@ import styles from './Header.module.css';
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // Ички меню (оюндар үчүн) жаңы state
+  const [isGamesSubOpen, setIsGamesSubOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     setIsOpen(false);
+    setIsDropdownOpen(false);
+    setIsGamesSubOpen(false);
     document.body.style.overflow = 'unset';
   }, [location]);
 
@@ -41,7 +45,10 @@ const Header: React.FC = () => {
           <div 
             className={styles.dropdown}
             onMouseEnter={() => setIsDropdownOpen(true)}
-            onMouseLeave={() => setIsDropdownOpen(false)}
+            onMouseLeave={() => {
+              setIsDropdownOpen(false);
+              setIsGamesSubOpen(false);
+            }}
           >
             <span className={`${styles.dropdownLabel} ${isDropdownOpen ? styles.labelActive : ''}`}>
               Жамаат ▾
@@ -57,8 +64,33 @@ const Header: React.FC = () => {
                   <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                   <Link to="/best-students">🌟 Мыкты окуучулар</Link>
                   <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
-                  <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link> {/* ЖАҢЫ КОШУЛДУ */}
-                  <Link to="/community/duel-game">🧠 Ким акылдуу? (Live)</Link>
+                  <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
+
+                  {/* ИЧКИ ЖАМААТ: Окуучулар үчүн оюндар */}
+                  <div 
+                    className={styles.subDropdown}
+                    onMouseEnter={() => setIsGamesSubOpen(true)}
+                    onMouseLeave={() => setIsGamesSubOpen(false)}
+                  >
+                    <div className={`${styles.subDropdownLabel} ${isGamesSubOpen ? styles.subActive : ''}`}>
+                      🎮 Окуучулар үчүн оюндар <span className={styles.arrow}>▸</span>
+                    </div>
+                    
+                    <AnimatePresence>
+                      {isGamesSubOpen && (
+                        <motion.div 
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 10 }}
+                          className={styles.subDropdownContent}
+                        >
+                          <Link to="/community/duel-game">🧠 Ким акылдуу? (Live)</Link>
+                          <Link to="/community/apricot-tree">🌳 Өрүк дарагы (Оюн)</Link>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   <Link to="/library">📚 Китепкана</Link>
                   <Link to="/parents-corner">👨‍👩‍👧‍👦 Ата-энелер бурчу</Link> 
                   <Link to="/gallery">📸 Мектеп галереясы</Link>
@@ -98,14 +130,19 @@ const Header: React.FC = () => {
                 <div className={styles.mobileDivider}>Мектеп жашоосу</div>
                 <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
+                
+                {/* Мобилдик версияда ички менюну ачык тизме кылып койгон ыңгайлуу */}
+                <div className={styles.mobileSubSection}>
+                   <span className={styles.mobileSubTitle}>🎮 Окуучулар үчүн оюндар:</span>
+                   <Link to="/community/duel-game">🧠 Ким акылдуу? (Оюн)</Link>
+                   <Link to="/community/apricot-tree">🌳 Өрүк дарагы (Оюн)</Link>
+                </div>
+
                 <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
-                <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link> {/* ЖАҢЫ КОШУЛДУ */}
-                <Link to="/community/duel-game">🧠 Ким акылдуу? (Оюн)</Link>
+                <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
                 <Link to="/library">📚 Китепкана</Link> 
                 <Link to="/parents-corner">👨‍👩‍👧 Ата-энелер бурчу</Link> 
-                <Link to="/resources">📚 Пайдалуу ресурстар</Link>
                 <Link to="/gallery">📸 Мектеп галереясы</Link>
-                <Link to="/online-lessons">🎥 Онлайн сабактар</Link>
                 
                 <div className={styles.mobileDivider}>Маалымат</div>
                 <Link to="/schedule">📅 Расписание</Link>
