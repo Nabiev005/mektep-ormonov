@@ -1,0 +1,136 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* Элементтерди экранга тегиз жайгаштырат */
+  padding: 10px;
+  background: #1a1a1a;
+  height: 100vh; /* Экрандын бийиктигин толук ээлейт */
+  width: 100vw;
+  color: white;
+  overflow: hidden; /* Скроллду өчүрөт */
+  box-sizing: border-box;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.question {
+  color: #4ade80;
+  font-size: clamp(1.2rem, 5vw, 1.8rem); /* Экранга карап чоңоюп-кичирейет */
+  margin: 0;
+}
+
+.scoreBoard {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  gap: 1px;
+  background: #333;
+  border: 3px solid #444;
+  position: relative;
+  width: 100%;
+  /* Оюн талаасы экрандын бийиктигине жараша чектелет */
+  max-width: min(350px, 70vh); 
+  aspect-ratio: 1;
+  margin: auto 0;
+}
+
+.cell {
+  background: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.snakeBody {
+  width: 90%;
+  height: 90%;
+  background: #4ade80;
+  border-radius: 2px;
+}
+
+.food {
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: white;
+  background: #e11d48;
+  padding: 1px 3px;
+  border-radius: 3px;
+  z-index: 10;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  border-radius: inherit;
+}
+
+.overlay h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.overlay button {
+  padding: 10px 20px;
+  background: #4ade80;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ДЖОЙСТИК - Мобилдик телефондор үчүн негизги бөлүк */
+.joystick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 15px; /* Төмөнкү чекеден бир аз боштук */
+}
+
+.joystick button {
+  width: 55px; /* Кнопкаларды бир аз кичирейттик */
+  height: 55px;
+  font-size: 1.2rem;
+  background: #333;
+  color: white;
+  border: 2px solid #444;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  touch-action: manipulation; /* Телефондо басууну тездетет */
+}
+
+.joystick button:active {
+  background: #555;
+  transform: scale(0.95);
+}
+
+.mid {
+  display: flex;
+  gap: 35px; /* Сол жана оң кнопкалардын ортосундагы боштук */
+}
+
+/* КИЧИНЕ ЭКРАНДАР ҮЧҮН (iPhone SE ж.б.) */
+@media (max-height: 600px) {
+  .question { font-size: 1rem; }
+  .board { max-width: 55vh; }
+  .joystick button { width: 45px; height: 45px; }
+}

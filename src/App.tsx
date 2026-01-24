@@ -28,7 +28,9 @@ import MediaCenter from './pages/MediaCenter/MediaCenter';
 import DuelGame from './pages/Community/DuelGame/DuelGame';
 import WarmWordsPage  from "./pages/WarmWords/WarmWords"
 import ApricotQuiz from './pages/ApricotQuiz/ApricotQuiz';
-
+import SnakeGame from './pages/SnakeGame/SnakeGame';
+import MathSprint from './pages/MathSprint/MathSprint';
+import GeoGame from './pages/GeoGame/GeoGame';
 import styles from './App.module.css';
 
 const AnimatedRoutes = () => {
@@ -64,6 +66,9 @@ const AnimatedRoutes = () => {
         <Route path="/community/media-center" element={<MediaCenter />} />
         <Route path="/community/duel-game" element={<DuelGame />} />
         <Route path="/community/apricot-tree" element={<ApricotQuiz />} />
+        <Route path="/community/snake-game" element={<SnakeGame />} />
+        <Route path="/community/math-sprint" element={<MathSprint />} />
+        <Route path="/community/games/geo-master" element={<GeoGame />} />
         <Route path="/community/warm-words" element={<WarmWordsPage />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />

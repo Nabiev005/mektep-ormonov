@@ -7,7 +7,6 @@ import styles from './Header.module.css';
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // Ички меню (оюндар үчүн) жаңы state
   const [isGamesSubOpen, setIsGamesSubOpen] = useState(false);
   const location = useLocation();
 
@@ -66,7 +65,7 @@ const Header: React.FC = () => {
                   <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
                   <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
 
-                  {/* ИЧКИ ЖАМААТ: Окуучулар үчүн оюндар */}
+                  {/* ИЧКИ МЕНЮ: Окуучулар үчүн оюндар */}
                   <div 
                     className={styles.subDropdown}
                     onMouseEnter={() => setIsGamesSubOpen(true)}
@@ -84,8 +83,11 @@ const Header: React.FC = () => {
                           exit={{ opacity: 0, x: 10 }}
                           className={styles.subDropdownContent}
                         >
-                          <Link to="/community/duel-game">🧠 Ким акылдуу? (Live)</Link>
-                          <Link to="/community/apricot-tree">🌳 Өрүк дарагы (Оюн)</Link>
+                          <Link to="/community/duel-game">🧠 Ким акылдуу?</Link>
+                          <Link to="/community/apricot-tree">🌳 Өрүк дарагы</Link>
+                          <Link to="/community/snake-game">🐍 Билим Жыланы</Link>
+                          <Link to="/community/math-sprint">🧮 Тез Эсепте</Link>
+                          <Link to="/community/games/geo-master">🌍 Гео Мастер</Link>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -131,11 +133,14 @@ const Header: React.FC = () => {
                 <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
                 
-                {/* Мобилдик версияда ички менюну ачык тизме кылып койгон ыңгайлуу */}
+                {/* МОБИЛДИК ВЕРСИЯДАГЫ ОЮНДАРДЫН ТОЛУК ТИЗМЕСИ */}
                 <div className={styles.mobileSubSection}>
                    <span className={styles.mobileSubTitle}>🎮 Окуучулар үчүн оюндар:</span>
-                   <Link to="/community/duel-game">🧠 Ким акылдуу? (Оюн)</Link>
-                   <Link to="/community/apricot-tree">🌳 Өрүк дарагы (Оюн)</Link>
+                   <Link to="/community/duel-game">🧠 Ким акылдуу?</Link>
+                   <Link to="/community/apricot-tree">🌳 Өрүк дарагы</Link>
+                   <Link to="/community/snake-game">🐍 Билим Жыланы</Link>
+                   <Link to="/community/math-sprint">🧮 Тез Эсепте</Link>
+                   <Link to="/community/games/geo-master">🌍 Гео Мастер</Link>
                 </div>
 
                 <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
@@ -149,7 +154,7 @@ const Header: React.FC = () => {
                 <Link to="/news">📰 Жаңылыктар</Link>
                 <Link to="/contact">📞 Байланыш</Link>
                 
-                <Link to="/admin-panel" className={styles.mobileAdminLink}>🔐Админ</Link>
+                <Link to="/admin-panel" className={styles.mobileAdminLink}>🔐 Админ</Link>
               </div>
             </motion.div>
           )}

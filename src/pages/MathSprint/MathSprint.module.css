@@ -1,0 +1,222 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  background: #4158D0;
+  background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+  padding: 20px;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+.mainContent { 
+  z-index: 2; 
+  width: 100%;
+  max-width: 450px;
+}
+
+.card {
+  background: white;
+  width: 100%;
+  min-height: 500px;
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.sidePanel {
+  width: 240px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 20px;
+  border-radius: 25px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  height: fit-content;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.panelTitle { 
+  font-weight: 800; 
+  margin-bottom: 20px; 
+  font-size: 1.3rem; 
+  border-bottom: 2px solid rgba(255,255,255,0.2); 
+  padding-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.leaderItem { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 12px; 
+  font-size: 1rem;
+  background: rgba(0,0,0,0.1);
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.leaderScore {
+  background: #FFCC70;
+  color: #000;
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.myRank { 
+  border: 2px solid #FFCC70;
+  background: rgba(255, 204, 112, 0.1);
+}
+
+/* --- АДАПТИКА (ТЕЛЕФОН ҮЧҮН) --- */
+@media (max-width: 1050px) {
+  .container {
+    flex-direction: column; /* Элементтерди астын-үстүн тизет */
+    padding: 20px 10px;
+    height: auto; /* Контентке жараша чоңоёт */
+    align-items: center;
+  }
+
+  .mainContent {
+    order: 1; /* Оюн биринчи турат */
+    margin-bottom: 20px;
+  }
+
+  .sidePanel {
+    display: block; /* Эми панелдер жоголбойт */
+    width: 100%;
+    max-width: 450px;
+    order: 2; /* Оюндун астына түшөт */
+    margin-bottom: 15px;
+    box-sizing: border-box;
+  }
+}
+
+/* Кичинекей телефондор үчүн */
+@media (max-width: 480px) {
+  .card {
+    padding: 20px;
+    min-height: 420px;
+  }
+  .question {
+    font-size: 2.8rem;
+  }
+  .optBtn {
+    padding: 10px;
+    font-size: 1.1rem;
+  }
+}
+
+/* --- БАШКА ЭЛЕМЕНТТЕР --- */
+.topBar { position: absolute; top: 20px; width: calc(100% - 60px); left: 30px; }
+.highScoreLabel { background: #fef3c7; color: #92400e; padding: 6px 18px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+
+.bigIcon { font-size: 4.5rem; margin-bottom: 15px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); }
+
+.mainBtn { 
+  background: #4158D0; 
+  color: white; 
+  border: none; 
+  padding: 16px 45px; 
+  border-radius: 18px; 
+  font-size: 1.3rem; 
+  font-weight: bold;
+  cursor: pointer; 
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(65, 88, 208, 0.3);
+}
+
+.mainBtn:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(65, 88, 208, 0.4); }
+.mainBtn:active { transform: scale(0.98); }
+
+.gameStats { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 800; font-size: 1.4rem; color: #334155; }
+
+.progressBg { background: #f1f5f9; height: 10px; border-radius: 10px; overflow: hidden; margin-bottom: 25px; border: 1px solid #e2e8f0; }
+.progressBar { background: linear-gradient(90deg, #f43f5e, #fb7185); height: 100%; }
+
+.question { font-size: 3.8rem; font-weight: 900; color: #0f172a; margin-bottom: 25px; }
+
+.optionsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+
+.optBtn { 
+  background: #fff; 
+  border: 2px solid #e2e8f0; 
+  padding: 18px; 
+  border-radius: 20px; 
+  font-size: 1.4rem; 
+  font-weight: 800; 
+  color: #334155;
+  cursor: pointer; 
+  transition: all 0.2s; 
+}
+
+.optBtn:hover { border-color: #4158D0; background: #f8fafc; }
+.optBtn:active { background: #4158D0; color: white; transform: scale(0.92); }
+
+.loginForm { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+.nameInput { 
+  width: 85%; 
+  padding: 15px; 
+  border: 2px solid #cbd5e1; 
+  border-radius: 15px; 
+  font-size: 1.2rem; 
+  text-align: center; 
+  outline: none; 
+  transition: 0.3s; 
+}
+.nameInput:focus { border-color: #4158D0; box-shadow: 0 0 15px rgba(65, 88, 208, 0.15); }
+
+/* Мобилдик версияда панелдерди иреттейбиз */
+@media (max-width: 1050px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+    padding-bottom: 50px; /* Ылдый жакта боштук */
+  }
+
+  .mainContent {
+    order: 1; /* Оюн өйдөдө */
+    margin-bottom: 20px;
+  }
+
+  .sidePanel {
+    display: block;
+    width: 100%;
+    max-width: 450px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+  }
+
+  /* Рейтинг биринчи, Катышуучу экинчи турсун десеңиз: */
+  .sidePanel:nth-of-type(1) { order: 2; } 
+  .userPanel { order: 3; }
+}
+
+/* Катышуучунун маалыматы үчүн кошумча стилдер */
+.userInfo {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border-radius: 15px;
+  text-align: left;
+}
+
+.userInfo p {
+  margin: 5px 0;
+}
+
+.badgeSection {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
