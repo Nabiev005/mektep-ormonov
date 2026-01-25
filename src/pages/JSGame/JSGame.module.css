@@ -1,0 +1,866 @@
+.container {
+  min-height: 100vh;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background: #1e293b;
+  padding: 15px 25px;
+  border-radius: 15px;
+  border: 1px solid #334155;
+}
+
+.levelBadge {
+  background: #3b82f6;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.gameLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  flex: 1;
+}
+
+/* Мобилдик версия үчүн */
+@media (max-width: 900px) {
+  .gameLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.previewSection {
+  background: #1e293b;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #334155;
+}
+
+.scene {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background: linear-gradient(to bottom, #1e293b, #0f172a);
+}
+
+.character {
+  font-size: 5rem;
+  z-index: 2;
+}
+
+.floor {
+  width: 80%;
+  height: 4px;
+  background: #3b82f6;
+  box-shadow: 0 0 20px #3b82f6;
+  border-radius: 2px;
+  margin-top: 10px;
+}
+
+.instructions {
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.5);
+  border-top: 1px solid #334155;
+}
+
+.editorSection {
+  background: #020617;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #334155;
+  position: relative;
+}
+
+.terminalHeader {
+  padding: 10px 20px;
+  background: #1e293b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.dots { display: flex; gap: 5px; }
+.dots span { width: 8px; height: 8px; border-radius: 50%; background: #475569; }
+
+.codeArea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #38bdf8;
+  padding: 20px;
+  font-size: 1.1rem;
+  resize: none;
+  outline: none;
+  line-height: 1.6;
+}
+
+.runBtn {
+  margin: 20px;
+  padding: 15px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.runBtn:hover { background: #059669; transform: translateY(-2px); }
+
+.error {
+  color: #ef4444;
+  padding: 0 20px;
+  font-size: 0.9rem;
+}
+
+.successModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #10b981;
+  padding: 40px;
+  border-radius: 30px;
+  text-align: center;
+  box-shadow: 0 0 50px rgba(16, 185, 129, 0.4);
+  z-index: 100;
+}
+
+.successModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Фонду караңгылатуу */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #10b981;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+
+.nextBtn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  background: white;
+  color: #10b981;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nextBtn:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+}
+
+/* ... мурунку стилдер калат, төмөнкүлөрдү кошуңуз же жаңыртыңыз ... */
+
+.overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 25px;
+  max-width: 500px;
+  width: 100%;
+  border: 2px solid #10b981;
+  text-align: center;
+}
+
+.explanationBox {
+  text-align: left;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  margin: 20px 0;
+}
+
+.explanationBox h4 {
+  color: #10b981;
+  margin-bottom: 10px;
+}
+
+.explanationBox ul {
+  padding-left: 20px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+
+.explanationBox li {
+  margin-bottom: 8px;
+}
+
+.nextBtn {
+  width: 100%;
+  padding: 15px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.nextBtn:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+/* --- Адаптивдүүлүк (Mobile First) --- */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px; /* Телефондо капталдагы боштукту азайтабыз */
+  }
+
+  .header {
+    flex-direction: column; /* Элементтерди биринин астына бирин коёбуз */
+    gap: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .gameLayout {
+    grid-template-columns: 1fr; /* Сөзсүз бир колонка кылабыз */
+    gap: 15px;
+  }
+
+  .previewSection {
+    min-height: 250px; /* Оюн талаасынын бийиктигин чектөө */
+  }
+
+  .character {
+    font-size: 3.5rem; /* Каарманды бир аз кичирейтебиз */
+  }
+
+  .instructions h3 {
+    font-size: 1.1rem; /* Заголовокту кичирейтебиз */
+  }
+
+  .taskText {
+    font-size: 0.9rem; /* Тапшырманын текстин кичирейтебиз */
+  }
+
+  .codeArea {
+    height: 150px; /* Редактор телефондо өтө узун болбошу керек */
+    font-size: 0.95rem;
+  }
+
+  .modal {
+    width: 95%; /* Модалдык терезе экранга толук батышы үчүн */
+    padding: 20px;
+  }
+
+  .explanationBox ul {
+    font-size: 0.85rem; /* Түшүндүрмө текстин кичирейтебиз */
+  }
+}
+
+/* Экран өтө кичинекей болсо (мисалы, iPhone SE) */
+@media (max-width: 480px) {
+  .levelBadge {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+  }
+  
+  .stats {
+    font-size: 0.85rem;
+  }
+}
+
+.liveDisplay {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  margin-bottom: 15px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  overflow: auto;
+}
+
+/* HTML жазганда тексттин түсү көрүнүшү үчүн */
+.htmlOutput {
+  color: white;
+  width: 100%;
+  padding: 10px;
+}
+
+/* CSS Preview үчүн кутуча */
+.cssPreviewBox {
+  width: 80px;
+  height: 80px;
+  background: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.explanationInline {
+  margin-top: 15px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border-left: 4px solid #f7df1e;
+}
+
+.explanationInline h4 {
+  margin: 0 0 8px 0;
+  color: #f7df1e;
+  font-size: 0.9rem;
+}
+
+.pointsList {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.taskHeader {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+/* ... Сиз берген бардык стилдер сакталат ... */
+
+/* --- ЖАҢЫ: КИРЕ БЕРИШ БЕТ (DASHBOARD) СТИЛДЕРИ --- */
+
+.dashboardContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.welcomeText h1 {
+  font-size: 3rem;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+  font-weight: 800;
+  background-color: blue;
+  color: white;
+
+}
+
+.welcomeText p {
+  font-size: 1.2rem;
+  color: #020617;
+  max-width: 600px;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  width: 100%;
+}
+
+.menuCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 30px;
+  padding: 40px 30px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Картаны басканда же үстүнө баргандагы эффект */
+.menuCard:hover {
+  transform: translateY(-15px);
+  border-color: #3b82f6;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.cardIcon {
+  font-size: 4.5rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+}
+
+.menuCard h2 {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.menuCard p {
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+.levelInfo {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Түстүү вариациялар */
+.htmlCard:hover {
+  border-color: #e34c26;
+  box-shadow: 0 15px 30px rgba(227, 76, 38, 0.15);
+}
+.htmlCard .levelInfo {
+  color: #e34c26;
+  background: rgba(227, 76, 38, 0.1);
+  border-color: rgba(227, 76, 38, 0.2);
+}
+
+.cssCard:hover {
+  border-color: #264de4;
+  box-shadow: 0 15px 30px rgba(38, 77, 228, 0.15);
+}
+.cssCard .levelInfo {
+  color: #264de4;
+  background: rgba(38, 77, 228, 0.1);
+  border-color: rgba(38, 77, 228, 0.2);
+}
+
+.jsCard:hover {
+  border-color: #f7df1e;
+  box-shadow: 0 15px 30px rgba(247, 223, 30, 0.15);
+}
+.jsCard .levelInfo {
+  color: #f7df1e;
+  background: rgba(247, 223, 30, 0.1);
+  border-color: rgba(247, 223, 30, 0.2);
+}
+
+/* --- МОБИЛДИК ВЕРСИЯ ҮЧҮН ТОЛУКТОО --- */
+
+@media (max-width: 768px) {
+  .welcomeText h1 {
+    font-size: 2rem;
+  }
+  
+  .dashboardContainer {
+    padding: 30px 15px;
+  }
+
+  .menuCard {
+    padding: 30px 20px;
+  }
+
+  .cardIcon {
+    font-size: 3.5rem;
+  }
+}
+
+/* Жалтырак эффект (Animation sheen) */
+.menuCard::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
+  transform: rotate(45deg);
+  transition: 0.8s;
+}
+
+.menuCard:hover::after {
+  left: 100%;
+}
+
+/* --- ЖАҢЫ: ПРОГРЕСС-БАР ЖАНА ИНТЕРФЕЙС ЭЛЕМЕНТТЕРИ --- */
+
+/* Баш сөз үчүн атайын эффект */
+.mainTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-align: center;
+  background-color: blue;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+}
+
+/* Прогресс-бардын контейнери */
+.progressContainer {
+  width: 100%;
+  margin: 20px 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: bold;
+}
+
+.progressValue {
+  color: #10b981;
+}
+
+/* Прогресс-бардын сырткы катмары */
+.progressBar {
+  width: 100%;
+  height: 10px;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 10px;
+  border: 1px solid #334155;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Прогресс-бардын толтурулушу (Анимация менен) */
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  border-radius: 10px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+/* Картанын ичиндеги кичинекей деталдар */
+.cardDesc {
+  font-size: 0.95rem;
+  color: #64748b;
+  text-align: center;
+  margin-top: 10px;
+  min-height: 3em;
+}
+
+/* Каармандын абалына жараша анимация (JS Game үчүн) */
+@keyframes characterJump {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.characterSuccess {
+  animation: characterJump 0.5s ease infinite;
+}
+
+/* --- КОШУМЧА АДАПТИВДҮҮЛҮК (Планшет жана кичине мониторлор үчүн) --- */
+
+@media (max-width: 1100px) {
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr); /* Планшетте 2 колонка */
+    gap: 20px;
+  }
+}
+
+@media (max-width: 650px) {
+  .cardGrid {
+    grid-template-columns: 1fr; /* Телефондо 1 колонка */
+  }
+  
+  .mainTitle {
+    font-size: 2.2rem;
+  }
+}
+
+/* Баскычтардын басылуу эффекти */
+.runBtn:active, .nextBtn:active {
+  transform: scale(0.95);
+}
+
+/* Жүктөлүп жаткандагы (Skeleton) эффект үчүн */
+.loadingShimmer {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+
+/* --- БАШКЫ ЖАЗУУНУ ОҢДОО (FIX) --- */
+
+.welcomeText h1 {
+  /* Тунуктукту алып салып, даана түс беребиз */
+  -webkit-text-fill-color: initial !important; 
+  color: #1e293b !important; /* Күңүрт көк түс (ак фондо даана көрүнөт) */
+  
+  /* Же кооз градиент кааласаңыз, төмөнкү 3 сапты колдонуңуз: */
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text;
+
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  display: block; /* Элемент көрүнүшү үчүн */
+}
+
+/* Эгер сиздин HTML'де .mainTitle колдонулса, аны да оңдойбуз */
+.mainTitle {
+  -webkit-text-fill-color: initial !important;
+  color: #1e293b !important;
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text;
+  display: block !important;
+}
+
+/* Прогресс бардын текстери (0% бүтүрүлдү) көрүнбөй жатса */
+.progressLabel span {
+  color: #475569 !important; /* Боз түс */
+  font-weight: 600;
+}
+
+/* Dashboard фонду бир аз жумшартуу (көз ирмемдик ак фондон качуу) */
+.dashboardContainer {
+  background-color: #f8fafc !important;
+  min-height: 100vh;
+}
+
+/* Мобилдик телефондор үчүн тексттин көлөмүн тууралоо */
+@media (max-width: 768px) {
+  .welcomeText h1 {
+    font-size: 2.2rem !important;
+    padding: 0 10px;
+  }
+}/* --- БАШКЫ ЖАЗУУНУ ОҢДОО (FIX) --- */
+
+.welcomeText h1 {
+  /* Тунуктукту алып салып, даана түс беребиз */
+  -webkit-text-fill-color: initial !important; 
+  color: #1e293b !important; /* Күңүрт көк түс (ак фондо даана көрүнөт) */
+  
+  /* Же кооз градиент кааласаңыз, төмөнкү 3 сапты колдонуңуз: */
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text;
+
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  display: block; /* Элемент көрүнүшү үчүн */
+}
+
+/* Эгер сиздин HTML'де .mainTitle колдонулса, аны да оңдойбуз */
+.mainTitle {
+  -webkit-text-fill-color: initial !important;
+  color: #1e293b !important;
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text;
+  display: block !important;
+}
+
+/* Прогресс бардын текстери (0% бүтүрүлдү) көрүнбөй жатса */
+.progressLabel span {
+  color: #475569 !important; /* Боз түс */
+  font-weight: 600;
+}
+
+/* Dashboard фонду бир аз жумшартуу (көз ирмемдик ак фондон качуу) */
+.dashboardContainer {
+  background-color: #f8fafc !important;
+  min-height: 100vh;
+}
+
+/* Мобилдик телефондор үчүн тексттин көлөмүн тууралоо */
+@media (max-width: 768px) {
+  .welcomeText h1 {
+    font-size: 2.2rem !important;
+    padding: 0 10px;
+  }
+}
+
+.certificateOverlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.95);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.certificatePaper {
+  width: 800px;
+  height: 560px;
+  background: white;
+  padding: 40px;
+  position: relative;
+  border: 15px solid #1e293b;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  color: #1e293b;
+  text-align: center;
+  font-family: 'Serif', 'Times New Roman';
+}
+
+.certBorder {
+  height: 100%;
+  border: 2px solid #3b82f6;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.certHeader { font-size: 3rem; color: #1e293b; margin: 0; }
+.certSub { font-size: 1.2rem; color: #64748b; text-transform: uppercase; letter-spacing: 2px; }
+.studentName { 
+  font-size: 3.5rem; 
+  color: #3b82f6; 
+  margin: 20px 0; 
+  border-bottom: 2px solid #e2e8f0;
+  font-family: 'Brush Script MT', cursive;
+}
+.certText { font-size: 1.1rem; line-height: 1.6; color: #475569; }
+.certFooter { display: flex; justify-content: space-between; margin-top: 40px; }
+.signature { border-top: 1px solid #94a3b8; width: 200px; padding-top: 10px; }
+
+.downloadBtn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* --- ЖАҢЫ ТОЛУКТОО: ТЕКСТТИ ОРТОГО КЕЛТИРҮҮ ЖАНА ОҢДОО --- */
+
+/* 1. Башкы беттеги "Кайсы багытты..." текстин ортого келтирүү */
+.welcomeText {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.welcomeText p {
+  text-align: center !important;
+  margin: 0 auto !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* 2. Сертификаттын ичиндеги тексттердин тууралануусу */
+.certificatePaper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.certBorder {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+}
+
+/* 3. Сертификаттын мобилдик версияга ыңгайлашуусу (телефондо көрүү үчүн) */
+@media (max-width: 850px) {
+  .certificatePaper {
+    width: 95vw !important;
+    height: auto !important;
+    min-height: 500px !important;
+    padding: 20px !important;
+    border-width: 10px !important;
+  }
+  
+  .studentName {
+    font-size: 2rem !important;
+  }
+  
+  .certHeader {
+    font-size: 1.8rem !important;
+  }
+}
+
+/* 4. VS Code сары сызыктарын (Warning) жок кылуу үчүн стандарттык касиеттер */
+.mainTitle, .welcomeText h1 {
+  background-clip: text !important; /* Стандарттык касиет */
+}
+
+/* 5. Директордун кол тамгасы жана дата бөлүмүнүн тууралануусу */
+.certFooter {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  padding: 0 20px !important;
+}
+
+.signature, .certFooter div {
+  flex: 0 0 200px !important;
+}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import AigulGulu from "../../assets/AigulGul.png"
 import styles from './Home.module.css';
 
-// 1. САНДАРДЫ САНАТУУЧУ КОМПОНЕНТ (Сиздин кодуңуз сакталды)
 const AnimatedCounter: React.FC<{ target: number, duration?: number }> = ({ target, duration = 2 }) => {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -32,7 +32,7 @@ const AnimatedCounter: React.FC<{ target: number, duration?: number }> = ({ targ
 const Home: React.FC = () => {
   return (
     <div className={styles.home}>
-      {/* 1. HERO SECTION - Сүрөт жана эффекттер кошулду */}
+      {/* 1. HERO SECTION */}
       <section className={styles.hero}>
         <div className={styles.heroOverlay}></div>
         <div className={styles.mountainDecoration}></div>
@@ -43,25 +43,25 @@ const Home: React.FC = () => {
           transition={{ duration: 1 }}
           className={styles.heroContent}
         >
-          <h1 className={styles.mainTitle}>Зайил Ормонов атындагы <br/> орто мектеби</h1>
+          {/* ГҮЛ ЭМИ ТЕКСТТИН ҮСТҮНДӨ ЖАНА БОРБОРДО */}
+          <motion.div 
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className={styles.aigulFlower}
+          >
+            <img className='AigulGul-img' src={AigulGulu} alt="AigulGulu" />
+          </motion.div>
+
+          <h1 className={styles.mainTitle}>Зайил Ормонов атындагы <br/> жалпы билим берүү мектеби мекемеси</h1>
           <p className={styles.subtitle}>Биздин мектеп — терең билим жана татыктуу тарбия берүүчү алтын уя.</p>
           <div className={styles.heroButtons}>
             <Link to="/about" className={styles.primaryBtn}>Биз жөнүндө</Link>
             <Link to="/contact" className={styles.secondaryBtn}>Байланышуу</Link>
           </div>
         </motion.div>
-
-        {/* Айгүл гүлү декорациясы */}
-        <motion.div 
-          animate={{ y: [0, -15, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className={styles.aigulFlower}
-        >
-          🌷
-        </motion.div>
       </section>
 
-      {/* 2. STATS SECTION - Сандар автоматтык түрдө санайт */}
+      {/* 2. STATS SECTION */}
       <section className={styles.stats}>
         <div className={styles.statBox}>
           <h2><AnimatedCounter target={250} />+</h2>

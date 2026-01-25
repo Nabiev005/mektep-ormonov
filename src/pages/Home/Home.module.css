@@ -2,7 +2,6 @@
   width: 100%;
 }
 
-/* Hero Section */
 .hero {
   height: 80vh;
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
@@ -15,6 +14,29 @@
   text-align: center;
   color: white;
   padding: 0 20px;
+  position: relative;
+}
+
+/* БААРЫН ОРТОГО ТҮЗДӨӨЧҮ КОНТЕЙНЕР */
+.heroContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+/* ГҮЛДҮН ЖАҢЫ СТИЛИ */
+.aigulFlower {
+  width: 80px;         /* Көлөмү кичирейди */
+  margin-bottom: 10px; 
+  display: block;
+}
+
+.aigulFlower img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
 }
 
 .mainTitle {
@@ -28,8 +50,6 @@
   font-size: 1.2rem;
   margin-bottom: 40px;
   max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .heroButtons {
@@ -47,13 +67,13 @@
 }
 
 .primaryBtn {
-  background-color: var(--primary-color);
+  background-color: var(--primary-color, #2563eb);
   color: white;
 }
 
 .secondaryBtn {
   background-color: white;
-  color: var(--primary-color);
+  color: var(--primary-color, #2563eb);
 }
 
 .primaryBtn:hover { transform: scale(1.05); }
@@ -75,7 +95,7 @@
 
 .statBox h2 {
   font-size: 2.5rem;
-  color: var(--primary-color);
+  color: var(--primary-color, #2563eb);
   margin-bottom: 5px;
 }
 
@@ -122,4 +142,93 @@
 @media (max-width: 768px) {
   .mainTitle { font-size: 2.2rem; }
   .heroButtons { flex-direction: column; }
+  .aigulFlower { width: 60px; } /* Мобилдикте дагы кичирейет */
+}
+
+
+/* ... Башындагы коддор өзгөрбөйт ... */
+
+.heroContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+  width: 100%;
+}
+
+.aigulFlower {
+  width: 80px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.aigulFlower img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.mainTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+/* --- АДАПТИВКА: Текстти чоңойтуу жана жайгашууну оңдоо --- */
+@media (max-width: 768px) {
+  .hero {
+    height: auto;
+    min-height: 90vh; /* Өтө узун болбошу үчүн */
+    padding-top: 80px; /* Header'ден ылдый түшүрүү */
+    padding-bottom: 40px;
+  }
+
+  .aigulFlower {
+    width: 60px; /* Гүлдүн өлчөмү */
+    margin-bottom: 15px;
+  }
+
+  .mainTitle {
+    /* Текстти окууга ыңгайлуу өлчөмгө келтирдик */
+    font-size: 2.4rem !important; 
+    line-height: 1.2;
+    margin-bottom: 20px;
+    padding: 0 15px;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    font-size: 1.1rem; /* Субтитрди бир аз чоңойттук */
+    margin-bottom: 35px;
+    padding: 0 20px;
+    line-height: 1.5;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 40px; /* Баскычтар капталга жабышпашы үчүн */
+    gap: 15px;
+  }
+
+  .primaryBtn, .secondaryBtn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 12px; /* Мобилдикте заманбап көрүнөт */
+  }
+}
+
+/* Эң кичинекей телефондор үчүн */
+@media (max-width: 480px) {
+  .mainTitle {
+    font-size: 2rem !important;
+  }
+  
+  .aigulFlower {
+    width: 55px;
+  }
 }

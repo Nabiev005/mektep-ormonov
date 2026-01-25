@@ -21,8 +21,8 @@ const Footer: React.FC = () => {
                 даярдап келет. Сапаттуу билим — биздин башкы максатыбыз.
               </p>
               <div className={styles.socialGroup}>
-                <a href="#" className={styles.socialCircle}><Instagram size={20} /></a>
-                <a href="#" className={styles.socialCircle}><Facebook size={20} /></a>
+                <a href="https://www.instagram.com/kg.mektep?igsh=MWRnbXlscmFucXBidA==" className={styles.socialCircle}><Instagram size={20} /></a>
+                <a href="https://www.facebook.com/profile.php?id=100009872891560" className={styles.socialCircle}><Facebook size={20} /></a>
                 <a href="#" className={styles.socialCircle}><Youtube size={20} /></a>
               </div>
             </div>
@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
               <div className={styles.contactInfo}>
                 <div className={styles.infoItem}>
                   <MapPin size={18} className={styles.accentIcon} />
-                  <span>Баткен району, Кан айылы</span>
+                  <span>Баткен району Алтын-Бешик аймагы, Кан айылы</span>
                 </div>
                 <div className={styles.infoItem}>
                   <Phone size={18} className={styles.accentIcon} />
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
                 </div>
                 <div className={styles.infoItem}>
                   <Mail size={18} className={styles.accentIcon} />
-                  <span>info@mektep.kg</span>
+                  <span>maadali.isamidinuulu@bk.ru</span>
                 </div>
               </div>
 
@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
           <div className={styles.divider}></div>
 
           <div className={styles.bottomBar}>
-            <p>© {new Date().getFullYear()} Зайил Ормонов атындагы мектеп. Бардык укуктар корголгон.</p>
+            <p>© {new Date().getFullYear()} Зайил Ормонов атындагы жалпы билим берүү мектеби мекемеси. Бардык укуктар корголгон. Сайт Автору: Набиев Айбек</p>
             <div className={styles.legalLinks}>
               <a href="#">Купуялуулук</a>
               <a href="#">Эрежелер</a>

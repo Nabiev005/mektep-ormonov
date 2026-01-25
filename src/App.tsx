@@ -31,6 +31,7 @@ import ApricotQuiz from './pages/ApricotQuiz/ApricotQuiz';
 import SnakeGame from './pages/SnakeGame/SnakeGame';
 import MathSprint from './pages/MathSprint/MathSprint';
 import GeoGame from './pages/GeoGame/GeoGame';
+import JSGame from "./pages/JSGame/JSGame"
 import styles from './App.module.css';
 
 const AnimatedRoutes = () => {
@@ -69,6 +70,7 @@ const AnimatedRoutes = () => {
         <Route path="/community/snake-game" element={<SnakeGame />} />
         <Route path="/community/math-sprint" element={<MathSprint />} />
         <Route path="/community/games/geo-master" element={<GeoGame />} />
+        <Route path="/community/js-game" element={<JSGame />} />
         <Route path="/community/warm-words" element={<WarmWordsPage />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
