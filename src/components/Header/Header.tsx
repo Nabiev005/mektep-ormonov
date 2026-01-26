@@ -89,6 +89,7 @@ const Header: React.FC = () => {
                           <Link to="/community/math-sprint">🧮 Тез Эсепте</Link>
                           <Link to="/community/games/geo-master">🌍 Гео Мастер</Link>
                           <Link to="/community/js-game">🧑‍💻 Frontend үйрөнүү</Link>
+                          <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -143,6 +144,7 @@ const Header: React.FC = () => {
                    <Link to="/community/math-sprint">🧮 Тез Эсепте</Link>
                    <Link to="/community/games/geo-master">🌍 Гео Мастер</Link>
                    <Link to="/community/js-game">🧑‍💻 Frontend үйрөнүү</Link>
+                   <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
                 </div>
 
                 <Link to="/community/media-center">🎙️ Медиа-борбор</Link>

@@ -35,7 +35,7 @@ const Contact: React.FC = () => {
           <div className={styles.infoCard}>
             <div className={styles.infoItem}>
               <span className={styles.icon}>📍</span>
-              <p><strong>Дарегибиз:</strong> Баткен району, Алтын бешик айыл аймагы Кан айылы.</p>
+              <p><strong>Дарегибиз:</strong> Баткен району, Алтын-Бешик аймагы Кан айылы.</p>
             </div>
             <div className={styles.infoItem}>
               <span className={styles.icon}>📞</span>

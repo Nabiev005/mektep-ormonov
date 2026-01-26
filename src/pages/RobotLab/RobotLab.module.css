@@ -1,0 +1,199 @@
+/* НЕГИЗГИ КОНТЕЙНЕР */
+.container {
+  background: #020617;
+  color: #f8fafc;
+  min-height: 100vh;
+  padding: 20px; /* Азайтылды */
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  flex-direction: column;
+}
+
+.header { 
+  text-align: center; 
+  margin-bottom: 20px; 
+}
+
+.levelBadge {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+/* НЕГИЗГИ МАКЕТ (3 МАМЫЧА) */
+.mainLayout {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px; /* Мамычалар оптималдаштырылды */
+  gap: 15px;
+  flex: 1;
+  max-width: 1600px; /* Өтө жайылып кетпеши үчүн */
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* СОЛ ТАРАП (САБАКТАР) */
+.sidebar {
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  height: fit-content; /* Мазмунга жараша бийиктик */
+}
+
+.theoryBox {
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #cbd5e1;
+  margin: 10px 0;
+}
+
+.taskBox {
+  border-left: 3px solid #3b82f6;
+  padding-left: 12px;
+  font-size: 0.9rem;
+}
+
+/* ОРТО (СИМУЛЯТОР) */
+.gameContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.scene {
+  background: #0f172a;
+  background-image: radial-gradient(#1e293b 1px, transparent 1px);
+  background-size: 20px 20px;
+  height: 400px; /* Бийиктик бир аз азайтылды */
+  position: relative;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid #334155;
+  overflow: hidden;
+}
+
+.terminal {
+  background: #020617;
+  border: 1px solid #334155;
+  border-top: none;
+  padding: 10px;
+  height: 100px;
+  color: #10b981;
+  font-size: 0.8rem;
+  border-radius: 0 0 12px 12px;
+}
+
+/* ОҢ ТАРАП (ЭДИТОР) */
+.editorContainer {
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  overflow: hidden;
+  height: fit-content;
+}
+
+.editorHeader {
+  background: #1e293b;
+  padding: 8px 15px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  border-bottom: 1px solid #334155;
+}
+
+.codeArea {
+  background: transparent;
+  color: #e2e8f0;
+  border: none;
+  padding: 15px;
+  font-family: 'JetBrains Mono', monospace;
+  resize: vertical;
+  min-height: 250px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+/* БАТКЫЧТАР */
+.controls {
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  background: #1e293b;
+}
+
+.runBtn {
+  flex: 1;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.runBtn:hover { background: #2563eb; }
+
+.resetBtn {
+  background: #475569;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* РОБОТ ЖАНА МАКСАТ (Styles remain similar but refined) */
+.robotWrapper {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  transition: all 0.4s ease;
+}
+
+.robotBody {
+  width: 100%;
+  height: 100%;
+  background: #1e293b;
+  border: 2px solid #38bdf8;
+  border-radius: 8px;
+  position: relative;
+}
+
+.targetZone {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  font-size: 1.2rem;
+}
+
+/* АДАПТИВКА (MOBILE RESPONSIVE) */
+@media (max-width: 1100px) {
+  .mainLayout {
+    grid-template-columns: 1fr; /* Баары бир мамычага түшөт */
+    max-width: 700px;
+  }
+  
+  .sidebar, .gameContainer, .editorContainer {
+    width: 100%;
+  }
+
+  .scene {
+    height: 300px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 10px; }
+  .header h1 { font-size: 1.2rem; }
+  .mainLayout { gap: 10px; }
+}
