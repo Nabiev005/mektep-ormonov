@@ -206,3 +206,76 @@
     font-size: 1.8rem;
   }
 }
+
+/* --- КОШУМЧА ОҢДООЛОР (АДАПТИВКА ЖАНА ДИЗАЙН) --- */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 40px 15px; /* Боштуктарды мобилдикке ылайыкташтыруу */
+  }
+
+  .title {
+    font-size: 2rem; /* Смартфондо чоң текст батпай калышы мүмкүн */
+    margin-bottom: 30px;
+  }
+
+  .historyCard, .bioCard {
+    border-radius: 20px; /* Кичине экранда бурчтарды бир аз азайтуу */
+    margin-bottom: 40px;
+  }
+
+  /* Сүрөттүн бийиктигин автоматтык кылуу, текстти кыспаш үчүн */
+  .bioImageWrapper, .historyImageWrapper {
+    height: 300px; /* Туруктуу бийиктикти азайтуу */
+    min-height: 250px;
+  }
+
+  /* Сүрөт менен тексттин ортосундагы кагылышууну алдын алуу */
+  .bioInfo, .historyInfo {
+    padding: 25px 20px;
+    width: 100%;
+    flex: none; /* Бийиктикти мазмунга жараша ийкемдүү кылат */
+  }
+
+  .bioName {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+  }
+
+  .bioDescription {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  /* Маанилер сеткасын (Values Grid) телефондо 1 мамыча кылуу */
+  .valuesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .valueCard {
+    padding: 30px 20px;
+  }
+}
+
+/* Кичинекей телефондор үчүн (iPhone SE ж.б.) */
+@media (max-width: 480px) {
+  .bioImageWrapper, .historyImageWrapper {
+    height: 220px;
+  }
+  
+  .bioName {
+    font-size: 1.4rem;
+  }
+
+  .featureItem {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+}
+
+/* Сүрөттөр мобилдикте туура көрүнүшү үчүн маанилүү кошумча */
+.bioImageWrapper img, .historyImageWrapper img {
+  display: block;
+  max-width: 100%;
+}
