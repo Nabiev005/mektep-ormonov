@@ -17,6 +17,13 @@ const JSGame: React.FC = () => {
   const [heroName, setHeroName] = useState('Баатыр');
   const [showCert, setShowCert] = useState(false);
   const [fullName, setFullName] = useState('');
+  
+  // ЖАҢЫ: Деңгээлдердин тизмесин ачып/жабуу үчүн абал
+  const [showLevelDropdown, setShowLevelDropdown] = useState(false);
+
+  // ЖАҢЫ КОШУЛДУ: JavaScript кодунун жыйынтыгын сактоо үчүн
+  const [jsOutput, setJsOutput] = useState<string>('');
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_heroAge, setHeroAge] = useState('?');
 
@@ -29,6 +36,27 @@ const JSGame: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('dev_journey_progress', JSON.stringify(progress));
   }, [progress]);
+
+  // ЖАҢЫ КОШУЛДУ: JavaScript кодун реалдуу убакытта текшерүү
+  useEffect(() => {
+    if (mode === 'JS' && code.trim()) {
+      try {
+        const logs: string[] = [];
+        const mockConsole = {
+          log: (...args: any[]) => logs.push(args.map(a => String(a)).join(' '))
+        };
+        // Коопсуз иштетүү
+        const result = new Function('console', `try { return ${code} } catch(e) { ${code} }`)(mockConsole);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setJsOutput(logs.length > 0 ? logs.join('\n') : (result !== undefined ? String(result) : ''));
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        setJsOutput('...'); // Код жазылып жатканда
+      }
+    } else {
+      setJsOutput('');
+    }
+  }, [code, mode]);
 
   // Бардык курстардын бүткөнүн текшерүү
   const isAllCompleted = useMemo(() => {
@@ -101,7 +129,6 @@ const JSGame: React.FC = () => {
           <p>Кайсы багытты өздөштүрүүнү каалайсыз? (3 этапты толук бүтүрсөнүз сертифкат берилет!)</p>
         </motion.div>
 
-        {/* СЕРТИФИКАТ БАСКЫЧЫ */}
         {isAllCompleted && (
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }} 
@@ -158,7 +185,6 @@ const JSGame: React.FC = () => {
           })}
         </div>
 
-        {/* СЕРТИФИКАТ МОДАЛЫ */}
         <AnimatePresence>
           {showCert && (
             <motion.div className={styles.overlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -247,7 +273,62 @@ const JSGame: React.FC = () => {
     <div className={styles.container}>
       <header className={styles.header}>
         <button onClick={() => setMode(null)} className={styles.levelBadge} style={{ cursor: 'pointer', background: 'blue', color: 'white', border: 'none' }}>⬅ Артка</button>
-        <div className={styles.levelBadge}>{mode}: Деңгээл {level} / {currentLevels.length}</div>
+        
+        <div style={{ position: 'relative' }}>
+          <div 
+            className={styles.levelBadge} 
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}
+            onClick={() => setShowLevelDropdown(!showLevelDropdown)}
+          >
+            {mode}: Деңгээл {level} / {currentLevels.length} ▾
+          </div>
+
+          <AnimatePresence>
+            {showLevelDropdown && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '0',
+                  background: '#1e293b',
+                  border: '1px solid #3b82f6',
+                  borderRadius: '8px',
+                  marginTop: '10px',
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                  zIndex: 1000,
+                  width: '200px',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.5)'
+                }}
+              >
+                {currentLevels.map((_, index) => (
+                  <div 
+                    key={index}
+                    onClick={() => {
+                      setLevel(index + 1);
+                      setCode('');
+                      setIsSuccess(false);
+                      setShowLevelDropdown(false);
+                    }}
+                    style={{
+                      padding: '10px 15px',
+                      cursor: 'pointer',
+                      borderBottom: '1px solid #334155',
+                      color: level === index + 1 ? '#3b82f6' : 'white',
+                      background: level === index + 1 ? '#0f172a' : 'transparent',
+                    }}
+                  >
+                    Деңгээл {index + 1} { (index + 1) <= progress[mode!] ? '✅' : '' }
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         <div className={styles.stats}>
           <span>Каарман: <b>{heroName}</b></span>
         </div>
@@ -267,12 +348,21 @@ const JSGame: React.FC = () => {
                   {code.includes('content') ? "" : "Текст"}
                 </div>
               ) : (
-                <motion.div 
-                  animate={isSuccess ? { scale: [1, 1.2, 1], y: [0, -20, 0] } : {}}
-                  className={styles.character}
-                >
-                  🏃‍♂️
-                </motion.div>
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <motion.div 
+                      animate={isSuccess ? { scale: [1, 1.2, 1], y: [0, -20, 0] } : {}}
+                      className={styles.character}
+                    >
+                      🏃‍♂️
+                    </motion.div>
+                  </div>
+                  {/* ЖАҢЫ КОШУЛДУ: JavaScript консолу */}
+                  <div style={{ background: '#0f172a', padding: '10px', height: '60px', borderRadius: '5px', color: '#10b981', fontFamily: 'monospace', textAlign: 'left', border: '1px solid #334155', overflowY: 'auto', fontSize: '13px' }}>
+                    <div style={{ color: '#64748b', fontSize: '10px', marginBottom: '4px' }}>CONSOLE OUTPUT:</div>
+                    {jsOutput || '> ...'}
+                  </div>
+                </div>
               )}
             </div>
             <div className={styles.floor}></div>
