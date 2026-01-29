@@ -291,7 +291,7 @@ const Dashboard: React.FC = () => {
       <motion.aside initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className={styles.sidebar}>
         <h2>⚙️ Админ</h2>
         <div className={`${styles.menuItem} ${activeTab === 'stats' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('stats'); setEditingId(null);}}>📊 Статистика</div>
-        <div className={`${styles.menuItem} ${activeTab === 'duel-questions' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('duel-questions'); setEditingId(null);}}>🎮 Дуэль суроолору</div>
+        <div className={`${styles.menuItem} ${activeTab === 'duel-questions' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('duel-questions'); setEditingId(null);}}>🎮 Ким акылдуу?</div>
         <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('news'); setEditingId(null);}}>📰 Жаңылыктар</div>
         <div className={`${styles.menuItem} ${activeTab === 'media-center' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('media-center'); setEditingId(null);}}>🎙️ Медиа-борбор</div>
         <div className={`${styles.menuItem} ${activeTab === 'online-lessons' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('online-lessons'); setEditingId(null);}}>🎥 Онлайн сабактар</div>
