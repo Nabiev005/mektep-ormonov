@@ -53,7 +53,7 @@ const Header: React.FC = () => {
             }}
           >
             <span className={`${styles.dropdownLabel} ${isDropdownOpen ? styles.labelActive : ''}`}>
-              Жамаат ▾
+              Чөйрө ▾
             </span>
             <AnimatePresence>
               {isDropdownOpen && (
@@ -101,7 +101,7 @@ const Header: React.FC = () => {
                     onMouseLeave={() => setIsGamesSubOpen(false)}
                   >
                     <div className={`${styles.subDropdownLabel} ${isGamesSubOpen ? styles.subActive : ''}`}>
-                      🎮 Интеллектуалдык оюндар <span className={styles.arrow}>▸</span>
+                      📚🎮 Сабак + <span className={styles.arrow}>▸</span>
                     </div>
                     <AnimatePresence>
                       {isGamesSubOpen && (
