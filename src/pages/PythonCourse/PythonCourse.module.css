@@ -1,0 +1,340 @@
+/* Жалпы контейнер */
+.wrapper {
+  min-height: 100vh;
+  background: #0f172a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 750px;
+}
+
+/* Прогресс-бардын дизайны */
+.progressWrapper {
+  margin-bottom: 25px;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.progressBar {
+  height: 10px;
+  background: #1e293b;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #2dd4bf);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Негизги карта (Card) */
+.card {
+  background: #1e293b;
+  border-radius: 24px;
+  padding: 35px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 15px;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+/* Код редактору (VS Code стили) */
+.editor {
+  background: #020617;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 25px;
+  border: 1px solid #334155;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.editorHeader {
+  background: #1e293b;
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+}
+
+.dots {
+  display: flex;
+  gap: 8px;
+}
+
+.dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.dots span:nth-child(1) { background: #ff5f56; }
+.dots span:nth-child(2) { background: #ffbd2e; }
+.dots span:nth-child(3) { background: #27c93f; }
+
+.fileName {
+  font-size: 13px;
+  color: #64748b;
+  font-family: 'Fira Code', monospace;
+  letter-spacing: 0.5px;
+}
+
+.codeArea {
+  padding: 25px;
+  overflow-x: auto;
+}
+
+.pre {
+  margin: 0;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 18px;
+  color: #e2e8f0;
+  line-height: 2; /* Инпут текстке жабышпашы үчүн маанилүү */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* ИНПУТ СТИЛИ - Эң негизгиси */
+.inlineInput {
+  background: rgba(45, 212, 191, 0.15); 
+  border: 2px solid #2dd4bf;
+  border-radius: 6px;
+  color: #2dd4bf;
+  padding: 2px 12px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  width: 150px;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0 6px;
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.2);
+}
+
+.inlineInput:focus {
+  background: rgba(45, 212, 191, 0.25);
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
+  transform: scale(1.02);
+}
+
+.inlineInput::placeholder {
+  color: rgba(45, 212, 191, 0.4);
+  font-size: 14px;
+}
+
+/* Баскычтар */
+.checkBtn {
+  width: 100%;
+  padding: 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.checkBtn:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.checkBtn:active {
+  transform: translateY(0);
+}
+
+/* Кыйытма (Hint) */
+.hint {
+  background: rgba(251, 191, 36, 0.1);
+  border-left: 4px solid #fbbf24;
+  color: #fbbf24;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Финиш экран */
+.finishContainer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a;
+  padding: 20px;
+}
+
+.finishCard {
+  text-align: center;
+  background: #1e293b;
+  padding: 60px 40px;
+  border-radius: 32px;
+  max-width: 500px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.homeBtn {
+  margin-top: 25px;
+  padding: 12px 30px;
+  background: transparent;
+  border: 2px solid #3b82f6;
+  color: #3b82f6;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.homeBtn:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+/* Мобилдик версия - Кылдат тууралоо */
+@media (max-width: 640px) {
+  .card {
+    padding: 25px 20px;
+  }
+  
+  .title {
+    font-size: 22px;
+  }
+
+  .pre {
+    font-size: 15px;
+  }
+
+  .inlineInput {
+    width: 110px;
+    font-size: 15px;
+    padding: 2px 8px;
+  }
+
+  .checkBtn {
+    padding: 14px;
+  }
+}
+
+
+/* Терминалдын стили */
+.terminal {
+  background: #020617;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #1e293b;
+  font-family: 'Fira Code', monospace;
+  min-height: 80px;
+}
+
+.terminalHeader {
+  background: #1e293b;
+  padding: 5px 15px;
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.terminalBody {
+  padding: 12px 15px;
+  font-size: 15px;
+  color: #10b981; /* Python жыйынтыгы көбүнчө жашыл же ак болот */
+}
+
+/* Туура жооп болгондо код редактору жашыл болуп "жанып" чыгат */
+.correctGlow {
+  border: 1px solid #10b981 !important;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+.nextBtn {
+  width: 100%;
+  padding: 15px;
+  background: #10b981; /* Жашыл түс - ийгилик */
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nextBtn:hover {
+  background: #059669;
+  transform: scale(1.02);
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.prevBtn {
+  flex: 1;
+  padding: 15px;
+  background: #334155;
+  color: #f8fafc;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.prevBtn:hover {
+  background: #1e293b;
+  border-color: #64748b;
+}
+
+/* Негизги баскычтар (Текшерүү/Кийинки) Артка баскычынан чоңураак болушу үчүн */
+.checkBtn, .nextBtn {
+  flex: 2;
+}
+
+/* Мобилдик версияда баскычтарды бири-биринин астына коюу */
+@media (max-width: 600px) {
+  .buttonGroup {
+    flex-direction: column-reverse;
+  }
+}

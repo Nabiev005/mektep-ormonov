@@ -8,12 +8,14 @@ const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isGamesSubOpen, setIsGamesSubOpen] = useState(false);
+  const [isITSubOpen, setIsITSubOpen] = useState(false); // Жаңы: IT үчүн state
   const location = useLocation();
 
   useEffect(() => {
     setIsOpen(false);
     setIsDropdownOpen(false);
     setIsGamesSubOpen(false);
+    setIsITSubOpen(false);
     document.body.style.overflow = 'unset';
   }, [location]);
 
@@ -47,6 +49,7 @@ const Header: React.FC = () => {
             onMouseLeave={() => {
               setIsDropdownOpen(false);
               setIsGamesSubOpen(false);
+              setIsITSubOpen(false);
             }}
           >
             <span className={`${styles.dropdownLabel} ${isDropdownOpen ? styles.labelActive : ''}`}>
@@ -65,16 +68,41 @@ const Header: React.FC = () => {
                   <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
                   <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
 
-                  {/* ИЧКИ МЕНЮ: Окуучулар үчүн оюндар */}
+                  {/* IT ҮЙРӨНҮҮ БӨЛҮМҮ */}
                   <div 
                     className={styles.subDropdown}
-                    onMouseEnter={() => setIsGamesSubOpen(true)}
+                    onMouseEnter={() => { setIsITSubOpen(true); setIsGamesSubOpen(false); }}
+                    onMouseLeave={() => setIsITSubOpen(false)}
+                  >
+                    <div className={`${styles.subDropdownLabel} ${isITSubOpen ? styles.subActive : ''}`}>
+                      🚀 IT үйрөнүү <span className={styles.arrow}>▸</span>
+                    </div>
+                    <AnimatePresence>
+                      {isITSubOpen && (
+                        <motion.div 
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 10 }}
+                          className={styles.subDropdownContent}
+                        >
+                          <Link to="/community/js-game">🧑‍💻 Frontend үйрөнүү</Link>
+                          <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
+                          <Link to="/community/python-course">🐍 Python үйрөнүү</Link>
+                          <Link to="/community/ai-course">🕹️ AI үйрөнүү</Link>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* ОКУУЧУЛАР ҮЧҮН ОЮНДАР */}
+                  <div 
+                    className={styles.subDropdown}
+                    onMouseEnter={() => { setIsGamesSubOpen(true); setIsITSubOpen(false); }}
                     onMouseLeave={() => setIsGamesSubOpen(false)}
                   >
                     <div className={`${styles.subDropdownLabel} ${isGamesSubOpen ? styles.subActive : ''}`}>
-                      🎮 Окуучулар үчүн оюндар <span className={styles.arrow}>▸</span>
+                      🎮 Интеллектуалдык оюндар <span className={styles.arrow}>▸</span>
                     </div>
-                    
                     <AnimatePresence>
                       {isGamesSubOpen && (
                         <motion.div 
@@ -88,8 +116,6 @@ const Header: React.FC = () => {
                           <Link to="/community/snake-game">🐍 Билим Жыланы</Link>
                           <Link to="/community/math-sprint">🧮 Тез Эсепте</Link>
                           <Link to="/community/games/geo-master">🌍 Гео Мастер</Link>
-                          <Link to="/community/js-game">🧑‍💻 Frontend үйрөнүү</Link>
-                          <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -111,7 +137,7 @@ const Header: React.FC = () => {
           <Link to="/admin-panel" className={styles.adminBtn}>Админ</Link>
         </nav>
 
-        {/* Заманбап Бургер */}
+        {/* Бургер баскычы */}
         <button className={styles.burger} onClick={toggleMenu} aria-label="Меню">
           <div className={`${styles.line} ${isOpen ? styles.open1 : ''}`}></div>
           <div className={`${styles.line} ${isOpen ? styles.open2 : ''}`}></div>
@@ -131,11 +157,15 @@ const Header: React.FC = () => {
                 <Link to="/">🏠 Башкы бет</Link>
                 <Link to="/about">📖 Биз жөнүндө</Link> 
                 
-                <div className={styles.mobileDivider}>Мектеп жашоосу</div>
-                <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
-                <Link to="/best-students">🌟 Мыкты окуучулар</Link>
-                
-                {/* МОБИЛДИК ВЕРСИЯДАГЫ ОЮНДАРДЫН ТОЛУК ТИЗМЕСИ */}
+                <div className={styles.mobileDivider}>IT & Билим</div>
+                <div className={styles.mobileSubSection}>
+                   <span className={styles.mobileSubTitle}>🚀 IT үйрөнүү:</span>
+                   <Link to="/community/js-game">🧑‍💻 Frontend үйрөнүү</Link>
+                   <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
+                   <Link to="/community/python-course">🐍 Python үйрөнүү</Link>
+                   <Link to="/community/ai-course">🕹️ AI үйрөнүү</Link>
+                </div>
+
                 <div className={styles.mobileSubSection}>
                    <span className={styles.mobileSubTitle}>🎮 Окуучулар үчүн оюндар:</span>
                    <Link to="/community/duel-game">🧠 Ким акылдуу?</Link>
@@ -143,18 +173,15 @@ const Header: React.FC = () => {
                    <Link to="/community/snake-game">🐍 Билим Жыланы</Link>
                    <Link to="/community/math-sprint">🧮 Тез Эсепте</Link>
                    <Link to="/community/games/geo-master">🌍 Гео Мастер</Link>
-                   <Link to="/community/js-game">🧑‍💻 Frontend үйрөнүү</Link>
-                   <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
                 </div>
 
+                <div className={styles.mobileDivider}>Мектеп жашоосу</div>
+                <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
+                <Link to="/best-students">🌟 Мыкты окуучулар</Link>
                 <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
-                <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
                 <Link to="/library">📚 Китепкана</Link> 
-                <Link to="/parents-corner">👨‍👩‍👧 Ата-энелер бурчу</Link> 
-                <Link to="/gallery">📸 Мектеп галереясы</Link>
                 
                 <div className={styles.mobileDivider}>Маалымат</div>
-                <Link to="/schedule">📅 Расписание</Link>
                 <Link to="/news">📰 Жаңылыктар</Link>
                 <Link to="/contact">📞 Байланыш</Link>
                 

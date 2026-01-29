@@ -1,0 +1,201 @@
+.wrapper {
+  background: radial-gradient(circle at top center, #0f172a 0%, #020617 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #f8fafc;
+}
+
+.container {
+  width: 100%;
+  max-width: 850px;
+}
+
+.progressWrapper {
+  margin-bottom: 30px;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #818cf8;
+}
+
+.progressBar {
+  height: 10px;
+  background: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 20px;
+  padding: 30px;
+  backdrop-filter: blur(10px);
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #22d3ee;
+}
+
+.description {
+  color: #94a3b8;
+  margin-bottom: 25px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Editor стилдери */
+.editor {
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #334155;
+  margin-bottom: 20px;
+}
+
+.correctGlow {
+  border-color: #22d3ee !important;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+}
+
+.editorHeader {
+  background: #1e293b;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dots { display: flex; gap: 6px; }
+.dots span { width: 10px; height: 10px; border-radius: 50%; }
+.dots span:nth-child(1) { background: #ff5f56; }
+.dots span:nth-child(2) { background: #ffbd2e; }
+.dots span:nth-child(3) { background: #27c93f; }
+
+.fileName { color: #94a3b8; font-size: 12px; font-family: monospace; }
+
+.codeArea { padding: 20px; overflow-x: auto; }
+.pre { margin: 0; }
+.inlineInput {
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #22d3ee;
+  padding: 2px 8px;
+  font-family: inherit;
+  font-size: inherit;
+  width: 120px;
+  outline: none;
+}
+
+/* Terminal */
+.terminal {
+  background: #000;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #1e293b;
+}
+
+.terminalHeader {
+  background: #0f172a;
+  padding: 5px 15px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.terminalBody { padding: 15px; min-height: 50px; font-family: monospace; }
+
+/* Buttons */
+.buttonGroup { display: flex; gap: 15px; }
+.prevBtn, .checkBtn, .nextBtn {
+  padding: 15px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+}
+
+.prevBtn { flex: 1; background: #334155; color: white; }
+.checkBtn { flex: 2; background: #6366f1; color: white; }
+.nextBtn { flex: 2; background: #06b6d4; color: white; }
+
+.hint {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 15px;
+  border-radius: 10px;
+  color: #f59e0b;
+  margin-bottom: 20px;
+}
+
+/* Mobile Adaptation */
+@media (max-width: 600px) {
+  .buttonGroup { flex-direction: column-reverse; }
+  .card { padding: 20px; }
+}
+
+
+.theoryBox {
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 4px solid #818cf8;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.theoryLabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: #818cf8;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.theoryBox p {
+  margin: 0;
+  color: #e2e8f0;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* Финиш экраны үчүн кошумча */
+.finishContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+
+.finishCard {
+  background: #1e1b4b;
+  padding: 50px;
+  border-radius: 30px;
+  text-align: center;
+  border: 1px solid #818cf8;
+  box-shadow: 0 0 30px rgba(129, 140, 248, 0.3);
+}
+
+.homeBtn {
+  margin-top: 20px;
+  padding: 12px 30px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}

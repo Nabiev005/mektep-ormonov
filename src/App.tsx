@@ -33,6 +33,8 @@ import MathSprint from './pages/MathSprint/MathSprint';
 import GeoGame from './pages/GeoGame/GeoGame';
 import JSGame from "./pages/JSGame/JSGame"
 import RobotLab from './pages/RobotLab/RobotLab';
+import PythonCourse from './pages/PythonCourse/PythonCourse';
+import AICourse from './pages/AICourse/AICourse';
 import styles from './App.module.css';
 
 const AnimatedRoutes = () => {
@@ -73,6 +75,8 @@ const AnimatedRoutes = () => {
         <Route path="/community/games/geo-master" element={<GeoGame />} />
         <Route path="/community/js-game" element={<JSGame />} />
         <Route path="/community/robot-lab" element={<RobotLab />} />
+        <Route path="/community/python-course" element={<PythonCourse />} />
+        <Route path="/community/ai-course" element={<AICourse />} />
         <Route path="/community/warm-words" element={<WarmWordsPage />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />

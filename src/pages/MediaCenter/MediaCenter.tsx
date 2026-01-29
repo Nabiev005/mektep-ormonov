@@ -67,7 +67,7 @@ const MediaCenter: React.FC = () => {
               <div className={styles.imgBox}>
                 <img 
                   src={item.mediaType === 'video' ? `https://img.youtube.com/vi/${getYTId(item.videoUrl)}/mqdefault.jpg` : 'https://img.freepik.com/free-vector/media-player-concept-illustration_114360-3135.jpg'} 
-                  alt="" 
+                  alt=""  
                 />
                 <span className={styles.badge}>{item.mediaType.toUpperCase()}</span>
               </div>
