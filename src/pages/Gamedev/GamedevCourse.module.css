@@ -1,0 +1,165 @@
+.wrapper {
+  background: #0a0a0c;
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header { margin-bottom: 30px; }
+.levelInfo { font-size: 14px; color: #4ade80; margin-bottom: 8px; font-weight: bold; }
+.progressBar { background: #1f2937; height: 8px; border-radius: 4px; overflow: hidden; }
+.fill { background: #4ade80; height: 100%; box-shadow: 0 0 10px #4ade80; }
+
+.mainCard {
+  background: #111827;
+  border: 1px solid #374151;
+  padding: 30px;
+  border-radius: 16px;
+}
+
+.title { color: #4ade80; font-size: 24px; margin-bottom: 20px; }
+
+.theoryCard {
+  background: rgba(74, 222, 128, 0.05);
+  border-left: 4px solid #4ade80;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.label { font-size: 10px; color: #4ade80; font-weight: 800; display: block; margin-bottom: 5px; }
+
+.editor {
+  background: #000;
+  border-radius: 10px;
+  border: 1px solid #374151;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.glow { border-color: #4ade80; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
+
+.editorTop { background: #1f2937; padding: 10px 15px; display: flex; align-items: center; }
+.btns { display: flex; gap: 5px; margin-right: 15px; }
+.btns span { width: 8px; height: 8px; border-radius: 50%; background: #374151; }
+.file { font-size: 12px; color: #9ca3af; }
+
+.code { padding: 20px; color: #4ade80; font-size: 18px; }
+.input {
+  background: #1f2937;
+  border: none;
+  border-bottom: 2px solid #4ade80;
+  color: #fff;
+  width: 100px;
+  padding: 0 5px;
+  outline: none;
+  font-family: inherit;
+  font-size: 18px;
+}
+
+.terminal { background: #000; margin: 20px 0; border-radius: 8px; padding: 15px; border: 1px solid #1f2937; }
+.termHead { font-size: 10px; color: #4b5563; margin-bottom: 5px; }
+.termBody { font-family: monospace; font-size: 14px; }
+
+.checkBtn, .nextBtn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.checkBtn { background: #374151; color: white; }
+.checkBtn:hover { background: #4b5563; }
+.nextBtn { background: #4ade80; color: #000; }
+
+/* АДАПТИВКА (Мобильный версия) */
+@media (max-width: 600px) {
+  .mainCard { padding: 15px; }
+  .code { font-size: 14px; }
+  .input { width: 80px; font-size: 14px; }
+  .title { font-size: 20px; }
+}
+
+/* Sidebar Стилдери */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 300px;
+  height: 100vh;
+  background: #111827;
+  border-right: 1px solid #374151;
+  z-index: 1000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #4ade80;
+}
+
+.levelList { display: flex; flex-direction: column; gap: 10px; }
+
+.levelItem {
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #1f2937;
+  transition: 0.3s;
+  font-size: 14px;
+}
+
+.levelItem:hover { background: #374151; }
+.activeLevel { border-left: 4px solid #4ade80; background: #374151; color: #4ade80; }
+
+/* Navigation Стилдери */
+.topNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.menuBtn {
+  background: transparent;
+  border: 1px solid #374151;
+  color: #9ca3af;
+  padding: 5px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Артка баскычы кичине, Текшерүү чоң */
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.prevBtn {
+  background: #1f2937;
+  color: white;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.prevBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Адаптивка */
+@media (max-width: 600px) {
+  .sidebar { width: 100%; } /* Телефондо меню толук экранды ээлейт */
+  .actions { grid-template-columns: 1fr; } /* Телефондо баскычтар биринин астына бири */
+}

@@ -89,6 +89,8 @@ const Header: React.FC = () => {
                           <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
                           <Link to="/community/python-course">🐍 Python үйрөнүү</Link>
                           <Link to="/community/ai-course">🕹️ AI үйрөнүү</Link>
+                          <Link to="/community/gamedev">🎮 Оюн жасоо</Link>
+                          <Link to="/community/typing-game">🙌 Бат жазуу</Link>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -164,6 +166,8 @@ const Header: React.FC = () => {
                    <Link to="/community/robot-lab">🤖 Робот жасоо</Link>
                    <Link to="/community/python-course">🐍 Python үйрөнүү</Link>
                    <Link to="/community/ai-course">🕹️ AI үйрөнүү</Link>
+                   <Link to="/community/gamedev">🎮 Оюн жасоо</Link>
+                   <Link to="/community/typing-game">🙌 Бат жазуу</Link>
                 </div>
 
                 <div className={styles.mobileSubSection}>
