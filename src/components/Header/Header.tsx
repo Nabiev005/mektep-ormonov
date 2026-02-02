@@ -158,6 +158,7 @@ const Header: React.FC = () => {
               <div className={styles.mobileNavLinks}>
                 <Link to="/">🏠 Башкы бет</Link>
                 <Link to="/about">📖 Биз жөнүндө</Link> 
+                <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
                 
                 <div className={styles.mobileDivider}>IT & Билим</div>
                 <div className={styles.mobileSubSection}>
@@ -184,9 +185,13 @@ const Header: React.FC = () => {
                 <Link to="/best-students">🌟 Мыкты окуучулар</Link>
                 <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
                 <Link to="/library">📚 Китепкана</Link> 
+                <Link to="/gallery">📸 Мектеп галереясы</Link>
+                <Link to="/resources">🔗 Пайдалуу ресурстар</Link>
+                <Link to="/online-lessons">🎥 Онлайн сабактар</Link>
                 
                 <div className={styles.mobileDivider}>Маалымат</div>
                 <Link to="/news">📰 Жаңылыктар</Link>
+                 <Link to="/schedule">Расписание</Link>
                 <Link to="/contact">📞 Байланыш</Link>
                 
                 <Link to="/admin-panel" className={styles.mobileAdminLink}>🔐 Админ</Link>
