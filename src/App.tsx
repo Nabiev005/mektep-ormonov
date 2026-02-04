@@ -37,6 +37,7 @@ import PythonCourse from './pages/PythonCourse/PythonCourse';
 import AICourse from './pages/AICourse/AICourse';
 import GamedevCourse from './pages/Gamedev/GamedevCourse';
 import TypingGame from './pages/TypingGame/TypingGame';
+import LogicGame from './pages/LogicGame/LogicGame';
 import styles from './App.module.css';
 
 const AnimatedRoutes = () => {
@@ -81,6 +82,7 @@ const AnimatedRoutes = () => {
         <Route path="/community/ai-course" element={<AICourse />} />
         <Route path="/community/gamedev" element={<GamedevCourse />} />
         <Route path="/community/typing-game" element={<TypingGame />} />
+        <Route path="/community/logic-game" element={<LogicGame />} />
         <Route path="/community/warm-words" element={<WarmWordsPage />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />
