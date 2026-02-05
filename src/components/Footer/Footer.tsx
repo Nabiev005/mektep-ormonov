@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
               </p>
               <div className={styles.socialGroup}>
                 <a href="https://www.instagram.com/kg.mektep?igsh=MWRnbXlscmFucXBidA==" className={styles.socialCircle}><Instagram size={20} /></a>
-                <a href="https://www.facebook.com/profile.php?id=100009872891560" className={styles.socialCircle}><Facebook size={20} /></a>
+                <a href="https://www.facebook.com/profile.php?id=61586219777150" className={styles.socialCircle}><Facebook size={20} /></a>
                 <a href="#" className={styles.socialCircle}><Youtube size={20} /></a>
               </div>
             </div>
