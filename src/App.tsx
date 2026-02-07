@@ -38,6 +38,13 @@ import AICourse from './pages/AICourse/AICourse';
 import GamedevCourse from './pages/Gamedev/GamedevCourse';
 import TypingGame from './pages/TypingGame/TypingGame';
 import LogicGame from './pages/LogicGame/LogicGame';
+import ORTPrep from './pages/ORTPrep/ORTPrep';
+import AnalogiesGame from './pages/ORTPrep/AnalogiesGame';
+import MathGame from './pages/ORTPrep/MathGame';
+import Reading from './pages/ORTPrep/Reading';
+import GrammarGame from './pages/ORTPrep/GrammarGame';
+import Tips from './pages/ORTPrep/Tips';
+import Methodology from './pages/ORTPrep/Methodology';
 import styles from './App.module.css';
 
 const AnimatedRoutes = () => {
@@ -83,6 +90,13 @@ const AnimatedRoutes = () => {
         <Route path="/community/gamedev" element={<GamedevCourse />} />
         <Route path="/community/typing-game" element={<TypingGame />} />
         <Route path="/community/logic-game" element={<LogicGame />} />
+        <Route path="/community/ort" element={<ORTPrep />} />
+        <Route path="/ort/analogies" element={<AnalogiesGame />} />
+        <Route path="/ort/math" element={<MathGame />} />
+        <Route path="/ort/reading" element={<Reading />} />
+        <Route path="/ort/grammar" element={<GrammarGame />} />
+        <Route path="/ort-tips" element={<Tips />} />
+        <Route path="/ort/methodology" element={<Methodology />} />
         <Route path="/community/warm-words" element={<WarmWordsPage />} />
         <Route path="/online-lessons" element={<OnlineLessons />} />
         <Route path="/teacher-panel" element={<TeacherPanel />} />

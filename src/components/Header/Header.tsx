@@ -65,6 +65,7 @@ const Header: React.FC = () => {
                 >
                   <Link to="/teachers">👨‍🏫 Мугалимдер</Link>
                   <Link to="/best-students">🌟 Мыкты окуучулар</Link>
+                  <Link to="/community/ort">📚 ORT даярдоо</Link>
                   <Link to="/community/media-center">🎙️ Медиа-борбор</Link>
                   <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
 
@@ -160,6 +161,7 @@ const Header: React.FC = () => {
                 <Link to="/">🏠 Башкы бет</Link>
                 <Link to="/about">📖 Биз жөнүндө</Link> 
                 <Link to="/community/warm-words">✨ Жылуу сөздөр дубалы</Link>
+                <Link to="/community/ort">📚 ORT даярдоо</Link>
                 
                 <div className={styles.mobileDivider}>IT & Билим</div>
                 <div className={styles.mobileSubSection}>
