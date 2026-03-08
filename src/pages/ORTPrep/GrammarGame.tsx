@@ -41,6 +41,7 @@ const GrammarGame: React.FC = () => {
   const getButtonStyle = (index: number) => {
     let background = '#fff';
     let borderColor = '#e2e8f0';
+    // eslint-disable-next-line prefer-const
     let color = '#1a202c';
 
     if (showFeedback) {
