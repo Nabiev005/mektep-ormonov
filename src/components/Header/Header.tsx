@@ -200,6 +200,8 @@ const Header: React.FC = () => {
               <Link to="/teachers" style={s.navLink}>👨‍🏫 Мугалимдер</Link>
               <Link to="/best-students" style={s.navLink}>🌟 Мыкты окуучулар</Link>
               <Link to="/library" style={s.navLink}>📚 Китепкана</Link>
+                  <Link to="/resources"  style={s.navLink}>🔗 Пайдалуу ресурстар</Link>
+                  <Link to="/online-lessons" style={s.navLink}>🎥 Онлайн сабактар</Link>
               <Link to="/gallery" style={s.navLink}>📸 Галерея</Link>
               <Link to="/contact" style={s.navLink}>📞 Байланыш</Link>
             </div>
