@@ -10,3 +10,23 @@ body {
   font-family: 'Inter', sans-serif;
   color: var(--text-color);
 }
+
+.appWrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 260px; /* Компьютерде меню үчүн орун */
+  width: calc(100% - 260px);
+  transition: all 0.3s ease;
+}
+
+/* МОБИЛДИК ТЕЛЕФОНДОР ҮЧҮН */
+@media (max-width: 1023px) {
+  .mainContent {
+    margin-left: 0; /* Телефондо контентти солго жылдырбайбыз */
+    width: 100%;
+  }
+}
