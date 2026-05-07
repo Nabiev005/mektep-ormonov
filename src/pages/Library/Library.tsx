@@ -4,29 +4,30 @@ import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Library.module.css';
 
-interface Book {
+interface WorkPlan {
   id: string;
   title: string;
   description: string;
   imageUrl: string;
+  pdfUrl?: string;
   date: string;
 }
 
 const Library: React.FC = () => {
-  const [books, setBooks] = useState<Book[]>([]);
+  const [plans, setPlans] = useState<WorkPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    // 'library' коллекциясын убакыт боюнча иреттеп алуу
+    // Мурдагы маалыматтар бузулбашы үчүн коллекциянын аты library бойдон калды.
     const q = query(collection(db, 'library'), orderBy('updatedAt', 'desc'));
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const booksData = snapshot.docs.map(doc => ({
+      const plansData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      })) as Book[];
-      setBooks(booksData);
+      })) as WorkPlan[];
+      setPlans(plansData);
       setLoading(false);
     });
 
@@ -34,9 +35,9 @@ const Library: React.FC = () => {
   }, []);
 
   // Издөө логикасы
-  const filteredBooks = books.filter(book =>
-    book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    book.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredPlans = plans.filter(plan =>
+    plan.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    plan.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -46,14 +47,14 @@ const Library: React.FC = () => {
           initial={{ opacity: 0, y: -20 }} 
           animate={{ opacity: 1, y: 0 }}
         >
-          📚 Мектеп китепканасы
+          📄 Мугалимдердин иш планы
         </motion.h1>
-        <p>Билим булагы — китеп. Биздин мектептин санариптик китепканасына кош келиңиз!</p>
+        <p>Мектептеги мугалимдердин иш пландары PDF форматында жарыяланып турат.</p>
         
         <div className={styles.searchBox}>
           <input 
             type="text" 
-            placeholder="Китептин атын же авторун издеңиз..." 
+            placeholder="Мугалимдин аты же иш планы боюнча издеңиз..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -69,10 +70,10 @@ const Library: React.FC = () => {
           className={styles.booksGrid}
         >
           <AnimatePresence>
-            {filteredBooks.length > 0 ? (
-              filteredBooks.map((book) => (
+            {filteredPlans.length > 0 ? (
+              filteredPlans.map((plan) => (
                 <motion.div 
-                  key={book.id}
+                  key={plan.id}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -80,14 +81,29 @@ const Library: React.FC = () => {
                   className={styles.bookCard}
                 >
                   <div className={styles.imageWrapper}>
-                    <img src={book.imageUrl || 'https://via.placeholder.com/300x400?text=No+Image'} alt={book.title} />
+                    {plan.imageUrl ? (
+                      <img src={plan.imageUrl} alt={plan.title} />
+                    ) : (
+                      <div className={styles.pdfFallback}>PDF</div>
+                    )}
                   </div>
                   <div className={styles.bookInfo}>
-                    <h3>{book.title}</h3>
-                    <p className={styles.description}>{book.description}</p>
+                    <h3>{plan.title}</h3>
+                    <p className={styles.description}>{plan.description}</p>
                     <div className={styles.bookFooter}>
-                      <span className={styles.date}>📅 {book.date}</span>
-                      <button className={styles.readBtn}>Толук окуу</button>
+                      <span className={styles.date}>📅 {plan.date}</span>
+                      {plan.pdfUrl ? (
+                        <a
+                          className={styles.readBtn}
+                          href={plan.pdfUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Иш планы менен таанышуу
+                        </a>
+                      ) : (
+                        <button className={styles.disabledBtn} disabled>PDF жок</button>
+                      )}
                     </div>
                   </div>
                 </motion.div>

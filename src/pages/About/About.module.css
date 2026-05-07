@@ -1,281 +1,287 @@
 .aboutPage {
   width: 100%;
+  color: #0f172a;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 60px 20px;
-}
-
-.title {
-  text-align: center;
-  font-size: 2.8rem;
-  color: var(--primary-color);
-  margin-bottom: 50px;
-}
-
-/* Мектеп тарыхы КАРТОЧКАСЫ */
-.historyCard {
+.hero {
+  min-height: 440px;
   display: flex;
-  background: white;
-  border-radius: 30px;
+  align-items: flex-end;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 24px;
+  background:
+    linear-gradient(90deg, rgba(8, 20, 38, 0.9), rgba(8, 20, 38, 0.45)),
+    url('../../assets/Home.jpg') center / cover no-repeat;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+}
+
+.heroContent {
+  width: min(820px, 100%);
+  padding: clamp(34px, 6vw, 70px);
+  color: white;
+}
+
+.eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #ccfbf1;
+  color: #0f766e;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.hero .eyebrow {
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(10px);
+}
+
+.hero h1 {
+  max-width: 780px;
+  margin: 18px 0 0;
+  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.hero p {
+  max-width: 680px;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.facts,
+.story,
+.person,
+.values {
+  width: min(1180px, 100%);
+  margin: 54px auto 0;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: -36px;
+  position: relative;
+  z-index: 2;
+}
+
+.factCard {
+  padding: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.factCard strong,
+.factCard span {
+  display: block;
+}
+
+.factCard strong {
+  color: #0f766e;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1;
+}
+
+.factCard span {
+  margin-top: 10px;
+  color: #475569;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.story,
+.person {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+  gap: 24px;
   align-items: stretch;
-  margin-bottom: 60px;
 }
 
-.historyInfo {
-  flex: 1.5;
-  padding: 50px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.historyInfo h2 {
-  font-size: 1.8rem;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.historyInfo p {
-  line-height: 1.7;
-  color: #555;
-  margin-bottom: 15px;
-  font-size: 1.05rem;
-}
-
-.divider {
-  height: 1px;
-  background: #eee;
-  margin: 20px 0;
-}
-
-.historyImageWrapper {
-  flex: 1;
+.storyText,
+.storyImage,
+.personText,
+.personImage,
+.valueCard {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 22px;
   background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+}
+
+.storyText,
+.personText {
+  padding: clamp(26px, 4vw, 42px);
+}
+
+.storyText h2,
+.personText h2,
+.sectionHeader h2 {
+  margin: 14px 0 0;
+  color: #0f172a;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  line-height: 1.08;
+}
+
+.storyText p,
+.personText p,
+.valueCard p {
+  color: #475569;
+  font-size: 1.02rem;
+  line-height: 1.78;
+}
+
+.storyText p,
+.personText p {
+  margin: 18px 0 0;
+}
+
+.storyImage,
+.personImage {
   overflow: hidden;
 }
 
-.historyImageWrapper img {
+.storyImage img,
+.personImage img {
+  display: block;
   width: 100%;
   height: 100%;
+  min-height: 430px;
   object-fit: cover;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  transition: transform 0.6s ease;
 }
 
-.historyCard:hover .historyImageWrapper img {
-  transform: scale(1.05);
+.person {
+  grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
 }
 
-/* Values Section */
+.personImage img {
+  object-position: center 10%;
+}
+
+.legacyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.legacyGrid div {
+  padding: 18px;
+  border-radius: 16px;
+  background: #eff6ff;
+}
+
+.legacyGrid strong,
+.legacyGrid span {
+  display: block;
+}
+
+.legacyGrid strong {
+  color: #1d4ed8;
+}
+
+.legacyGrid span {
+  margin-top: 6px;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.sectionHeader {
+  margin-bottom: 22px;
+}
+
 .values {
-  background-color: #f8f9fa;
-  padding: 80px 0;
-}
-
-.subTitle {
-  text-align: center;
-  font-size: 2.2rem;
-  margin-bottom: 50px;
+  margin-bottom: 34px;
 }
 
 .valuesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
 }
 
 .valueCard {
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  padding: 28px;
 }
 
 .icon {
-  font-size: 3.5rem;
-  margin-bottom: 20px;
-}
-
-.biographySection {
-  padding: 80px 0;
-  background: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
-}
-
-.bioCard {
-  display: flex;
-  background: white;
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.03);
-  align-items: center;
-}
-
-.bioImageWrapper {
-  flex: 1;
-  width: 100%;
-  height: 450px;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  filter: saturate(1.1) contrast(1.05); 
-}
-
-.bioImageWrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 10%; 
-  transition: transform 0.5s ease, filter 0.5s ease;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-.bioInfo {
-  flex: 1.5;
-  padding: 50px;
-}
-
-.scrollLabel {
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 2px;
-  color: #007aff;
-  font-weight: 700;
-  display: block;
-  margin-bottom: 10px;
-}
-
-.bioName {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #1c1c1e;
-}
-
-.bioDescription {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #48484a;
-  margin-bottom: 30px;
-}
-
-.bioFeatures {
   display: grid;
-  gap: 15px;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 16px;
+  background: #fef3c7;
+  font-size: 1.7rem;
 }
 
-.featureItem {
-  padding: 15px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  border-left: 4px solid #007aff;
+.valueCard h3 {
+  margin: 20px 0 10px;
+  color: #0f172a;
+  font-size: 1.22rem;
 }
 
-.bioImageWrapper:hover img {
-  transform: scale(1.05);
-  filter: saturate(1.2) brightness(1.05);
+.valueCard p {
+  margin: 0;
 }
 
-/* Адаптивка */
-@media (max-width: 992px) {
-  .bioCard, .historyCard {
-    flex-direction: column;
-  }
-  .bioImageWrapper, .historyImageWrapper {
-    width: 100%;
-    height: 350px;
-  }
-  .historyImageWrapper {
-    order: -1; /* Мобилдикте сүрөт тексттин үстүндө болот */
-  }
-  .bioInfo, .historyInfo {
-    padding: 30px;
-  }
-  .bioName {
-    font-size: 1.8rem;
-  }
-}
-
-/* --- КОШУМЧА ОҢДООЛОР (АДАПТИВКА ЖАНА ДИЗАЙН) --- */
-
-@media (max-width: 768px) {
-  .container {
-    padding: 40px 15px; /* Боштуктарды мобилдикке ылайыкташтыруу */
-  }
-
-  .title {
-    font-size: 2rem; /* Смартфондо чоң текст батпай калышы мүмкүн */
-    margin-bottom: 30px;
-  }
-
-  .historyCard, .bioCard {
-    border-radius: 20px; /* Кичине экранда бурчтарды бир аз азайтуу */
-    margin-bottom: 40px;
-  }
-
-  /* Сүрөттүн бийиктигин автоматтык кылуу, текстти кыспаш үчүн */
-  .bioImageWrapper, .historyImageWrapper {
-    height: 300px; /* Туруктуу бийиктикти азайтуу */
-    min-height: 250px;
-  }
-
-  /* Сүрөт менен тексттин ортосундагы кагылышууну алдын алуу */
-  .bioInfo, .historyInfo {
-    padding: 25px 20px;
-    width: 100%;
-    flex: none; /* Бийиктикти мазмунга жараша ийкемдүү кылат */
-  }
-
-  .bioName {
-    font-size: 1.6rem;
-    margin-bottom: 15px;
-  }
-
-  .bioDescription {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  /* Маанилер сеткасын (Values Grid) телефондо 1 мамыча кылуу */
+@media (max-width: 1024px) {
+  .facts,
   .valuesGrid {
     grid-template-columns: 1fr;
-    gap: 20px;
   }
 
-  .valueCard {
-    padding: 30px 20px;
+  .story,
+  .person {
+    grid-template-columns: 1fr;
+  }
+
+  .personImage {
+    order: -1;
   }
 }
 
-/* Кичинекей телефондор үчүн (iPhone SE ж.б.) */
-@media (max-width: 480px) {
-  .bioImageWrapper, .historyImageWrapper {
-    height: 220px;
-  }
-  
-  .bioName {
-    font-size: 1.4rem;
+@media (max-width: 640px) {
+  .hero {
+    min-height: 560px;
+    border-radius: 18px;
   }
 
-  .featureItem {
-    font-size: 0.85rem;
-    padding: 10px;
+  .heroContent {
+    padding: 28px 20px 38px;
   }
-}
 
-/* Сүрөттөр мобилдикте туура көрүнүшү үчүн маанилүү кошумча */
-.bioImageWrapper img, .historyImageWrapper img {
-  display: block;
-  max-width: 100%;
+  .hero h1 {
+    font-size: 2.45rem;
+  }
+
+  .facts {
+    margin-top: 18px;
+  }
+
+  .story,
+  .person,
+  .values {
+    margin-top: 42px;
+  }
+
+  .storyImage img,
+  .personImage img {
+    min-height: 300px;
+  }
+
+  .legacyGrid {
+    grid-template-columns: 1fr;
+  }
 }

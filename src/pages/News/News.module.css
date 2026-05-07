@@ -1,76 +1,264 @@
-.container { padding: 50px 5%; max-width: 1200px; margin: 0 auto; }
-.title { text-align: center; margin-bottom: 40px; color: #1a2a3a; }
-.newsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-.card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-.image { width: 100%; height: 200px; object-fit: cover; }
-.content { padding: 20px; }
-.date { font-size: 0.8rem; color: #777; }
-.loader { text-align: center; padding: 100px; font-size: 1.5rem; }
+.container {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 28px 0 56px;
+}
+
+.hero {
+  margin-bottom: 26px;
+  padding: 34px;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 22px;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(20, 184, 166, 0.08)),
+    #ffffff;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.07);
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin-bottom: 12px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #075985;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  line-height: 1.05;
+}
+
+.subtitle {
+  max-width: 680px;
+  margin: 16px 0 0;
+  color: #475569;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.tab,
+.activeTab {
+  flex: 0 0 auto;
+  padding: 11px 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.tab {
+  background: #ffffff;
+  color: #334155;
+}
+
+.tab:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+
+.activeTab {
+  background: linear-gradient(135deg, #2563eb, #0f766e);
+  color: white;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+}
+
+.newsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+.card {
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 45px rgba(15, 23, 42, 0.12);
+}
+
+.imageWrap {
+  position: relative;
+  background: #e2e8f0;
+}
+
+.image,
+.imageFallback {
+  width: 100%;
+  height: 210px;
+}
+
+.image {
+  display: block;
+  object-fit: cover;
+}
+
+.imageFallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
+  color: #1e3a8a;
+  font-weight: 900;
+}
+
+.imageCount {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  color: white;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.content {
+  padding: 20px;
+}
+
+.date,
+.modalDate {
+  color: #64748b;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.content h3 {
+  margin: 10px 0 10px;
+  color: #0f172a;
+  font-size: 1.18rem;
+  line-height: 1.35;
+}
+
+.content p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+}
 
 .moreBtn {
-  margin-top: 15px;
-  background: #ebf8ff;
-  color: #3182ce;
+  margin-top: 18px;
   border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-weight: 600;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 11px 16px;
+  font-weight: 800;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
 .moreBtn:hover {
-  background: #3182ce;
+  transform: translateY(-1px);
+  background: #2563eb;
   color: white;
 }
 
-/* Модалдык терезенин стилдери */
+.loader,
+.noData,
+.error {
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
+  text-align: center;
+}
+
+.loader {
+  margin: 80px auto;
+  padding: 34px;
+  color: #1e3a8a;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.noData {
+  grid-column: 1 / -1;
+  padding: 42px;
+  color: #64748b;
+  font-size: 1.05rem;
+}
+
+.error {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.75);
+  inset: 0;
+  z-index: 5200;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
   padding: 20px;
-  backdrop-filter: blur(5px);
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(6px);
 }
 
 .modalContent {
-  background: white;
-  width: 100%;
-  max-width: 650px;
-  max-height: 90vh;
-  border-radius: 24px;
-  overflow-y: auto; /* Текст өтө узун болсо, ичинен скайп этилет */
   position: relative;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: min(820px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.34);
+}
+
+.modalGallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+  padding: 8px;
+  background: #f8fafc;
 }
 
 .closeBtn {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: white;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
   border: none;
-  width: 35px;
-  height: 35px;
   border-radius: 50%;
-  font-size: 24px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  font-size: 26px;
   cursor: pointer;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
 }
 
 .modalImg {
   width: 100%;
-  height: 350px;
+  height: 260px;
+  border-radius: 16px;
   object-fit: cover;
 }
 
@@ -78,75 +266,42 @@
   padding: 30px;
 }
 
-.modalDate {
-  color: #718096;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
 .modalBody h2 {
-  margin: 10px 0 20px 0;
-  color: #1a202c;
-  line-height: 1.3;
+  margin: 10px 0 18px;
+  color: #0f172a;
+  line-height: 1.24;
 }
 
 .modalFullDesc {
-  color: #4a5568;
+  color: #334155;
   line-height: 1.8;
   font-size: 1.05rem;
-  white-space: pre-wrap; /* Саптарды туура көчүрүү үчүн */
+  white-space: pre-wrap;
 }
 
-/* Мобилдик версияда сүрөттүн бийиктигин азайтуу */
 @media (max-width: 768px) {
+  .container {
+    padding-top: 12px;
+  }
+
+  .hero {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .newsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modalOverlay {
+    padding: 12px;
+  }
+
   .modalImg {
-    height: 200px;
+    height: 210px;
   }
+
   .modalBody {
-    padding: 20px;
+    padding: 22px;
   }
-}
-
-
-.tabsContainer {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 40px;
-  flex-wrap: wrap; /* Мобилдик телефондордо баскычтар сынып түшүүсү үчүн */
-}
-
-.tab {
-  padding: 12px 24px;
-  border: 2px solid #edf2f7;
-  background: white;
-  border-radius: 50px;
-  font-weight: 600;
-  color: #4a5568;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.tab:hover {
-  border-color: #3182ce;
-  color: #3182ce;
-}
-
-.activeTab {
-  padding: 12px 24px;
-  border: 2px solid #3182ce;
-  background: #3182ce;
-  color: white;
-  border-radius: 50px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(49, 130, 206, 0.3);
-}
-
-.noData {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 50px;
-  color: #a0aec0;
-  font-size: 1.1rem;
 }

@@ -1,235 +1,370 @@
 .home {
   width: 100%;
-   font-family: 'Poppins', sans-serif;
+  color: #0f172a;
 }
 
 .hero {
-  height: 80vh;
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-              url('../../assets/home1.png');
-  background-size: cover;
-  background-position: center;
+  position: relative;
+  min-height: min(760px, calc(100vh - 40px));
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: white;
-  padding: 0 20px;
-  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background:
+    linear-gradient(90deg, rgba(8, 20, 38, 0.88) 0%, rgba(8, 20, 38, 0.62) 48%, rgba(8, 20, 38, 0.24) 100%),
+    url('../../assets/Home.jpg') center / cover no-repeat;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
 }
 
-/* БААРЫН ОРТОГО ТҮЗДӨӨЧҮ КОНТЕЙНЕР */
+.heroShade {
+  position: absolute;
+  inset: auto 0 0;
+  height: 160px;
+  background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.48));
+  pointer-events: none;
+}
+
 .heroContent {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  z-index: 1;
+  width: min(760px, 100%);
+  padding: clamp(34px, 7vw, 76px);
+  color: #ffffff;
+}
+
+.schoolBadge,
+.eyebrow {
+  display: inline-flex;
   align-items: center;
-  z-index: 5;
+  gap: 9px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
 }
 
-/* ГҮЛДҮН ЖАҢЫ СТИЛИ */
-.aigulFlower {
-  width: 80px;         /* Көлөмү кичирейди */
-  margin-bottom: 10px; 
-  display: block;
+.schoolBadge {
+  margin-bottom: 18px;
+  padding: 8px 13px 8px 9px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(10px);
 }
 
-.aigulFlower img {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+.schoolBadge img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
-.mainTitle {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 20px;
-  line-height: 1.2;
+.hero h1 {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(2.6rem, 6vw, 5.6rem);
+  line-height: 0.98;
+  letter-spacing: 0;
 }
 
-.subtitle {
-  font-size: 1.2rem;
-  margin-bottom: 40px;
-  max-width: 700px;
+.hero p {
+  max-width: 650px;
+  margin: 22px 0 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: clamp(1rem, 1.5vw, 1.22rem);
+  line-height: 1.75;
 }
 
-.heroButtons {
+.heroActions,
+.introLinks {
   display: flex;
-  gap: 20px;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
 }
 
-.primaryBtn, .secondaryBtn {
-  padding: 15px 30px;
-  border-radius: 30px;
-  font-weight: 600;
+.primaryBtn,
+.secondaryBtn,
+.introLinks a,
+.directionCard a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 14px;
+  padding: 0 18px;
+  font-weight: 900;
   text-decoration: none;
-  transition: all 0.3s;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .primaryBtn {
-  background-color: var(--primary-color, #2563eb);
-  color: white;
+  background: #f59e0b;
+  color: #111827;
+  box-shadow: 0 16px 30px rgba(245, 158, 11, 0.28);
 }
 
 .secondaryBtn {
-  background-color: white;
-  color: var(--primary-color, #2563eb);
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  backdrop-filter: blur(10px);
 }
 
-.primaryBtn:hover { transform: scale(1.05); }
-.secondaryBtn:hover { background-color: #f0f0f0; }
+.primaryBtn:hover,
+.secondaryBtn:hover,
+.introLinks a:hover,
+.directionCard a:hover {
+  transform: translateY(-2px);
+}
 
-/* Stats Section */
-.stats {
+.heroMeta {
   display: flex;
-  justify-content: space-around;
-  padding: 60px 5%;
-  background-color: #f8f9fa;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: 12px;
+  margin-top: 34px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: -42px auto 0;
+  position: relative;
+  z-index: 2;
+  width: min(1080px, calc(100% - 34px));
 }
 
 .statBox {
-  text-align: center;
+  min-height: 132px;
+  padding: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .statBox h2 {
-  font-size: 2.5rem;
-  color: var(--primary-color, #2563eb);
-  margin-bottom: 5px;
+  margin: 0;
+  color: #0f766e;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
 }
 
 .statBox p {
-  color: #666;
-  font-weight: 500;
+  margin: 10px 0 0;
+  color: #475569;
+  font-weight: 800;
 }
 
-/* Features Section */
-.features {
-  padding: 80px 5%;
-  max-width: 1200px;
-  margin: 0 auto;
+.intro,
+.directions,
+.cta {
+  width: min(1180px, 100%);
+  margin: 70px auto 0;
 }
 
-.sectionTitle {
-  text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 50px;
-  color: #333;
-}
-
-.featureGrid {
+.intro {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.6fr);
+  gap: 28px;
+  align-items: stretch;
 }
 
-.featureCard {
-  background: white;
-  padding: 40px;
+.introText,
+.portraitPanel,
+.cta {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+}
+
+.introText {
+  padding: clamp(26px, 4vw, 42px);
+}
+
+.eyebrow {
+  padding: 7px 12px;
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+.introText h2,
+.sectionHeader h2,
+.cta h2 {
+  margin: 14px 0 0;
+  color: #0f172a;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  line-height: 1.08;
+}
+
+.introText p,
+.cta p {
+  margin: 18px 0 0;
+  color: #475569;
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.introLinks a {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.portraitPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.portraitPanel img {
+  width: 100%;
+  min-height: 320px;
+  object-fit: cover;
+}
+
+.portraitPanel div {
+  padding: 20px;
+}
+
+.portraitPanel strong,
+.portraitPanel span {
+  display: block;
+}
+
+.portraitPanel strong {
+  font-size: 1.25rem;
+}
+
+.portraitPanel span {
+  margin-top: 6px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.sectionHeader {
+  margin-bottom: 22px;
+}
+
+.directionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.directionCard {
+  padding: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  border: 1px solid #eee;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
 }
 
 .icon {
-  font-size: 3rem;
-  margin-bottom: 20px;
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border-radius: 16px;
+  background: #fef3c7;
+  font-size: 1.6rem;
 }
 
-/* Адаптивка */
-@media (max-width: 768px) {
-  .mainTitle { font-size: 2.2rem; }
-  .heroButtons { flex-direction: column; }
-  .aigulFlower { width: 60px; } /* Мобилдикте дагы кичирейет */
+.directionCard h3 {
+  margin: 20px 0 10px;
+  color: #0f172a;
+  font-size: 1.2rem;
 }
 
+.directionCard p {
+  min-height: 78px;
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+}
 
-/* ... Башындагы коддор өзгөрбөйт ... */
+.directionCard a {
+  width: fit-content;
+  margin-top: 18px;
+  background: #0f172a;
+  color: #ffffff;
+}
 
-.heroContent {
-  position: relative;
+.cta {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  z-index: 5;
-  width: 100%;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(26px, 4vw, 42px);
+  margin-bottom: 30px;
 }
 
-.aigulFlower {
-  width: 80px;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: center;
+.cta .primaryBtn {
+  flex: 0 0 auto;
 }
 
-.aigulFlower img {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
-}
-
-.mainTitle {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 20px;
-  line-height: 1.2;
-}
-
-/* --- АДАПТИВКА: Текстти чоңойтуу жана жайгашууну оңдоо --- */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .hero {
-    height: auto;
-    min-height: 90vh; /* Өтө узун болбошу үчүн */
-    padding-top: 80px; /* Header'ден ылдый түшүрүү */
-    padding-bottom: 40px;
+    border-radius: 18px;
   }
 
-  .aigulFlower {
-    width: 60px; /* Гүлдүн өлчөмү */
-    margin-bottom: 15px;
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .mainTitle {
-    /* Текстти окууга ыңгайлуу өлчөмгө келтирдик */
-    font-size: 2.4rem !important; 
-    line-height: 1.2;
-    margin-bottom: 20px;
-    padding: 0 15px;
-    font-weight: 700;
-  }
-
-  .subtitle {
-    font-size: 1.1rem; /* Субтитрди бир аз чоңойттук */
-    margin-bottom: 35px;
-    padding: 0 20px;
-    line-height: 1.5;
-  }
-
-  .heroButtons {
-    flex-direction: column;
-    width: 100%;
-    padding: 0 40px; /* Баскычтар капталга жабышпашы үчүн */
-    gap: 15px;
-  }
-
-  .primaryBtn, .secondaryBtn {
-    width: 100%;
-    padding: 14px;
-    font-size: 1rem;
-    border-radius: 12px; /* Мобилдикте заманбап көрүнөт */
+  .intro,
+  .directionGrid {
+    grid-template-columns: 1fr;
   }
 }
 
-/* Эң кичинекей телефондор үчүн */
-@media (max-width: 480px) {
-  .mainTitle {
-    font-size: 2rem !important;
+@media (max-width: 640px) {
+  .hero {
+    min-height: 760px;
+    align-items: flex-end;
+    background-position: center;
   }
-  
-  .aigulFlower {
-    width: 55px;
+
+  .heroContent {
+    padding: 26px 20px 42px;
+  }
+
+  .hero h1 {
+    font-size: 2.55rem;
+  }
+
+  .heroActions,
+  .introLinks,
+  .cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primaryBtn,
+  .secondaryBtn,
+  .introLinks a,
+  .directionCard a {
+    width: 100%;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+    margin-top: 18px;
+    width: 100%;
+  }
+
+  .statBox {
+    min-height: auto;
+  }
+
+  .intro,
+  .directions,
+  .cta {
+    margin-top: 42px;
   }
 }

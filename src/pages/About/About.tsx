@@ -1,137 +1,129 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import ZayilPhoto from "../../assets/ormonov.png";
-import HomePhoto from "../../assets/home1.png"
+import ZayilPhoto from '../../assets/ormonov.png';
+import HomePhoto from '../../assets/home1.png';
 import styles from './About.module.css';
+
+const values = [
+  {
+    icon: '🎓',
+    title: 'Сапаттуу билим',
+    text: 'Окуучулардын негизги билимин бекемдеп, заманбап көндүмдөрдү өнүктүрөбүз.',
+  },
+  {
+    icon: '🤝',
+    title: 'Биримдик',
+    text: 'Мугалим, окуучу жана ата-эне бир максатта иштеген чөйрө түзөбүз.',
+  },
+  {
+    icon: '🚀',
+    title: 'Өнүгүү',
+    text: 'IT, чыгармачылык жана практикалык сабактар аркылуу жаңы мүмкүнчүлүк ачабыз.',
+  },
+];
+
+const facts = [
+  { value: '2015-2017', label: 'Жаңы имарат курулган жылдар' },
+  { value: '225', label: 'Окуучуга ылайыкташкан' },
+  { value: '1936', label: 'Эски имараттын тарыхый башаты' },
+];
 
 const About: React.FC = () => {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className={styles.aboutPage}
     >
-      {/* 1. Бөлүм: Мектептин тарыхы - КАРТОЧКА СТИЛИНДЕ */}
-      <section className={styles.intro}>
-        <div className={styles.container}>
-          <motion.h1 
-            initial={{ y: -20 }} 
-            animate={{ y: 0 }} 
-            className={styles.title}
-          >
-            Биздин тарых жана миссия
-          </motion.h1>
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          <span className={styles.eyebrow}>Биз жөнүндө</span>
+          <h1>Зайил Ормонов атындагы жалпы билим берүү мектеби</h1>
+          <p>
+            Биздин мектеп билимди, тарбияны жана коомго кызмат кылуу маданиятын
+            бириктирген заманбап окуу чөйрөсүн түзөт.
+          </p>
+        </div>
+      </section>
 
-          <div className={styles.historyCard}>
-            <div className={styles.historyInfo}>
-              <span className={styles.scrollLabel}>Биздин мектеп</span>
-              <h2>Мектептин негизделиши</h2>
-              <p>
-                Зайил Ормонов атындагы орто мектеп заман талабына ылайык жаңы имаратта
-                2015–2017-жылдары республикалык бюджеттин эсебинен курулуп, пайдаланууга берилген.
-                Жаңы мектеп имараты 1936-жылы курулган эски имараттын ордуна салынган.
-              </p>
-              <div className={styles.divider}></div>
-              <h2>Мүмкүнчүлүктөр</h2>
-              <p>
-                Мектеп 225 окуучуга ылайыкташтырылган. Имаратта заманбап окуу класстары, 
-                спорт залы, ашкана жана окуучулар үчүн коопсуз, жагымдуу билим берүү шарттары түзүлгөн.
-              </p>
+      <section className={styles.facts}>
+        {facts.map((fact) => (
+          <div className={styles.factCard} key={fact.label}>
+            <strong>{fact.value}</strong>
+            <span>{fact.label}</span>
+          </div>
+        ))}
+      </section>
+
+      <section className={styles.story}>
+        <div className={styles.storyText}>
+          <span className={styles.eyebrow}>Тарых</span>
+          <h2>Мектептин негизделиши жана бүгүнкү мүмкүнчүлүктөрү</h2>
+          <p>
+            Зайил Ормонов атындагы орто мектеп заман талабына ылайык жаңы имаратта
+            2015-2017-жылдары республикалык бюджеттин эсебинен курулуп, пайдаланууга берилген.
+            Жаңы мектеп имараты 1936-жылы курулган эски имараттын ордуна салынган.
+          </p>
+          <p>
+            Имаратта заманбап окуу класстары, спорт залы, ашкана жана окуучулар үчүн
+            коопсуз, жагымдуу билим берүү шарттары түзүлгөн. Мектеп окуучулардын билимине
+            гана эмес, инсандык сапатына да өзгөчө көңүл бурат.
+          </p>
+        </div>
+        <div className={styles.storyImage}>
+          <img src={HomePhoto} alt="Мектеп имараты" />
+        </div>
+      </section>
+
+      <section className={styles.person}>
+        <div className={styles.personImage}>
+          <img src={ZayilPhoto} alt="Зайил Ормонов" />
+        </div>
+        <div className={styles.personText}>
+          <span className={styles.eyebrow}>Инсандык мурас</span>
+          <h2>Зайил Ормонов</h2>
+          <p>
+            Зайил Ормонов 1920-жылы төрөлгөн. Ал 1941-1945-жылдардагы Улуу Ата
+            Мекендик согуштун катышуучусу болуп, фронттон кайтып келгенден кийин
+            өз өмүрүн чарбаны калыбына келтирүүгө жана аймакты өнүктүрүүгө арнаган.
+          </p>
+          <p>
+            Кан айылынын инфраструктурасын жакшыртууда, таза суу киргизүүдө,
+            ирригациялык системаларды уюштурууда жана мектеп имараттарын курууда
+            анын эмгеги чоң болгон. Мектепке анын ысымы ыйгарылышы — билимге,
+            эмгекке жана мекенчилдикке берилген урмат.
+          </p>
+          <div className={styles.legacyGrid}>
+            <div>
+              <strong>Максаты</strong>
+              <span>Айыл жаштарын сабаттуу жана мекенчил кылып тарбиялоо.</span>
             </div>
-            <div className={styles.historyImageWrapper}>
-              <img src={HomePhoto} alt="Мектеп имараты" />
+            <div>
+              <strong>Мурасы</strong>
+              <span>Эмгекчилдик, жоопкерчилик жана билимге умтулуу.</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- ЖАҢЫ КОШУЛГАН БӨЛҮМ: Зайил Ормоновдун биографиясы --- */}
-      <section className={styles.biographySection}>
-        <div className={styles.container}>
-          <div className={styles.bioCard}>
-            <div className={styles.bioImageWrapper}>
-              <div className={styles.bioPlaceholder}>
-                <img src={ZayilPhoto} alt="Зайил Ормонов" />
-              </div>
-            </div>
-            <div className={styles.bioInfo}>
-              <span className={styles.scrollLabel}>Инсандык мурас</span>
-              <h2 className={styles.bioName}>Зайил Ормонов</h2>
-              <p className={styles.bioDescription}>
-                Зайил Ормонов — агартуучулукка өмүрүн арнаган инсан. Ал Кан айылынын 
-                билим берүү тармагынын түптөлүшүнө зор салым кошуп, бир нече муундарга 
-                татыктуу тарбия берген. Анын ак эмгеги жана коомго кошкон салымы үчүн 
-                мектепке анын ысымы ыйгарылган.
-              </p>
-              <div className={styles.bioFeatures}>
-                <div className={styles.featureItem}>
-                  <strong>Максаты:</strong> Айыл жаштарын сабаттуу жана мекенчил кылып тарбиялоо.
-                </div>
-                <div className={styles.featureItem}>
-                  <strong>Мурасы:</strong> Билим алууга болгон умтулуу жана эмгекчилдик.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* ---------------------------------------------------- */}
-
-
-      <section className={styles.biographySection}>
-        <div className={styles.container}>
-          <div className={styles.bioCard}>
-            {/* <div className={styles.bioImageWrapper}>
-              <div className={styles.bioPlaceholder}>
-                <img src={ZayilPhoto} alt="Зайил Ормонов" />
-              </div>
-            </div> */}
-            <div className={styles.bioInfo}>
-              <span className={styles.scrollLabel}>Өмүрү жана Ишмердүүлүгү</span>
-              <h2 className={styles.bioName}>Зайил Ормонов</h2>
-              <p className={styles.bioDescription}>
-                Туулган жылы: Зайил Ормонов 1920-жылы төрөлгөн.
-                Согуш жолу: Ал 1941–1945-жылдардагы Улуу Ата Мекендик согуштун катышуучусу болгон. Фронттон кайтып келгенден кийин, өзүнүн өмүрүн чарбаны калыбына келтирүүгө жана аймакты өнүктүрүүгө арнаган.
-                Ишмердүүлүгү: Ал советтик доордо Баткен районундагы Кан айылдык кеңешинин (мурдагы Советтердин) төрагасы, колхоз башкармалыгынын жетекчиси сыяктуу жооптуу кызматтарда иштеген.
-                Кылган эмгеги: Кан айылынын инфраструктурасын жакшыртууда — айылга таза суу киргизүү, ирригациялык системаларды (арыктарды) казуу жана мектеп имараттарын курууда анын ролу чоң болгон. Ошол кездеги оор шарттарга карабай, тоолуу аймактагы элдин жашоосун жеңилдетүүгө багытталган демилгелерди ишке ашырган.
-              </p>
-              <div className={styles.bioFeatures}>
-                <div className={styles.featureItem}>
-                  <strong>Максаты:</strong> Айыл жаштарын сабаттуу жана мекенчил кылып тарбиялоо.
-                </div>
-                <div className={styles.featureItem}>
-                  <strong>Мурасы:</strong> Билим алууга болгон умтулуу жана эмгекчилдик.
-                </div>
-              </div>
-              
-            </div>
-          </div>
-        </div>
-        
-      </section>
-
-      {/* 2. Бөлүм: Биздин баалуулуктар */}
       <section className={styles.values}>
-        <div className={styles.container}>
-          <h2 className={styles.subTitle}>Биздин баалуулуктар</h2>
-          <div className={styles.valuesGrid}>
-            <motion.div whileHover={{ scale: 1.05 }} className={styles.valueCard}>
-              <div className={styles.icon}>🎓</div>
-              <h3>Сапаттуу билим</h3>
-              <p>Биз терең жана заманбап билим берүү стандарттарын карманабыз.</p>
+        <div className={styles.sectionHeader}>
+          <span className={styles.eyebrow}>Баалуулуктар</span>
+          <h2>Биз таянган негизги принциптер</h2>
+        </div>
+        <div className={styles.valuesGrid}>
+          {values.map((value) => (
+            <motion.div
+              key={value.title}
+              whileHover={{ y: -6 }}
+              className={styles.valueCard}
+            >
+              <div className={styles.icon}>{value.icon}</div>
+              <h3>{value.title}</h3>
+              <p>{value.text}</p>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} className={styles.valueCard}>
-              <div className={styles.icon}>🤝</div>
-              <h3>Биримдик</h3>
-              <p>Мугалимдер, окуучулар жана ата-энелер бирдиктүү командабыз.</p>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} className={styles.valueCard}>
-              <div className={styles.icon}>🚀</div>
-              <h3>Инновация</h3>
-              <p>Окутуу процессинде эң акыркы технологияларды колдонобуз.</p>
-            </motion.div>
-          </div>
+          ))}
         </div>
       </section>
     </motion.div>

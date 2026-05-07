@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const LogicGame = () => {
   const [problem, setProblem] = useState({ q: '', a: '' });
@@ -8,7 +8,7 @@ const LogicGame = () => {
   const [isActive, setIsActive] = useState(false);
   const [lives, setLives] = useState(3);
 
-  const generateProblem = () => {
+  const generateProblem = useCallback(() => {
     const operators = ['&&', '||'];
     const op = operators[Math.floor(Math.random() * operators.length)];
     const n1 = Math.floor(Math.random() * 20);
@@ -17,22 +17,15 @@ const LogicGame = () => {
     const n4 = Math.floor(Math.random() * 20);
 
     const q = `(${n1} > ${n2}) ${op} (${n3} < ${n4})`;
-    const a = eval(q).toString(); // Жөнөкөй эсептөө
+    const left = n1 > n2;
+    const right = n3 < n4;
+    const a = (op === '&&' ? left && right : left || right).toString();
     
     setProblem({ q, a });
     setTimeLeft(15);
-  };
+  }, []);
 
-  useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && isActive) {
-      handleWrong();
-    }
-  }, [timeLeft, isActive]);
-
-  const handleWrong = () => {
+  const handleWrong = useCallback(() => {
     setLives(prev => prev - 1);
     if (lives <= 1) {
       alert("Оюн бүттү! Сиздин упайыңыз: " + score);
@@ -42,7 +35,21 @@ const LogicGame = () => {
     } else {
       generateProblem();
     }
-  };
+  }, [generateProblem, lives, score]);
+
+  useEffect(() => {
+    if (!isActive) return;
+
+    const timer = setTimeout(() => {
+      if (timeLeft <= 1) {
+        handleWrong();
+      } else {
+        setTimeLeft(prev => prev - 1);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [timeLeft, isActive, handleWrong]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.toLowerCase();

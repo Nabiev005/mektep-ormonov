@@ -1,0 +1,235 @@
+.home {
+  width: 100%;
+   font-family: 'Poppins', sans-serif;
+}
+
+.hero {
+  height: 80vh;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+              url('../../assets/home1.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+  position: relative;
+}
+
+/* БААРЫН ОРТОГО ТҮЗДӨӨЧҮ КОНТЕЙНЕР */
+.heroContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+/* ГҮЛДҮН ЖАҢЫ СТИЛИ */
+.aigulFlower {
+  width: 80px;         /* Көлөмү кичирейди */
+  margin-bottom: 10px; 
+  display: block;
+}
+
+.aigulFlower img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.mainTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  max-width: 700px;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.primaryBtn, .secondaryBtn {
+  padding: 15px 30px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.primaryBtn {
+  background-color: var(--primary-color, #2563eb);
+  color: white;
+}
+
+.secondaryBtn {
+  background-color: white;
+  color: var(--primary-color, #2563eb);
+}
+
+.primaryBtn:hover { transform: scale(1.05); }
+.secondaryBtn:hover { background-color: #f0f0f0; }
+
+/* Stats Section */
+.stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 60px 5%;
+  background-color: #f8f9fa;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.statBox {
+  text-align: center;
+}
+
+.statBox h2 {
+  font-size: 2.5rem;
+  color: var(--primary-color, #2563eb);
+  margin-bottom: 5px;
+}
+
+.statBox p {
+  color: #666;
+  font-weight: 500;
+}
+
+/* Features Section */
+.features {
+  padding: 80px 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  color: #333;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.featureCard {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+}
+
+.icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+/* Адаптивка */
+@media (max-width: 768px) {
+  .mainTitle { font-size: 2.2rem; }
+  .heroButtons { flex-direction: column; }
+  .aigulFlower { width: 60px; } /* Мобилдикте дагы кичирейет */
+}
+
+
+/* ... Башындагы коддор өзгөрбөйт ... */
+
+.heroContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+  width: 100%;
+}
+
+.aigulFlower {
+  width: 80px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.aigulFlower img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.mainTitle {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+/* --- АДАПТИВКА: Текстти чоңойтуу жана жайгашууну оңдоо --- */
+@media (max-width: 768px) {
+  .hero {
+    height: auto;
+    min-height: 90vh; /* Өтө узун болбошу үчүн */
+    padding-top: 80px; /* Header'ден ылдый түшүрүү */
+    padding-bottom: 40px;
+  }
+
+  .aigulFlower {
+    width: 60px; /* Гүлдүн өлчөмү */
+    margin-bottom: 15px;
+  }
+
+  .mainTitle {
+    /* Текстти окууга ыңгайлуу өлчөмгө келтирдик */
+    font-size: 2.4rem !important; 
+    line-height: 1.2;
+    margin-bottom: 20px;
+    padding: 0 15px;
+    font-weight: 700;
+  }
+
+  .subtitle {
+    font-size: 1.1rem; /* Субтитрди бир аз чоңойттук */
+    margin-bottom: 35px;
+    padding: 0 20px;
+    line-height: 1.5;
+  }
+
+  .heroButtons {
+    flex-direction: column;
+    width: 100%;
+    padding: 0 40px; /* Баскычтар капталга жабышпашы үчүн */
+    gap: 15px;
+  }
+
+  .primaryBtn, .secondaryBtn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    border-radius: 12px; /* Мобилдикте заманбап көрүнөт */
+  }
+}
+
+/* Эң кичинекей телефондор үчүн */
+@media (max-width: 480px) {
+  .mainTitle {
+    font-size: 2rem !important;
+  }
+  
+  .aigulFlower {
+    width: 55px;
+  }
+}

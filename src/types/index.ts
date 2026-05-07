@@ -4,6 +4,7 @@ export interface NewsItem {
     description: string;
     date: string;
     imageUrl: string;
+    imageUrls?: string[];
 }
 
 

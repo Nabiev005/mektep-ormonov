@@ -47,7 +47,7 @@ const MathGame = () => {
       {/* Жогорку панель */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <button onClick={() => navigate(-1)} style={backBtnStyle}>← Артка</button>
-        <div style={timerStyle(timeLeft < 60 as any)}>
+        <div style={timerStyle(timeLeft < 60)}>
           Убакыт: {formatTime(timeLeft)}
         </div>
       </div>

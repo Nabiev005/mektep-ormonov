@@ -1,21 +1,19 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { db, auth, storage } from '../../firebase';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc, } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Admin.module.css';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 interface ListItem {
   id: string;
   title?: string;
   description?: string;
   imageUrl?: string;
+  imageUrls?: string[];
   pdfUrl?: string;
   videoUrl?: string;
   teacherName?: string;
@@ -43,17 +41,19 @@ const Dashboard: React.FC = () => {
   const [category, setCategory] = useState('achievements');
   const [mediaType, setMediaType] = useState('podcast'); 
   const [author, setAuthor] = useState('');     
-  const [imageFile, setImageFile] = useState<File | null>(null); 
+  const [imageFiles, setImageFiles] = useState<File[]>([]); 
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [teacherName, setTeacherName] = useState('');
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [selectedItem, setSelectedItem] = useState<ListItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [className, setClassName] = useState('1-класс');
   const [day, setDay] = useState('Дүйшөмбү');
   const [lessons, setLessons] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [formError, setFormError] = useState('');
   const [items, setItems] = useState<ListItem[]>([]);
   
   // ДУЭЛЬ ҮЧҮН STATE'ТЕР
@@ -124,15 +124,21 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const getItemImages = (item?: ListItem | null) => {
+    if (!item) return [];
+    if (Array.isArray(item.imageUrls) && item.imageUrls.length > 0) return item.imageUrls.slice(0, 5);
+    return item.imageUrl ? [item.imageUrl] : [];
+  };
+
   useEffect(() => {
-    if (!imageFile) {
-      if (!editingId) setPreviewUrl(null);
+    if (imageFiles.length === 0) {
+      if (!editingId) setPreviewUrls([]);
       return;
     }
-    const url = URL.createObjectURL(imageFile);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [imageFile, editingId]);
+    const urls = imageFiles.map((file) => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [imageFiles, editingId]);
 
   useEffect(() => {
     fetchStats();
@@ -153,6 +159,10 @@ const Dashboard: React.FC = () => {
     if (!certificateRef.current) return;
     setLoading(true);
     try {
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ]);
       const canvas = await html2canvas(certificateRef.current, { scale: 3, useCORS: true });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('l', 'mm', 'a4');
@@ -178,10 +188,31 @@ const Dashboard: React.FC = () => {
   };
 
   const uploadPDFFile = async (file: File) => {
-    const storageRef = ref(storage, `library_pdfs/${Date.now()}_${file.name}`);
-    const snapshot = await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    return downloadURL;
+    if (file.type !== 'application/pdf') {
+      throw new Error('PDF форматындагы файл тандаңыз.');
+    }
+
+    const safeName = file.name.replace(/[^\w.-]+/g, '_');
+    // Эски Firebase Storage rules бузулбашы үчүн папка аты library_pdfs бойдон калды.
+    const storageRef = ref(storage, `library_pdfs/${Date.now()}_${safeName}`);
+    const uploadTask = uploadBytesResumable(storageRef, file, {
+      contentType: 'application/pdf',
+    });
+
+    return new Promise<string>((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          setUploadProgress(progress);
+        },
+        (error) => reject(error),
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL);
+        }
+      );
+    });
   };
 
   const handleEdit = (item: ListItem) => {
@@ -209,7 +240,8 @@ const Dashboard: React.FC = () => {
       setTitle(item.title || '');
       setDesc(item.description || '');
       setCategory(item.category || 'achievements');
-      setPreviewUrl(item.imageUrl || null);
+      setPreviewUrls(getItemImages(item));
+      setImageFiles([]);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -217,6 +249,8 @@ const Dashboard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setUploadProgress(0);
+    setFormError('');
     try {
       let finalData: any = {};
       
@@ -234,16 +268,30 @@ const Dashboard: React.FC = () => {
           updatedAt: serverTimestamp() 
         };
       } else {
-        let currentImageUrl = previewUrl;
-        if (imageFile) currentImageUrl = await uploadImage(imageFile);
+        const editingItem = items.find(i => i.id === editingId);
+        const uploadedImageUrls = imageFiles.length > 0
+          ? await Promise.all(imageFiles.map((file) => uploadImage(file)))
+          : null;
+        const currentImageUrls = uploadedImageUrls
+          ? (activeTab === 'news' ? uploadedImageUrls.slice(0, 5) : uploadedImageUrls.slice(0, 1))
+          : getItemImages(editingItem);
+        const currentImageUrl = currentImageUrls[0] || '';
 
         let currentPdfUrl = items.find(i => i.id === editingId)?.pdfUrl || "";
-        if (activeTab === 'library' && pdfFile) currentPdfUrl = await uploadPDFFile(pdfFile);
+        if (activeTab === 'library') {
+          if (!editingId && !pdfFile) {
+            throw new Error('Иш планы үчүн PDF файлды тандаңыз.');
+          }
+          if (pdfFile) currentPdfUrl = await uploadPDFFile(pdfFile);
+        }
 
         finalData = {
           title, description: desc,
-          category: activeTab === 'news' ? category : activeTab === 'gallery' ? 'gallery' : activeTab === 'best-students' ? 'student' : activeTab === 'library' ? 'book' : 'teacher',
-          imageUrl: currentImageUrl, pdfUrl: currentPdfUrl, updatedAt: serverTimestamp()
+          category: activeTab === 'news' ? category : activeTab === 'gallery' ? 'gallery' : activeTab === 'best-students' ? 'student' : activeTab === 'library' ? 'work-plan' : 'teacher',
+          imageUrl: currentImageUrl,
+          imageUrls: activeTab === 'news' ? currentImageUrls : currentImageUrls.slice(0, 1),
+          pdfUrl: currentPdfUrl,
+          updatedAt: serverTimestamp()
         };
       }
 
@@ -257,17 +305,20 @@ const Dashboard: React.FC = () => {
       }
       
       // ТАЗАЛОО
-      setTitle(''); setDesc(''); setLessons(''); setImageFile(null); 
-      setPdfFile(null); setPreviewUrl(null); setVideoUrl(''); setTeacherName('');
+      setTitle(''); setDesc(''); setLessons(''); setImageFiles([]); 
+      setPdfFile(null); setPreviewUrls([]); setVideoUrl(''); setTeacherName('');
       setAuthor(''); setMediaType('podcast');
       setQuestion(''); setAnswer(''); // Дуэль тазалоо
       
       alert("Ийгиликтүү сакталды! ✨");
       fetchStats();
     } catch (error) {
-      alert("Ката кетти!");
+      const message = error instanceof Error ? error.message : "Ката кетти!";
+      setFormError(message);
+      alert(message);
     }
     setLoading(false);
+    setUploadProgress(0);
   };
 
   const handleDelete = async (id: string) => {
@@ -296,7 +347,7 @@ const Dashboard: React.FC = () => {
         <div className={`${styles.menuItem} ${activeTab === 'media-center' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('media-center'); setEditingId(null);}}>🎙️ Медиа-борбор</div>
         <div className={`${styles.menuItem} ${activeTab === 'online-lessons' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('online-lessons'); setEditingId(null);}}>🎥 Онлайн сабактар</div>
         <div className={`${styles.menuItem} ${activeTab === 'gallery' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('gallery'); setEditingId(null);}}>📸 Галерея</div>
-        <div className={`${styles.menuItem} ${activeTab === 'library' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('library'); setEditingId(null);}}>📚 Китепкана</div>
+        <div className={`${styles.menuItem} ${activeTab === 'library' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('library'); setEditingId(null);}}>📄 Иш пландар</div>
         <div className={`${styles.menuItem} ${activeTab === 'teachers' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('teachers'); setEditingId(null);}}>👨‍🏫 Мугалимдер</div>
         <div className={`${styles.menuItem} ${activeTab === 'best-students' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('best-students'); setEditingId(null);}}>🌟 Мыктылар</div>
         <div className={`${styles.menuItem} ${activeTab === 'schedule' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('schedule'); setEditingId(null);}}>📅 Расписание</div>
@@ -472,10 +523,11 @@ const Dashboard: React.FC = () => {
                  activeTab === 'best-students' ? '➕ Жаңы мыкты окуучу' : 
                  activeTab === 'teachers' ? '➕ Жаңы мугалим' : 
                  activeTab === 'gallery' ? '📸 Галереяга сүрөт кошуу' : 
-                 activeTab === 'library' ? '📚 Жаңы китеп кошуу' : '➕ Жаңы кошуу'}
+                 activeTab === 'library' ? '📄 Мугалимдин иш планын кошуу' : '➕ Жаңы кошуу'}
               </h1>
 
               <form onSubmit={handleSubmit} className={styles.glassCard}>
+                {formError && <div className={styles.formError}>{formError}</div>}
                 {activeTab === 'schedule' ? (
                   <>
                     <div className={styles.inputGroup}>
@@ -548,7 +600,7 @@ const Dashboard: React.FC = () => {
                         {activeTab === 'news' ? 'Жаңылыктын темасы' : 
                          activeTab === 'gallery' ? 'Сүрөттүн аталышы' :
                          activeTab === 'best-students' ? 'Окуучунун аты-жөнү' : 
-                         activeTab === 'library' ? 'Китептын аталышы жана автору' : 'Мугалимдин аты-жөнү'}
+                         activeTab === 'library' ? 'Мугалимдин аты-жөнү / иш планынын аталышы' : 'Мугалимдин аты-жөнү'}
                       </label>
                       <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
                     </div>
@@ -563,30 +615,62 @@ const Dashboard: React.FC = () => {
                       </div>
                     )}
                     <div className={styles.inputGroup}>
-                      <label>{activeTab === 'best-students' ? 'Жетишкендиктери' : activeTab === 'library' ? 'Китеп жөнүндө кыскача' : 'Маалымат'}</label>
+                      <label>{activeTab === 'best-students' ? 'Жетишкендиктери' : activeTab === 'library' ? 'Иш планы жөнүндө кыскача' : 'Маалымат'}</label>
                       <textarea rows={4} value={desc} onChange={(e) => setDesc(e.target.value)} required />
                     </div>
                     
                     <div className={styles.inputGroup}>
-                      <label>Сүрөт {activeTab === 'library' ? '(Мукабасы)' : ''}</label>
-                      <input id="fileInput" type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)} className={styles.fileInputHidden} />
-                      <label htmlFor="fileInput" className={styles.fileUploadLabel}>
-                        {imageFile ? `📁 ${imageFile.name.substring(0, 20)}...` : editingId ? "📷 Сүрөттү алмаштыруу" : "📁 Сүрөттү тандаңыз"}
+                      <label>
+                        Сүрөт {activeTab === 'library' ? '(мугалимдин сүрөтү же план мукабасы)' : activeTab === 'news' ? '(5ке чейин)' : ''}
                       </label>
-                      {previewUrl && (
+                      <input
+                        id="fileInput"
+                        type="file"
+                        accept="image/*"
+                        multiple={activeTab === 'news'}
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          setImageFiles(activeTab === 'news' ? files.slice(0, 5) : files.slice(0, 1));
+                        }}
+                        className={styles.fileInputHidden}
+                      />
+                      <label htmlFor="fileInput" className={styles.fileUploadLabel}>
+                        {imageFiles.length > 0
+                          ? `📁 ${imageFiles.length} сүрөт тандалды`
+                          : editingId
+                            ? "📷 Сүрөттү алмаштыруу"
+                            : activeTab === 'news'
+                              ? "📁 Сүрөттөрдү тандаңыз"
+                              : "📁 Сүрөттү тандаңыз"}
+                      </label>
+                      {previewUrls.length > 0 && (
                         <div className={styles.previewContainer}>
-                          <img src={previewUrl} alt="Preview" className={styles.imagePreview} />
+                          {previewUrls.map((url, index) => (
+                            <img key={url} src={url} alt={`Preview ${index + 1}`} className={styles.imagePreview} />
+                          ))}
                         </div>
                       )}
                     </div>
 
                     {activeTab === 'library' && (
                       <div className={styles.inputGroup}>
-                        <label>Китептин PDF файлы</label>
-                        <input id="pdfInput" type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files ? e.target.files[0] : null)} className={styles.fileInputHidden} />
+                        <label>Иш планынын PDF файлы</label>
+                        <input
+                          id="pdfInput"
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => setPdfFile(e.target.files ? e.target.files[0] : null)}
+                          className={styles.fileInputHidden}
+                        />
                         <label htmlFor="pdfInput" className={styles.fileUploadLabel} style={{background: '#2d3748', border: '1px solid #4a5568'}}>
-                          {pdfFile ? `📕 ${pdfFile.name.substring(0, 25)}...` : "📕 PDF файлды тандаңыз"}
+                          {pdfFile ? `📄 ${pdfFile.name.substring(0, 25)}...` : "📄 PDF иш планды тандаңыз"}
                         </label>
+                        {loading && activeTab === 'library' && uploadProgress > 0 && (
+                          <div className={styles.uploadProgress}>
+                            <span style={{ width: `${uploadProgress}%` }} />
+                            <strong>{uploadProgress}%</strong>
+                          </div>
+                        )}
                       </div>
                     )}
                   </>
@@ -596,7 +680,7 @@ const Dashboard: React.FC = () => {
                     {loading ? "Күтө туруңуз..." : editingId ? "Жаңыртуу 💾" : "Базага сактоо ✨"}
                   </motion.button>
                   {editingId && (
-                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrl(null); setVideoUrl(''); setTeacherName(''); setAuthor(''); setQuestion(''); setAnswer(''); }} className={styles.cancelBtn}>
+                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrls([]); setImageFiles([]); setVideoUrl(''); setTeacherName(''); setAuthor(''); setQuestion(''); setAnswer(''); }} className={styles.cancelBtn}>
                       Жокко чыгаруу
                     </button>
                   )}
@@ -641,9 +725,16 @@ const Dashboard: React.FC = () => {
                         </div>
                       ) : (
                         <>
-                          <img src={item.imageUrl} alt={item.title} />
+                          {getItemImages(item)[0] ? (
+                            <img src={getItemImages(item)[0]} alt={item.title} />
+                          ) : (
+                            <div className={styles.adminImageFallback}>PDF</div>
+                          )}
                           <div className={styles.adminCardInfo}>
                             <h4>{item.title}</h4>
+                            {activeTab === 'news' && getItemImages(item).length > 1 && (
+                              <p style={{fontSize: '12px', color: '#718096'}}>📷 {getItemImages(item).length} сүрөт</p>
+                            )}
                             <div className={styles.cardActions}>
                               <button onClick={() => handleEdit(item)} className={styles.editBtn}>✏️</button>
                               <button onClick={() => {setSelectedItem(item); setIsModalOpen(true);}} className={styles.viewBtn}>👁️</button>
@@ -676,7 +767,9 @@ const Dashboard: React.FC = () => {
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
               >
-                <img src={selectedItem.imageUrl} alt={selectedItem.title} />
+                {getItemImages(selectedItem).map((url, index) => (
+                  <img key={url} src={url} alt={`${selectedItem.title} ${index + 1}`} />
+                ))}
                 <h2>{selectedItem.title}</h2>
                 <p>{selectedItem.description}</p>
                 <button onClick={() => setIsModalOpen(false)}>Жабуу</button>

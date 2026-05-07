@@ -1,62 +1,57 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { auth } from './firebase'; 
 import { AnimatePresence } from 'framer-motion';
 
 // КОМПОНЕНТТЕР
 import Header from './components/Header/Header';
-import Home from './pages/Home/Home';
-import Contact from './pages/Contact/Contact';
-import Teachers from './pages/Teachers/Teachers';
-import BestStudents from './pages/BestStudents/BestStudents'; 
-import NewsPage from './pages/News/News';
-import About from './pages/About/About'; 
-import Schedule from './components/Schedule/Schedule'; 
-import TeacherPanel from './pages/Teacher/TeacherPanel';
-import Dashboard from './pages/Admin/Dashboard'; 
-import Login from './pages/Admin/Login'; 
 import Footer from './components/Footer/Footer';
 import AIChatBot from './components/AIChatBot/AIChatBot'; 
 
-// БИЛИМ & IT ПАЖАЛАРЫ
-import Resources from './pages/Resources/Resources';
-import ParentsCorner from './pages/ParentsCorner/ParentsCorner';
-import Gallery from './pages/Gallery/Gallery';
-import Library from './pages/Library/Library';
-import OnlineLessons from './pages/OnlineLessons/OnlineLessons';
-import MediaCenter from './pages/MediaCenter/MediaCenter';
-import RobotLab from './pages/RobotLab/RobotLab';
-import PythonCourse from './pages/PythonCourse/PythonCourse';
-import AICourse from './pages/AICourse/AICourse';
-import GamedevCourse from './pages/Gamedev/GamedevCourse';
-import ORTPrep from './pages/ORTPrep/ORTPrep';
-
-// ОЮНДАР
-import DuelGame from './pages/Community/DuelGame/DuelGame';
-import WarmWordsPage from "./pages/WarmWords/WarmWords"
-import ApricotQuiz from './pages/ApricotQuiz/ApricotQuiz';
-import SnakeGame from './pages/SnakeGame/SnakeGame';
-import MathSprint from './pages/MathSprint/MathSprint';
-import GeoGame from './pages/GeoGame/GeoGame';
-import JSGame from "./pages/JSGame/JSGame"
-import TypingGame from './pages/TypingGame/TypingGame';
-import LogicGame from './pages/LogicGame/LogicGame';
-
-// ЖРТ (ORT) БӨЛҮМДӨРҮ
-import AnalogiesGame from './pages/ORTPrep/AnalogiesGame';
-import MathGame from './pages/ORTPrep/MathGame';
-import Reading from './pages/ORTPrep/Reading';
-import GrammarGame from './pages/ORTPrep/GrammarGame';
-import Tips from './pages/ORTPrep/Tips';
-import Methodology from './pages/ORTPrep/Methodology';
-
 import styles from './App.module.css';
+
+const Home = lazy(() => import('./pages/Home/Home'));
+const Contact = lazy(() => import('./pages/Contact/Contact'));
+const Teachers = lazy(() => import('./pages/Teachers/Teachers'));
+const BestStudents = lazy(() => import('./pages/BestStudents/BestStudents'));
+const NewsPage = lazy(() => import('./pages/News/News'));
+const About = lazy(() => import('./pages/About/About'));
+const Schedule = lazy(() => import('./components/Schedule/Schedule'));
+const TeacherPanel = lazy(() => import('./pages/Teacher/TeacherPanel'));
+const Dashboard = lazy(() => import('./pages/Admin/Dashboard'));
+const Login = lazy(() => import('./pages/Admin/Login'));
+const Resources = lazy(() => import('./pages/Resources/Resources'));
+const ParentsCorner = lazy(() => import('./pages/ParentsCorner/ParentsCorner'));
+const Gallery = lazy(() => import('./pages/Gallery/Gallery'));
+const Library = lazy(() => import('./pages/Library/Library'));
+const OnlineLessons = lazy(() => import('./pages/OnlineLessons/OnlineLessons'));
+const MediaCenter = lazy(() => import('./pages/MediaCenter/MediaCenter'));
+const RobotLab = lazy(() => import('./pages/RobotLab/RobotLab'));
+const PythonCourse = lazy(() => import('./pages/PythonCourse/PythonCourse'));
+const AICourse = lazy(() => import('./pages/AICourse/AICourse'));
+const GamedevCourse = lazy(() => import('./pages/Gamedev/GamedevCourse'));
+const ORTPrep = lazy(() => import('./pages/ORTPrep/ORTPrep'));
+const DuelGame = lazy(() => import('./pages/Community/DuelGame/DuelGame'));
+const WarmWordsPage = lazy(() => import('./pages/WarmWords/WarmWords'));
+const ApricotQuiz = lazy(() => import('./pages/ApricotQuiz/ApricotQuiz'));
+const SnakeGame = lazy(() => import('./pages/SnakeGame/SnakeGame'));
+const MathSprint = lazy(() => import('./pages/MathSprint/MathSprint'));
+const GeoGame = lazy(() => import('./pages/GeoGame/GeoGame'));
+const JSGame = lazy(() => import('./pages/JSGame/JSGame'));
+const TypingGame = lazy(() => import('./pages/TypingGame/TypingGame'));
+const LogicGame = lazy(() => import('./pages/LogicGame/LogicGame'));
+const AnalogiesGame = lazy(() => import('./pages/ORTPrep/AnalogiesGame'));
+const MathGame = lazy(() => import('./pages/ORTPrep/MathGame'));
+const Reading = lazy(() => import('./pages/ORTPrep/Reading'));
+const GrammarGame = lazy(() => import('./pages/ORTPrep/GrammarGame'));
+const Tips = lazy(() => import('./pages/ORTPrep/Tips'));
+const Methodology = lazy(() => import('./pages/ORTPrep/Methodology'));
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -73,61 +68,63 @@ const AnimatedRoutes = () => {
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        {/* Негизги баракчалар */}
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/news" element={<NewsPage />} />
-        <Route path="/teachers" element={<Teachers />} />
-        <Route path="/best-students" element={<BestStudents />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/parents-corner" element={<ParentsCorner />} />
-        <Route path="/gallery" element={<Gallery />} />
-        <Route path="/library" element={<Library />} />
-        <Route path="/schedule" element={<Schedule />} />
-        <Route path="/contact" element={<Contact />} />
+      <Suspense fallback={<div className={styles.loader}>Баракча жүктөлүүдө...</div>}>
+        <Routes location={location} key={location.pathname}>
+          {/* Негизги баракчалар */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/news" element={<NewsPage />} />
+          <Route path="/teachers" element={<Teachers />} />
+          <Route path="/best-students" element={<BestStudents />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/parents-corner" element={<ParentsCorner />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/contact" element={<Contact />} />
 
-        {/* Коомчулук жана IT */}
-        <Route path="/community/media-center" element={<MediaCenter />} />
-        <Route path="/community/js-game" element={<JSGame />} />
-        <Route path="/community/robot-lab" element={<RobotLab />} />
-        <Route path="/community/python-course" element={<PythonCourse />} />
-        <Route path="/community/ai-course" element={<AICourse />} />
-        <Route path="/community/gamedev" element={<GamedevCourse />} />
-        <Route path="/online-lessons" element={<OnlineLessons />} />
-        <Route path="/community/warm-words" element={<WarmWordsPage />} />
+          {/* Коомчулук жана IT */}
+          <Route path="/community/media-center" element={<MediaCenter />} />
+          <Route path="/community/js-game" element={<JSGame />} />
+          <Route path="/community/robot-lab" element={<RobotLab />} />
+          <Route path="/community/python-course" element={<PythonCourse />} />
+          <Route path="/community/ai-course" element={<AICourse />} />
+          <Route path="/community/gamedev" element={<GamedevCourse />} />
+          <Route path="/online-lessons" element={<OnlineLessons />} />
+          <Route path="/community/warm-words" element={<WarmWordsPage />} />
 
-        {/* Оюндар */}
-        <Route path="/community/duel-game" element={<DuelGame />} />
-        <Route path="/community/apricot-tree" element={<ApricotQuiz />} />
-        <Route path="/community/snake-game" element={<SnakeGame />} />
-        <Route path="/community/math-sprint" element={<MathSprint />} />
-        <Route path="/community/games/geo-master" element={<GeoGame />} />
-        <Route path="/community/typing-game" element={<TypingGame />} />
-        <Route path="/community/logic-game" element={<LogicGame />} />
+          {/* Оюндар */}
+          <Route path="/community/duel-game" element={<DuelGame />} />
+          <Route path="/community/apricot-tree" element={<ApricotQuiz />} />
+          <Route path="/community/snake-game" element={<SnakeGame />} />
+          <Route path="/community/math-sprint" element={<MathSprint />} />
+          <Route path="/community/games/geo-master" element={<GeoGame />} />
+          <Route path="/community/typing-game" element={<TypingGame />} />
+          <Route path="/community/logic-game" element={<LogicGame />} />
 
-        {/* ЖРТ Даярдык */}
-        <Route path="/community/ort" element={<ORTPrep />} />
-        <Route path="/ort/analogies" element={<AnalogiesGame />} />
-        <Route path="/ort/math" element={<MathGame />} />
-        <Route path="/ort/reading" element={<Reading />} />
-        <Route path="/ort/grammar" element={<GrammarGame />} />
-        <Route path="/ort-tips" element={<Tips />} />
-        <Route path="/ort/methodology" element={<Methodology />} />
-        
-        {/* Панелдер */}
-        <Route path="/teacher-panel" element={<TeacherPanel />} />
-        <Route 
-          path="/admin-panel" 
-          element={user ? <Dashboard /> : <Login />} 
-        /> 
-      </Routes>
+          {/* ЖРТ Даярдык */}
+          <Route path="/community/ort" element={<ORTPrep />} />
+          <Route path="/ort/analogies" element={<AnalogiesGame />} />
+          <Route path="/ort/math" element={<MathGame />} />
+          <Route path="/ort/reading" element={<Reading />} />
+          <Route path="/ort/grammar" element={<GrammarGame />} />
+          <Route path="/ort-tips" element={<Tips />} />
+          <Route path="/ort/methodology" element={<Methodology />} />
+          
+          {/* Панелдер */}
+          <Route path="/teacher-panel" element={<TeacherPanel />} />
+          <Route 
+            path="/admin-panel" 
+            element={user ? <Dashboard /> : <Login />} 
+          /> 
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 };
 
 function App() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
