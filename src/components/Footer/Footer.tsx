@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
               <div className={styles.socialGroup}>
                 <a href="https://www.instagram.com/kg.mektep?igsh=MWRnbXlscmFucXBidA==" className={styles.socialCircle}><Instagram size={20} /></a>
                 <a href="https://www.facebook.com/profile.php?id=61586219777150" className={styles.socialCircle}><Facebook size={20} /></a>
-                <a href="#" className={styles.socialCircle}><Youtube size={20} /></a>
+                <Link to="/community/media-center" className={styles.socialCircle}><Youtube size={20} /></Link>
               </div>
             </div>
 
@@ -69,8 +69,8 @@ const Footer: React.FC = () => {
           <div className={styles.bottomBar}>
             <p>© {new Date().getFullYear()} Зайил Ормонов атындагы жалпы билим берүү мектеби мекемеси. Бардык укуктар корголгон. Сайт Автору: Набиев Айбек</p>
             <div className={styles.legalLinks}>
-              <a href="#">Купуялуулук</a>
-              <a href="#">Эрежелер</a>
+              <Link to="/contact">Купуялуулук</Link>
+              <Link to="/resources">Эрежелер</Link>
             </div>
           </div>
         </div>

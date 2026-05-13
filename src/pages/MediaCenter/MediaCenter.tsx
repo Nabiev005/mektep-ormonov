@@ -17,16 +17,24 @@ const MediaCenter: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [filter, setFilter] = useState('all');
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, 'media-center'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as MediaItem[];
-      setMediaItems(data);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as MediaItem[];
+        setMediaItems(data);
+        setError('');
+      },
+      () => {
+        setError('Медиа материалдарды жүктөөдө ката кетти. Интернетти текшерип, кайра аракет кылыңыз.');
+      }
+    );
     return () => unsubscribe();
   }, []);
 
@@ -61,8 +69,13 @@ const MediaCenter: React.FC = () => {
       </div>
 
       <div className={styles.grid}>
-        <AnimatePresence mode='popLayout'>
-          {filteredItems.map((item) => (
+        {error ? (
+          <div className={styles.emptyState}>{error}</div>
+        ) : filteredItems.length === 0 ? (
+          <div className={styles.emptyState}>Бул бөлүмдө азырынча материал жок.</div>
+        ) : (
+          <AnimatePresence mode='popLayout'>
+            {filteredItems.map((item) => (
             <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className={styles.card} key={item.id}>
               <div className={styles.imgBox}>
                 <img 
@@ -88,8 +101,9 @@ const MediaCenter: React.FC = () => {
                 </button>
               </div>
             </motion.div>
-          ))}
-        </AnimatePresence>
+            ))}
+          </AnimatePresence>
+        )}
       </div>
 
       <AnimatePresence>

@@ -17,6 +17,7 @@ const Teachers: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -30,6 +31,7 @@ const Teachers: React.FC = () => {
         setTeachers(data.sort((a, b) => a.title.localeCompare(b.title, 'ky')));
       } catch (error) {
         console.error("Мугалимдерди жүктөөнү ката кетти:", error);
+        setError('Мугалимдерди жүктөөдө ката кетти. Интернетти текшерип, кайра аракет кылыңыз.');
       } finally {
         setLoading(false);
       }
@@ -101,7 +103,13 @@ const Teachers: React.FC = () => {
       </div>
 
       <div className={styles.teachersGrid}>
-        {filteredTeachers.length > 0 ? (
+        {error ? (
+          <div className={styles.noData}>
+            <Search size={34} />
+            <h3>Маалымат жүктөлгөн жок</h3>
+            <p>{error}</p>
+          </div>
+        ) : filteredTeachers.length > 0 ? (
           filteredTeachers.map((teacher, index) => (
             <motion.div 
               key={teacher.id}

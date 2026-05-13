@@ -37,7 +37,7 @@ const News: React.FC = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const q = firestore.query(firestore.collection(db, "news"), firestore.orderBy("date", "desc"));
+        const q = firestore.query(firestore.collection(db, "news"), firestore.orderBy("createdAt", "desc"));
         const querySnapshot = await firestore.getDocs(q);
         
         const newsData = querySnapshot.docs.map(doc => ({

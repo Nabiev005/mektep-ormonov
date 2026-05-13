@@ -58,17 +58,26 @@ const BestStudents: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, 'best-students'), orderBy('updatedAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Student[];
-      setStudents(data);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Student[];
+        setStudents(data);
+        setError('');
+        setLoading(false);
+      },
+      () => {
+        setError('Окуучуларды жүктөөдө ката кетти. Интернетти текшерип, кайра аракет кылыңыз.');
+        setLoading(false);
+      }
+    );
     return () => unsubscribe();
   }, []);
 
@@ -129,7 +138,13 @@ const BestStudents: React.FC = () => {
       </div>
 
       <div className={styles.grid}>
-        {filteredStudents.length > 0 ? (
+        {error ? (
+          <div className={styles.noData}>
+            <Search size={34} />
+            <h3>Маалымат жүктөлгөн жок</h3>
+            <p>{error}</p>
+          </div>
+        ) : filteredStudents.length > 0 ? (
           filteredStudents.map((student) => (
             <StudentCard key={student.id} student={student} onOpen={setSelectedStudent} />
           ))

@@ -4,7 +4,11 @@ import type { CSSProperties } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onExpandedChange?: (expanded: boolean) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
   const location = useLocation();
@@ -12,12 +16,16 @@ const Header: React.FC = () => {
   const navClass = (path: string) => `nav-link${isActive(path) ? ' active' : ''}`;
   const uppercase = 'uppercase';
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const toggleMenu = () => setIsOpen(prev => !prev);
 
   // Баракча алмашканда менюну жабуу
   useEffect(() => {
     setIsOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    onExpandedChange?.(!isMobile && isOpen);
+  }, [isOpen, isMobile, onExpandedChange]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -27,7 +35,7 @@ const Header: React.FC = () => {
 
   // Меню ачылганда арткы фонду жылдырбоо
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && isMobile) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -36,15 +44,15 @@ const Header: React.FC = () => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   const s = {
     burgerBtn: {
       // eslint-disable-next-line @typescript-eslint/prefer-as-const
       position: 'fixed' as 'fixed',
       top: '15px',
-      left: '15px',
-      zIndex: 4000,
+      left: !isMobile && isOpen ? '306px' : '15px',
+      zIndex: 6000,
       width: '46px',
       height: '46px',
       background: 'linear-gradient(135deg, #2563eb 0%, #14b8a6 100%)',
@@ -59,6 +67,7 @@ const Header: React.FC = () => {
       justifyContent: 'center',
       gap: '4px',
       boxShadow: '0 14px 28px rgba(37, 99, 235, 0.28)',
+      transition: 'left 0.26s ease, transform 0.2s ease, box-shadow 0.2s ease',
     },
     line: {
       width: '20px',
@@ -72,7 +81,7 @@ const Header: React.FC = () => {
       left: 0,
       top: 0,
       bottom: 0,
-      width: '292px',
+      width: isMobile || isOpen ? '292px' : '76px',
       background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 48%, #eef6ff 100%)',
       borderRight: '1px solid rgba(148, 163, 184, 0.18)',
       display: 'flex',
@@ -81,8 +90,10 @@ const Header: React.FC = () => {
       zIndex: 5000,
       // eslint-disable-next-line @typescript-eslint/prefer-as-const
       overflowY: 'auto' as 'auto',
+      overflowX: 'hidden' as const,
       fontFamily: '"Inter", sans-serif',
       boxShadow: '18px 0 45px rgba(15, 23, 42, 0.08)',
+      transition: 'width 0.26s ease',
     },
     overlay: {
       // eslint-disable-next-line @typescript-eslint/prefer-as-const
@@ -93,8 +104,8 @@ const Header: React.FC = () => {
       zIndex: 4500,
     },
     logoContainer: {
-      margin: '16px',
-      padding: '18px',
+      margin: isMobile || isOpen ? '16px' : '74px 10px 14px',
+      padding: isMobile || isOpen ? '18px' : '8px',
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
@@ -136,7 +147,7 @@ const Header: React.FC = () => {
       letterSpacing: '0.2px',
     },
     menuSection: {
-      padding: '0 14px 18px 14px',
+      padding: isMobile || isOpen ? '0 14px 18px 14px' : '0 10px 10px',
     },
     sectionTitle: {
       padding: '0 12px',
@@ -153,7 +164,7 @@ const Header: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       gap: '10px',
-      padding: '12px 14px',
+      padding: isMobile || isOpen ? '12px 14px' : '12px 0',
       textDecoration: 'none',
       fontSize: '14px',
       fontWeight: active ? '750' : '600',
@@ -165,6 +176,9 @@ const Header: React.FC = () => {
       transition: 'transform 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease',
       marginBottom: '4px',
       minHeight: '44px',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      justifyContent: isMobile || isOpen ? 'flex-start' : 'center',
     }),
     badge: (color: string): CSSProperties => ({
       marginLeft: 'auto',
@@ -213,7 +227,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      {/* Бургер баскычы - мобилдикте гана */}
+      {/* Менюну ачуу/жабуу баскычы */}
       <button style={s.burgerBtn} onClick={toggleMenu} className="burger-btn" aria-label="Менюну ачуу">
         <div style={{...s.line, transform: isOpen ? 'rotate(45deg) translateY(8.5px)' : 'none'}}></div>
         <div style={{...s.line, opacity: isOpen ? 0 : 1}}></div>
@@ -235,15 +249,15 @@ const Header: React.FC = () => {
 
       {/* Сайдбар */}
       <motion.aside 
-        className="sidebar-nav"
+        className={`sidebar-nav ${!isMobile && !isOpen ? 'collapsed' : ''}`}
         style={s.sidebar}
-        initial={isMobile ? { x: '-100%' } : { x: 0 }}
-        animate={isMobile ? { x: isOpen ? 0 : '-100%' } : { x: 0 }}
+        initial={{ x: isMobile ? '-100%' : 0 }}
+        animate={{ x: isMobile ? (isOpen ? 0 : '-100%') : 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       >
         <Link to="/" style={s.logoContainer}>
           <div style={s.logoIcon}>🏫</div>
-          <div style={s.logoCopy}>
+          <div style={s.logoCopy} className="logo-copy">
             <span style={s.logoText}>З.Ормонов</span>
             <span style={s.logoMeta}>Мектеп порталы</span>
           </div>
@@ -251,46 +265,46 @@ const Header: React.FC = () => {
 
         {/* НЕГИЗГИ */}
         <div style={s.menuSection}>
-          <span style={s.sectionTitle}>Негизги</span>
-          <Link to="/" style={s.navLink(isActive('/'))} className={navClass('/')}>🏠 Башкы бет</Link>
-          <Link to="/about" style={s.navLink(isActive('/about'))} className={navClass('/about')}>📖 Биз жөнүндө</Link>
-          <Link to="/news" style={s.navLink(isActive('/news'))} className={navClass('/news')}>📰 Жаңылыктар</Link>
-          <Link to="/schedule" style={s.navLink(isActive('/schedule'))} className={navClass('/schedule')}>📅 Расписание</Link>
+          <span style={s.sectionTitle} className="section-title">Негизги</span>
+          <Link to="/" style={s.navLink(isActive('/'))} className={navClass('/')} title="Башкы бет"><span className="nav-icon">🏠</span><span className="nav-label">Башкы бет</span></Link>
+          <Link to="/about" style={s.navLink(isActive('/about'))} className={navClass('/about')} title="Биз жөнүндө"><span className="nav-icon">📖</span><span className="nav-label">Биз жөнүндө</span></Link>
+          <Link to="/news" style={s.navLink(isActive('/news'))} className={navClass('/news')} title="Жаңылыктар"><span className="nav-icon">📰</span><span className="nav-label">Жаңылыктар</span></Link>
+          <Link to="/schedule" style={s.navLink(isActive('/schedule'))} className={navClass('/schedule')} title="Расписание"><span className="nav-icon">📅</span><span className="nav-label">Расписание</span></Link>
         </div>
 
         {/* БИЛИМ & IT */}
         <div style={s.menuSection}>
-          <span style={s.sectionTitle}>Билим & IT</span>
-          <Link to="/community/ort" style={s.navLink(isActive('/community/ort'))} className={navClass('/community/ort')}>📚 ORT даярдоо</Link>
-          <Link to="/community/js-game" style={s.navLink(isActive('/community/js-game'))} className={navClass('/community/js-game')}>
-            🧑‍💻 Frontend <span style={s.badge('red')}>ХИТ</span>
+          <span style={s.sectionTitle} className="section-title">Билим & IT</span>
+          <Link to="/community/ort" style={s.navLink(isActive('/community/ort'))} className={navClass('/community/ort')} title="ORT даярдоо"><span className="nav-icon">📚</span><span className="nav-label">ORT даярдоо</span></Link>
+          <Link to="/community/js-game" style={s.navLink(isActive('/community/js-game'))} className={navClass('/community/js-game')} title="Frontend">
+            <span className="nav-icon">🧑‍💻</span><span className="nav-label">Frontend</span> <span className="nav-badge" style={s.badge('red')}>ХИТ</span>
           </Link>
-          <Link to="/community/python-course" style={s.navLink(isActive('/community/python-course'))} className={navClass('/community/python-course')}>🐍 Python</Link>
-          <Link to="/community/ai-course" style={s.navLink(isActive('/community/ai-course'))} className={navClass('/community/ai-course')}>
-            🕹️ AI үйрөнүү <span style={s.badge('blue')}>ЖАҢЫ</span>
+          <Link to="/community/python-course" style={s.navLink(isActive('/community/python-course'))} className={navClass('/community/python-course')} title="Python"><span className="nav-icon">🐍</span><span className="nav-label">Python</span></Link>
+          <Link to="/community/ai-course" style={s.navLink(isActive('/community/ai-course'))} className={navClass('/community/ai-course')} title="AI үйрөнүү">
+            <span className="nav-icon">🕹️</span><span className="nav-label">AI үйрөнүү</span> <span className="nav-badge" style={s.badge('blue')}>ЖАҢЫ</span>
           </Link>
-          <Link to="/resources" style={s.navLink(isActive('/resources'))} className={navClass('/resources')}>🔗 Пайдалуу ресурстар</Link>
+          <Link to="/resources" style={s.navLink(isActive('/resources'))} className={navClass('/resources')} title="Пайдалуу ресурстар"><span className="nav-icon">🔗</span><span className="nav-label">Пайдалуу ресурстар</span></Link>
         </div>
 
         {/* КООМЧУЛУК */}
         <div style={s.menuSection}>
-          <span style={s.sectionTitle}>Коомчулук</span>
-          <Link to="/community/warm-words" style={s.navLink(isActive('/community/warm-words'))} className={navClass('/community/warm-words')}>💌 Анонимдүү сөздөр</Link>
-          <Link to="/community/duel-game" style={s.navLink(isActive('/community/duel-game'))} className={navClass('/community/duel-game')}>🧠 Ким акылдуу?</Link>
-          <Link to="/community/math-sprint" style={s.navLink(isActive('/community/math-sprint'))} className={navClass('/community/math-sprint')}>🧮 Тез Эсепте</Link>
+          <span style={s.sectionTitle} className="section-title">Коомчулук</span>
+          <Link to="/community/warm-words" style={s.navLink(isActive('/community/warm-words'))} className={navClass('/community/warm-words')} title="Анонимдүү сөздөр"><span className="nav-icon">💌</span><span className="nav-label">Анонимдүү сөздөр</span></Link>
+          <Link to="/community/duel-game" style={s.navLink(isActive('/community/duel-game'))} className={navClass('/community/duel-game')} title="Ким акылдуу?"><span className="nav-icon">🧠</span><span className="nav-label">Ким акылдуу?</span></Link>
+          <Link to="/community/math-sprint" style={s.navLink(isActive('/community/math-sprint'))} className={navClass('/community/math-sprint')} title="Тез Эсепте"><span className="nav-icon">🧮</span><span className="nav-label">Тез Эсепте</span></Link>
         </div>
 
         {/* МЕКТЕП */}
         <div style={s.menuSection}>
-          <span style={s.sectionTitle}>Мектеп</span>
-          <Link to="/teachers" style={s.navLink(isActive('/teachers'))} className={navClass('/teachers')}>👨‍🏫 Мугалимдер</Link>
-          <Link to="/best-students" style={s.navLink(isActive('/best-students'))} className={navClass('/best-students')}>🏆 Мыкты окуучулар</Link>
-          <Link to="/gallery" style={s.navLink(isActive('/gallery'))} className={navClass('/gallery')}>📸 Галерея</Link>
-          <Link to="/library" style={s.navLink(isActive('/library'))} className={navClass('/library')}>📄 Иш пландар</Link>
-          <Link to="/contact" style={s.navLink(isActive('/contact'))} className={navClass('/contact')}>📞 Байланыш</Link>
+          <span style={s.sectionTitle} className="section-title">Мектеп</span>
+          <Link to="/teachers" style={s.navLink(isActive('/teachers'))} className={navClass('/teachers')} title="Мугалимдер"><span className="nav-icon">👨‍🏫</span><span className="nav-label">Мугалимдер</span></Link>
+          <Link to="/best-students" style={s.navLink(isActive('/best-students'))} className={navClass('/best-students')} title="Мыкты окуучулар"><span className="nav-icon">🏆</span><span className="nav-label">Мыкты окуучулар</span></Link>
+          <Link to="/gallery" style={s.navLink(isActive('/gallery'))} className={navClass('/gallery')} title="Галерея"><span className="nav-icon">📸</span><span className="nav-label">Галерея</span></Link>
+          <Link to="/library" style={s.navLink(isActive('/library'))} className={navClass('/library')} title="Иш пландар"><span className="nav-icon">📄</span><span className="nav-label">Иш пландар</span></Link>
+          <Link to="/contact" style={s.navLink(isActive('/contact'))} className={navClass('/contact')} title="Байланыш"><span className="nav-icon">📞</span><span className="nav-label">Байланыш</span></Link>
         </div>
 
-        <div style={s.adminBox}>
+        <div style={s.adminBox} className="admin-box">
           <p style={s.adminHint}>
             <span style={s.adminEyebrow}>Башкаруу</span>
             Жаңылыктарды жана мектеп маалыматтарын жаңыртуу.
@@ -301,8 +315,34 @@ const Header: React.FC = () => {
 
       <style>{`
         @media (min-width: 1024px) {
-          .burger-btn { display: none !important; }
-          .sidebar-nav { transform: none !important; }
+          .burger-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 34px rgba(37, 99, 235, 0.34) !important;
+          }
+
+          .nav-icon {
+            flex: 0 0 auto;
+            font-size: 20px;
+            line-height: 1;
+          }
+
+          .nav-label {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .sidebar-nav.collapsed .logo-copy,
+          .sidebar-nav.collapsed .section-title,
+          .sidebar-nav.collapsed .admin-box,
+          .sidebar-nav.collapsed .nav-label,
+          .sidebar-nav.collapsed .nav-badge {
+            display: none !important;
+          }
+
+          .sidebar-nav.collapsed .nav-link:hover {
+            transform: translateX(0) !important;
+          }
         }
 
         .nav-link:hover {

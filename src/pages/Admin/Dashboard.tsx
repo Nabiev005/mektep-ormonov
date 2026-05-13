@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
-import { db, auth, storage } from '../../firebase';
+import { db, auth } from '../../firebase';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc, } from 'firebase/firestore';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Admin.module.css';
@@ -14,8 +13,6 @@ interface ListItem {
   description?: string;
   imageUrl?: string;
   imageUrls?: string[];
-  pdfUrl?: string;
-  pdfName?: string;
   videoUrl?: string;
   teacherName?: string;
   className?: string;
@@ -43,8 +40,6 @@ const Dashboard: React.FC = () => {
   const [mediaType, setMediaType] = useState('podcast'); 
   const [author, setAuthor] = useState('');     
   const [imageFiles, setImageFiles] = useState<File[]>([]); 
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [pdfUrlInput, setPdfUrlInput] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [teacherName, setTeacherName] = useState('');
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -86,7 +81,7 @@ const Dashboard: React.FC = () => {
     date: new Date().toLocaleDateString('ky-KG')
   });
 
-  const IMGBB_API_KEY = '9aed8b9d3a6c54c6a68db494ac681c35';
+  const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY;
   const classList = ["1-класс", "2-класс", "3-класс", "4-класс", "5-класс", "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"];
   const subjectList = [
     { id: 'math', name: 'Математика' },
@@ -179,6 +174,9 @@ const Dashboard: React.FC = () => {
   };
 
   const uploadImage = async (file: File) => {
+    if (!IMGBB_API_KEY) {
+      throw new Error('Сүрөт жүктөө ачкычы табылган жок. .env.local ичиндеги VITE_IMGBB_API_KEY маанисин текшериңиз.');
+    }
     const formData = new FormData();
     formData.append('image', file);
     const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
@@ -186,54 +184,17 @@ const Dashboard: React.FC = () => {
       body: formData,
     });
     const data = await response.json();
+    if (!response.ok || !data?.data?.url) {
+      throw new Error('Сүрөт жүктөлгөн жок. Файл өлчөмүн же интернетти текшериңиз.');
+    }
     return data.data.url;
-  };
-
-  const uploadPDFFile = async (file: File) => {
-    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
-    if (!isPdf) {
-      throw new Error('PDF форматындагы файл тандаңыз.');
-    }
-    const maxSizeMb = 25;
-    if (file.size > maxSizeMb * 1024 * 1024) {
-      throw new Error(`PDF файлы ${maxSizeMb}MBдан ашпашы керек.`);
-    }
-
-    const safeName = file.name.replace(/[^\w.-]+/g, '_');
-    // Эски Firebase Storage rules бузулбашы үчүн папка аты library_pdfs бойдон калды.
-    const storageRef = ref(storage, `library_pdfs/${Date.now()}_${safeName}`);
-    const uploadTask = uploadBytesResumable(storageRef, file, {
-      contentType: 'application/pdf',
-    });
-
-    return new Promise<string>((resolve, reject) => {
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-          setUploadProgress(progress);
-        },
-        (error) => reject(error),
-        async () => {
-          try {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            resolve(downloadURL);
-          } catch (error) {
-            reject(error);
-          }
-        }
-      );
-    });
   };
 
   const getReadableError = (error: unknown) => {
     const fallback = error instanceof Error ? error.message : "Ката кетти!";
     const code = typeof error === 'object' && error && 'code' in error ? String((error as { code?: unknown }).code) : '';
-    if (code.includes('storage/unauthorized')) {
-      return 'PDF жүктөлгөн жок: Firebase Storage уруксат бербей жатат. Убактылуу чечим катары PDFти Google Drive/Firebase Storageке жүктөп, төмөнкү PDF шилтеме талаасына URL киргизиңиз.';
-    }
-    if (code.includes('storage/canceled')) return 'PDF жүктөө токтотулду.';
-    if (code.includes('storage/retry-limit-exceeded')) return 'PDF жүктөөдө интернет же Firebase Storage кечигип жатат. Кайра аракет кылыңыз.';
+    if (code.includes('permission-denied')) return 'Firebase уруксат бербей жатат. Админ аккаунт жана Firestore rules текшериңиз.';
+    if (code.includes('unavailable')) return 'Firebase убактылуу жеткиликсиз. Интернетти текшерип, кайра аракет кылыңыз.';
     return fallback;
   };
 
@@ -262,7 +223,6 @@ const Dashboard: React.FC = () => {
       setTitle(item.title || '');
       setDesc(item.description || '');
       setCategory(item.category || 'achievements');
-      setPdfUrlInput(activeTab === 'library' ? item.pdfUrl || '' : '');
       setPreviewUrls(getItemImages(item));
       setImageFiles([]);
     }
@@ -300,17 +260,9 @@ const Dashboard: React.FC = () => {
           : getItemImages(editingItem);
         const currentImageUrl = currentImageUrls[0] || '';
 
-        let currentPdfUrl = pdfUrlInput.trim() || items.find(i => i.id === editingId)?.pdfUrl || "";
-        let currentPdfName = items.find(i => i.id === editingId)?.pdfName || "";
         if (activeTab === 'library') {
           if (!editingId && !currentImageUrl) {
             throw new Error('Иш планы үчүн сүрөт тандаңыз.');
-          }
-          if (pdfFile) {
-            currentPdfUrl = await uploadPDFFile(pdfFile);
-            currentPdfName = pdfFile.name;
-          } else if (pdfUrlInput.trim() && !currentPdfName) {
-            currentPdfName = 'Иш планы PDF';
           }
         }
 
@@ -319,8 +271,6 @@ const Dashboard: React.FC = () => {
           category: activeTab === 'news' ? category : activeTab === 'gallery' ? 'gallery' : activeTab === 'best-students' ? 'student' : activeTab === 'library' ? 'work-plan' : 'teacher',
           imageUrl: currentImageUrl,
           imageUrls: activeTab === 'news' ? currentImageUrls : currentImageUrls.slice(0, 1),
-          pdfUrl: currentPdfUrl,
-          pdfName: currentPdfName,
           updatedAt: serverTimestamp()
         };
       }
@@ -336,7 +286,7 @@ const Dashboard: React.FC = () => {
       
       // ТАЗАЛОО
       setTitle(''); setDesc(''); setLessons(''); setImageFiles([]); 
-      setPdfFile(null); setPdfUrlInput(''); setPreviewUrls([]); setVideoUrl(''); setTeacherName('');
+      setPreviewUrls([]); setVideoUrl(''); setTeacherName('');
       setAuthor(''); setMediaType('podcast');
       setQuestion(''); setAnswer(''); // Дуэль тазалоо
       
@@ -691,7 +641,7 @@ const Dashboard: React.FC = () => {
                     {loading ? "Күтө туруңуз..." : editingId ? "Жаңыртуу 💾" : "Базага сактоо ✨"}
                   </motion.button>
                   {editingId && (
-                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrls([]); setImageFiles([]); setPdfFile(null); setPdfUrlInput(''); setVideoUrl(''); setTeacherName(''); setAuthor(''); setQuestion(''); setAnswer(''); }} className={styles.cancelBtn}>
+                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrls([]); setImageFiles([]); setVideoUrl(''); setTeacherName(''); setAuthor(''); setQuestion(''); setAnswer(''); }} className={styles.cancelBtn}>
                       Жокко чыгаруу
                     </button>
                   )}
@@ -739,7 +689,7 @@ const Dashboard: React.FC = () => {
                           {getItemImages(item)[0] ? (
                             <img src={getItemImages(item)[0]} alt={item.title} />
                           ) : (
-                            <div className={styles.adminImageFallback}>{activeTab === 'library' ? 'Сүрөт' : 'PDF'}</div>
+                            <div className={styles.adminImageFallback}>Сүрөт жок</div>
                           )}
                           <div className={styles.adminCardInfo}>
                             <h4>{item.title}</h4>

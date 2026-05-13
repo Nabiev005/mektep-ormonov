@@ -16,17 +16,26 @@ const OnlineLessons: React.FC = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, 'online-lessons'), orderBy('updatedAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const lessonsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Lesson[];
-      setLessons(lessonsData);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const lessonsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Lesson[];
+        setLessons(lessonsData);
+        setError('');
+        setLoading(false);
+      },
+      () => {
+        setError('Онлайн сабактарды жүктөөдө ката кетти. Интернетти текшерип, кайра аракет кылыңыз.');
+        setLoading(false);
+      }
+    );
     return () => unsubscribe();
   }, []);
 
@@ -43,6 +52,10 @@ const OnlineLessons: React.FC = () => {
       
       {loading ? (
         <div className={styles.loaderWrapper}><Loader2 className={styles.spinner} size={48} /></div>
+      ) : error ? (
+        <div className={styles.emptyState}>
+          <p>{error}</p>
+        </div>
       ) : (
         <div className={styles.grid}>
           {lessons.map((lesson) => {

@@ -9,14 +9,13 @@ interface WorkPlan {
   title: string;
   description: string;
   imageUrl: string;
-  pdfUrl?: string;
-  pdfName?: string;
   date: string;
 }
 
 const Library: React.FC = () => {
   const [plans, setPlans] = useState<WorkPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPlan, setSelectedPlan] = useState<WorkPlan | null>(null);
 
@@ -24,14 +23,22 @@ const Library: React.FC = () => {
     // Мурдагы маалыматтар бузулбашы үчүн коллекциянын аты library бойдон калды.
     const q = query(collection(db, 'library'), orderBy('updatedAt', 'desc'));
     
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const plansData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as WorkPlan[];
-      setPlans(plansData);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const plansData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as WorkPlan[];
+        setPlans(plansData);
+        setError('');
+        setLoading(false);
+      },
+      () => {
+        setError('Иш пландарды жүктөөдө ката кетти. Интернетти текшерип, кайра аракет кылыңыз.');
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
@@ -51,7 +58,7 @@ const Library: React.FC = () => {
         >
           📄 Мугалимдердин иш планы
         </motion.h1>
-        <p>Мектептеги мугалимдердин иш пландары PDF форматында жарыяланып турат.</p>
+        <p>Мектептеги мугалимдердин иш пландары сүрөт форматында жарыяланып турат.</p>
         
         <div className={styles.searchBox}>
           <input 
@@ -66,6 +73,8 @@ const Library: React.FC = () => {
 
       {loading ? (
         <div className={styles.loader}>Жүктөлүүдө...</div>
+      ) : error ? (
+        <p className={styles.noResults}>{error}</p>
       ) : (
         <motion.div 
           layout
@@ -90,7 +99,7 @@ const Library: React.FC = () => {
                     {plan.imageUrl ? (
                       <img src={plan.imageUrl} alt={plan.title} />
                     ) : (
-                      <div className={styles.pdfFallback}>Сүрөт</div>
+                      <div className={styles.imageFallback}>Сүрөт</div>
                     )}
                   </button>
                   <div className={styles.bookInfo}>

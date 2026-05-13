@@ -23,6 +23,7 @@ const Schedule: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState("1-класс");
   const [schedule, setSchedule] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const lessonLines = useMemo(() => {
     const rawLessons = schedule[0]?.lessons || "";
@@ -42,14 +43,23 @@ const Schedule: React.FC = () => {
       where("day", "==", selectedDay)
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Lesson[];
-      setSchedule(data);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Lesson[];
+        setSchedule(data);
+        setError('');
+        setLoading(false);
+      },
+      () => {
+        setSchedule([]);
+        setError('Расписаниени жүктөөдө ката кетти. Интернетти текшерип, кайра аракет кылыңыз.');
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, [selectedClass, selectedDay]);
@@ -136,6 +146,12 @@ const Schedule: React.FC = () => {
             <div className={styles.stateCard}>
               <Loader2 className={styles.spinner} size={34} />
               <p className={styles.infoText}>Расписание жүктөлүүдө...</p>
+            </div>
+          ) : error ? (
+            <div className={styles.stateCard}>
+              <Search size={36} />
+              <h3>Маалымат жүктөлгөн жок</h3>
+              <p className={styles.infoText}>{error}</p>
             </div>
           ) : schedule.length > 0 ? (
             <div className={styles.lessonsCard}>

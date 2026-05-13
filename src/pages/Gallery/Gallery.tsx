@@ -18,17 +18,26 @@ const Gallery = () => {
   const [selectedImg, setSelectedImg] = useState<ImageItem | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as ImageItem[];
-      setImages(data);
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as ImageItem[];
+        setImages(data);
+        setError('');
+        setLoading(false);
+      },
+      () => {
+        setError('Галереяны жүктөөдө ката кетти. Интернетти текшерип, кайра аракет кылыңыз.');
+        setLoading(false);
+      }
+    );
     return () => unsubscribe();
   }, []);
 
@@ -92,7 +101,13 @@ const Gallery = () => {
       </div>
 
       <div className={styles.imageGrid}>
-        {filteredImages.length > 0 ? (
+        {error ? (
+          <div className={styles.noData}>
+            <Search size={34} />
+            <h3>Маалымат жүктөлгөн жок</h3>
+            <p>{error}</p>
+          </div>
+        ) : filteredImages.length > 0 ? (
           filteredImages.map((item, index) => (
             <motion.button
               layout

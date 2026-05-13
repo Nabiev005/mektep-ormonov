@@ -48,6 +48,7 @@ const Reading = lazy(() => import('./pages/ORTPrep/Reading'));
 const GrammarGame = lazy(() => import('./pages/ORTPrep/GrammarGame'));
 const Tips = lazy(() => import('./pages/ORTPrep/Tips'));
 const Methodology = lazy(() => import('./pages/ORTPrep/Methodology'));
+const NotFound = lazy(() => import('./pages/NotFound/NotFound'));
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -117,6 +118,7 @@ const AnimatedRoutes = () => {
             path="/admin-panel" 
             element={user ? <Dashboard /> : <Login />} 
           /> 
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </AnimatePresence>
@@ -125,6 +127,7 @@ const AnimatedRoutes = () => {
 
 function App() {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
+  const [isHeaderExpanded, setIsHeaderExpanded] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -140,12 +143,12 @@ function App() {
     },
     contentArea: {
       // Телефондо сол жактагы боштукту (margin) алып салат
-      marginLeft: isMobile ? '0' : '260px', 
+      marginLeft: isMobile ? '0' : isHeaderExpanded ? '292px' : '76px',
       flex: 1,
       display: 'flex',
       // eslint-disable-next-line @typescript-eslint/prefer-as-const
       flexDirection: 'column' as 'column',
-      width: isMobile ? '100%' : 'calc(100% - 260px)',
+      width: isMobile ? '100%' : isHeaderExpanded ? 'calc(100% - 292px)' : 'calc(100% - 76px)',
       transition: 'margin-left 0.3s ease',
     },
     main: {
@@ -157,7 +160,7 @@ function App() {
   return (
     <Router>
       <div style={layoutStyles.appWrapper}>
-        <Header />
+        <Header onExpandedChange={setIsHeaderExpanded} />
         
         <div style={layoutStyles.contentArea}>
           <main style={layoutStyles.main}>

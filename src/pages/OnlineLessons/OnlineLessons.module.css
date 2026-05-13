@@ -124,6 +124,17 @@
   gap: 15px;
 }
 
+.emptyState {
+  padding: 34px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  background: #ffffff;
+  color: #64748b;
+  font-weight: 800;
+  text-align: center;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.07);
+}
+
 .spinner {
   animation: rotate 2s linear infinite;
   color: #3182ce;
