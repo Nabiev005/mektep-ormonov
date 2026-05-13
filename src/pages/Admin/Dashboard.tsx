@@ -15,6 +15,7 @@ interface ListItem {
   imageUrl?: string;
   imageUrls?: string[];
   pdfUrl?: string;
+  pdfName?: string;
   videoUrl?: string;
   teacherName?: string;
   className?: string;
@@ -43,6 +44,7 @@ const Dashboard: React.FC = () => {
   const [author, setAuthor] = useState('');     
   const [imageFiles, setImageFiles] = useState<File[]>([]); 
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfUrlInput, setPdfUrlInput] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [teacherName, setTeacherName] = useState('');
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -52,7 +54,7 @@ const Dashboard: React.FC = () => {
   const [day, setDay] = useState('Дүйшөмбү');
   const [lessons, setLessons] = useState('');
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [, setUploadProgress] = useState(0);
   const [formError, setFormError] = useState('');
   const [items, setItems] = useState<ListItem[]>([]);
   
@@ -188,8 +190,13 @@ const Dashboard: React.FC = () => {
   };
 
   const uploadPDFFile = async (file: File) => {
-    if (file.type !== 'application/pdf') {
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
       throw new Error('PDF форматындагы файл тандаңыз.');
+    }
+    const maxSizeMb = 25;
+    if (file.size > maxSizeMb * 1024 * 1024) {
+      throw new Error(`PDF файлы ${maxSizeMb}MBдан ашпашы керек.`);
     }
 
     const safeName = file.name.replace(/[^\w.-]+/g, '_');
@@ -208,11 +215,26 @@ const Dashboard: React.FC = () => {
         },
         (error) => reject(error),
         async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          } catch (error) {
+            reject(error);
+          }
         }
       );
     });
+  };
+
+  const getReadableError = (error: unknown) => {
+    const fallback = error instanceof Error ? error.message : "Ката кетти!";
+    const code = typeof error === 'object' && error && 'code' in error ? String((error as { code?: unknown }).code) : '';
+    if (code.includes('storage/unauthorized')) {
+      return 'PDF жүктөлгөн жок: Firebase Storage уруксат бербей жатат. Убактылуу чечим катары PDFти Google Drive/Firebase Storageке жүктөп, төмөнкү PDF шилтеме талаасына URL киргизиңиз.';
+    }
+    if (code.includes('storage/canceled')) return 'PDF жүктөө токтотулду.';
+    if (code.includes('storage/retry-limit-exceeded')) return 'PDF жүктөөдө интернет же Firebase Storage кечигип жатат. Кайра аракет кылыңыз.';
+    return fallback;
   };
 
   const handleEdit = (item: ListItem) => {
@@ -240,6 +262,7 @@ const Dashboard: React.FC = () => {
       setTitle(item.title || '');
       setDesc(item.description || '');
       setCategory(item.category || 'achievements');
+      setPdfUrlInput(activeTab === 'library' ? item.pdfUrl || '' : '');
       setPreviewUrls(getItemImages(item));
       setImageFiles([]);
     }
@@ -277,12 +300,18 @@ const Dashboard: React.FC = () => {
           : getItemImages(editingItem);
         const currentImageUrl = currentImageUrls[0] || '';
 
-        let currentPdfUrl = items.find(i => i.id === editingId)?.pdfUrl || "";
+        let currentPdfUrl = pdfUrlInput.trim() || items.find(i => i.id === editingId)?.pdfUrl || "";
+        let currentPdfName = items.find(i => i.id === editingId)?.pdfName || "";
         if (activeTab === 'library') {
-          if (!editingId && !pdfFile) {
-            throw new Error('Иш планы үчүн PDF файлды тандаңыз.');
+          if (!editingId && !currentImageUrl) {
+            throw new Error('Иш планы үчүн сүрөт тандаңыз.');
           }
-          if (pdfFile) currentPdfUrl = await uploadPDFFile(pdfFile);
+          if (pdfFile) {
+            currentPdfUrl = await uploadPDFFile(pdfFile);
+            currentPdfName = pdfFile.name;
+          } else if (pdfUrlInput.trim() && !currentPdfName) {
+            currentPdfName = 'Иш планы PDF';
+          }
         }
 
         finalData = {
@@ -291,6 +320,7 @@ const Dashboard: React.FC = () => {
           imageUrl: currentImageUrl,
           imageUrls: activeTab === 'news' ? currentImageUrls : currentImageUrls.slice(0, 1),
           pdfUrl: currentPdfUrl,
+          pdfName: currentPdfName,
           updatedAt: serverTimestamp()
         };
       }
@@ -306,14 +336,14 @@ const Dashboard: React.FC = () => {
       
       // ТАЗАЛОО
       setTitle(''); setDesc(''); setLessons(''); setImageFiles([]); 
-      setPdfFile(null); setPreviewUrls([]); setVideoUrl(''); setTeacherName('');
+      setPdfFile(null); setPdfUrlInput(''); setPreviewUrls([]); setVideoUrl(''); setTeacherName('');
       setAuthor(''); setMediaType('podcast');
       setQuestion(''); setAnswer(''); // Дуэль тазалоо
       
       alert("Ийгиликтүү сакталды! ✨");
       fetchStats();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Ката кетти!";
+      const message = getReadableError(error);
       setFormError(message);
       alert(message);
     }
@@ -523,7 +553,7 @@ const Dashboard: React.FC = () => {
                  activeTab === 'best-students' ? '➕ Жаңы мыкты окуучу' : 
                  activeTab === 'teachers' ? '➕ Жаңы мугалим' : 
                  activeTab === 'gallery' ? '📸 Галереяга сүрөт кошуу' : 
-                 activeTab === 'library' ? '📄 Мугалимдин иш планын кошуу' : '➕ Жаңы кошуу'}
+                 activeTab === 'library' ? '🖼️ Иш план сүрөтүн кошуу' : '➕ Жаңы кошуу'}
               </h1>
 
               <form onSubmit={handleSubmit} className={styles.glassCard}>
@@ -621,7 +651,7 @@ const Dashboard: React.FC = () => {
                     
                     <div className={styles.inputGroup}>
                       <label>
-                        Сүрөт {activeTab === 'library' ? '(мугалимдин сүрөтү же план мукабасы)' : activeTab === 'news' ? '(5ке чейин)' : ''}
+                        Сүрөт {activeTab === 'library' ? '(иш пландын сүрөтү)' : activeTab === 'news' ? '(5ке чейин)' : ''}
                       </label>
                       <input
                         id="fileInput"
@@ -639,7 +669,9 @@ const Dashboard: React.FC = () => {
                           ? `📁 ${imageFiles.length} сүрөт тандалды`
                           : editingId
                             ? "📷 Сүрөттү алмаштыруу"
-                            : activeTab === 'news'
+                            : activeTab === 'library'
+                              ? "🖼️ Иш план сүрөтүн тандаңыз"
+                              : activeTab === 'news'
                               ? "📁 Сүрөттөрдү тандаңыз"
                               : "📁 Сүрөттү тандаңыз"}
                       </label>
@@ -652,27 +684,6 @@ const Dashboard: React.FC = () => {
                       )}
                     </div>
 
-                    {activeTab === 'library' && (
-                      <div className={styles.inputGroup}>
-                        <label>Иш планынын PDF файлы</label>
-                        <input
-                          id="pdfInput"
-                          type="file"
-                          accept=".pdf"
-                          onChange={(e) => setPdfFile(e.target.files ? e.target.files[0] : null)}
-                          className={styles.fileInputHidden}
-                        />
-                        <label htmlFor="pdfInput" className={styles.fileUploadLabel} style={{background: '#2d3748', border: '1px solid #4a5568'}}>
-                          {pdfFile ? `📄 ${pdfFile.name.substring(0, 25)}...` : "📄 PDF иш планды тандаңыз"}
-                        </label>
-                        {loading && activeTab === 'library' && uploadProgress > 0 && (
-                          <div className={styles.uploadProgress}>
-                            <span style={{ width: `${uploadProgress}%` }} />
-                            <strong>{uploadProgress}%</strong>
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </>
                 )}
                 <div className={styles.formActions}>
@@ -680,7 +691,7 @@ const Dashboard: React.FC = () => {
                     {loading ? "Күтө туруңуз..." : editingId ? "Жаңыртуу 💾" : "Базага сактоо ✨"}
                   </motion.button>
                   {editingId && (
-                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrls([]); setImageFiles([]); setVideoUrl(''); setTeacherName(''); setAuthor(''); setQuestion(''); setAnswer(''); }} className={styles.cancelBtn}>
+                    <button type="button" onClick={() => { setEditingId(null); setTitle(''); setDesc(''); setLessons(''); setPreviewUrls([]); setImageFiles([]); setPdfFile(null); setPdfUrlInput(''); setVideoUrl(''); setTeacherName(''); setAuthor(''); setQuestion(''); setAnswer(''); }} className={styles.cancelBtn}>
                       Жокко чыгаруу
                     </button>
                   )}
@@ -728,7 +739,7 @@ const Dashboard: React.FC = () => {
                           {getItemImages(item)[0] ? (
                             <img src={getItemImages(item)[0]} alt={item.title} />
                           ) : (
-                            <div className={styles.adminImageFallback}>PDF</div>
+                            <div className={styles.adminImageFallback}>{activeTab === 'library' ? 'Сүрөт' : 'PDF'}</div>
                           )}
                           <div className={styles.adminCardInfo}>
                             <h4>{item.title}</h4>

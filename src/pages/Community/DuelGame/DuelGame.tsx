@@ -6,6 +6,7 @@ import {
   collection, doc, onSnapshot, setDoc, updateDoc, 
   getDocs, query, where, arrayUnion, orderBy, limit 
 } from 'firebase/firestore'; 
+import { ArrowLeft, Brain, CheckCircle2, Crown, Loader2, Send, Sparkles, Trophy, UserRound, XCircle } from 'lucide-react';
 import styles from './DuelGame.module.css';
 
 const SUBJECTS = [
@@ -24,6 +25,9 @@ const DuelGame: React.FC = () => {
   const [userAnswer, setUserAnswer] = useState('');
   const [leaders, setLeaders] = useState<any[]>([]);
   const [dbQuestions, setDbQuestions] = useState<any[]>([]); // Базадан келген суроолор үчүн
+  const [starting, setStarting] = useState(false);
+  const [nameError, setNameError] = useState('');
+  const [answerStatus, setAnswerStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
 
   // 1. Лидерлер тактасы (Баардык оюндардагы мыкты оюнчулар)
   useEffect(() => {
@@ -66,50 +70,55 @@ const DuelGame: React.FC = () => {
   };
 
   const startSubject = async (subject: any) => {
-    if (!userName.trim()) return alert("Атыңызды жазыңыз!");
+    if (!userName.trim()) {
+      setNameError("Оюнга кирүү үчүн атыңызды жазыңыз.");
+      return;
+    }
+    setNameError('');
+    setStarting(true);
     setCurrentSubject(subject);
 
-    let loadedQuestions: any[] = [];
-    
-    // Эгер предмет математика болбосо, 'duel-questions' коллекциясынан суроолорду тартабыз
-    if (subject.id !== 'math') {
-      const q = query(collection(db, 'duel-questions'), where('subject', '==', subject.id));
-      const snap = await getDocs(q);
-      loadedQuestions = snap.docs.map(d => d.data());
-      setDbQuestions(loadedQuestions);
-    }
-
-    // Биринчи суроону дароо көрсөтүү
-    if (subject.id === 'math') {
-      // eslint-disable-next-line react-hooks/purity
-      const n1 = Math.floor(Math.random() * 20) + 5;
-      // eslint-disable-next-line react-hooks/purity
-      const n2 = Math.floor(Math.random() * 20) + 5;
-      setProblem({ q: `${n1} + ${n2} = ?`, a: (n1 + n2).toString() });
-    } else {
-      if (loadedQuestions.length > 0) {
-        // eslint-disable-next-line react-hooks/purity
-        const firstQ = loadedQuestions[Math.floor(Math.random() * loadedQuestions.length)];
-        setProblem({ q: firstQ.question, a: firstQ.answer.toString().toLowerCase().trim() });
-      } else {
-        setProblem({ q: "Бул бөлүмгө суроо кошула элек", a: "---" });
+    try {
+      let loadedQuestions: any[] = [];
+      
+      // Эгер предмет математика болбосо, 'duel-questions' коллекциясынан суроолорду тартабыз
+      if (subject.id !== 'math') {
+        const q = query(collection(db, 'duel-questions'), where('subject', '==', subject.id));
+        const snap = await getDocs(q);
+        loadedQuestions = snap.docs.map(d => d.data());
+        setDbQuestions(loadedQuestions);
       }
-    }
 
-    // Аренага (Duel Mode) кошулуу же түзүү
-    const qArena = query(collection(db, 'math_arena'), where('status', '==', 'active'), where('subject', '==', subject.id));
-    const snapArena = await getDocs(qArena);
-    const playerObj = { name: userName, score: 0, avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${userName}`, subject: subject.id };
+      // Биринчи суроону дароо көрсөтүү
+      if (subject.id === 'math') {
+        const n1 = Math.floor(Math.random() * 20) + 5;
+        const n2 = Math.floor(Math.random() * 20) + 5;
+        setProblem({ q: `${n1} + ${n2} = ?`, a: (n1 + n2).toString() });
+      } else {
+        if (loadedQuestions.length > 0) {
+          const firstQ = loadedQuestions[Math.floor(Math.random() * loadedQuestions.length)];
+          setProblem({ q: firstQ.question, a: firstQ.answer.toString().toLowerCase().trim() });
+        } else {
+          setProblem({ q: "Бул бөлүмгө суроо кошула элек", a: "---" });
+        }
+      }
 
-    if (snapArena.empty) {
-      const newRef = doc(collection(db, 'math_arena'));
-      // eslint-disable-next-line react-hooks/purity
-      await setDoc(newRef, { id: newRef.id, players: [playerObj], status: 'active', subject: subject.id, createdAt: Date.now() });
-      setGameId(newRef.id);
-    } else {
-      const gameDoc = snapArena.docs[0];
-      await updateDoc(doc(db, 'math_arena', gameDoc.id), { players: arrayUnion(playerObj) });
-      setGameId(gameDoc.id);
+      // Аренага (Duel Mode) кошулуу же түзүү
+      const qArena = query(collection(db, 'math_arena'), where('status', '==', 'active'), where('subject', '==', subject.id));
+      const snapArena = await getDocs(qArena);
+      const playerObj = { name: userName.trim(), score: 0, avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${userName}`, subject: subject.id };
+
+      if (snapArena.empty) {
+        const newRef = doc(collection(db, 'math_arena'));
+        await setDoc(newRef, { id: newRef.id, players: [playerObj], status: 'active', subject: subject.id, createdAt: Date.now() });
+        setGameId(newRef.id);
+      } else {
+        const gameDoc = snapArena.docs[0];
+        await updateDoc(doc(db, 'math_arena', gameDoc.id), { players: arrayUnion(playerObj) });
+        setGameId(gameDoc.id);
+      }
+    } finally {
+      setStarting(false);
     }
   };
 
@@ -128,11 +137,16 @@ const DuelGame: React.FC = () => {
         p.name === userName ? { ...p, score: (p.score || 0) + 10 } : p
       );
       await updateDoc(doc(db, 'math_arena', gameId), { players: updatedPlayers });
+      setAnswerStatus('correct');
       setUserAnswer('');
-      generateProblem();
+      setTimeout(() => {
+        setAnswerStatus('idle');
+        generateProblem();
+      }, 520);
     } else {
+      setAnswerStatus('wrong');
       setUserAnswer(''); 
-      // Жөн гана ката болсо тазалап коёбуз же каалаган эффектти берсе болот
+      setTimeout(() => setAnswerStatus('idle'), 700);
     }
   };
 
@@ -140,27 +154,45 @@ const DuelGame: React.FC = () => {
     return (
       <div className={styles.dashboard}>
         <header className={styles.dashHeader}>
-          <h1>Салам, {userName || 'Окуучу'}! 👋</h1>
-          <input className={styles.nameInput} placeholder="Атыңызды жазыңыз..." value={userName} onChange={(e) => setUserName(e.target.value)} />
+          <span className={styles.heroBadge}><Brain size={18} /> Интеллект аренасы</span>
+          <h1>Ким акылдуу?</h1>
+          <p>Предметти тандап, суроолорго тез жооп бериңиз. Ар бир туура жооп 10 XP алып келет.</p>
+          <div className={styles.nameBox}>
+            <UserRound size={20} />
+            <input
+              className={styles.nameInput}
+              placeholder="Атыңызды жазыңыз..."
+              value={userName}
+              onChange={(e) => {
+                setUserName(e.target.value);
+                if (nameError) setNameError('');
+              }}
+            />
+          </div>
+          {nameError && <span className={styles.nameError}>{nameError}</span>}
         </header>
         <div className={styles.mainLayout}>
           <div className={styles.subjectGrid}>
             {SUBJECTS.map(s => (
-              <div key={s.id} className={styles.sCard} onClick={() => startSubject(s)} style={{'--clr': s.color} as any}>
+              <button key={s.id} className={styles.sCard} onClick={() => startSubject(s)} style={{'--clr': s.color} as any} disabled={starting}>
                 <span className={styles.sIcon}>{s.icon}</span>
                 <h3>{s.name}</h3>
-                <div className={styles.sBtn}>Ойноо</div>
-              </div>
+                <p>{s.id === 'math' ? 'Ыкчам эсептер' : 'Базадагы суроолор'}</p>
+                <div className={styles.sBtn}>{starting && currentSubject?.id === s.id ? <Loader2 size={17} /> : 'Ойноо'}</div>
+              </button>
             ))}
           </div>
           <aside className={styles.leaderSection}>
-            <h3>ЛИДЕРЛЕР 🏆</h3>
-            {leaders.map((l, i) => (
+            <h3><Trophy size={20} /> Лидерлер</h3>
+            {leaders.length > 0 ? leaders.map((l, i) => (
               <div key={i} className={styles.lRow}>
-                <span>{i+1}. {l.name}</span>
+                <span className={styles.rank}>{i === 0 ? <Crown size={16} /> : i + 1}</span>
+                <span>{l.name}</span>
                 <b>{l.score} XP</b>
               </div>
-            ))}
+            )) : (
+              <p className={styles.emptyLeaders}>Азырынча лидер жок. Биринчи болуп ойноңуз.</p>
+            )}
           </aside>
         </div>
       </div>
@@ -170,25 +202,35 @@ const DuelGame: React.FC = () => {
   return (
     <div className={styles.arena}>
        <div className={styles.arenaHeader}>
-          <button onClick={() => {setGameId(null); setCurrentSubject(null);}} className={styles.backBtn}>← Артка</button>
-          <h2>{currentSubject.name} Аренасы</h2>
+          <button onClick={() => {setGameId(null); setCurrentSubject(null); setAnswerStatus('idle');}} className={styles.backBtn}><ArrowLeft size={18} /> Артка</button>
+          <div>
+            <span className={styles.arenaKicker}>Онлайн дуэль</span>
+            <h2>{currentSubject.name} аренасы</h2>
+          </div>
           <div className={styles.subjectBadge} style={{background: currentSubject.color}}>{currentSubject.icon}</div>
        </div>
 
        <div className={styles.battleField}>
           <div className={styles.quizZone}>
              <div className={styles.qCard}>
+                <span className={styles.questionBadge}><Sparkles size={18} /> Суроо</span>
                 <div className={styles.qText}>{problem.q}</div>
+                {answerStatus !== 'idle' && (
+                  <div className={answerStatus === 'correct' ? styles.correctMsg : styles.wrongMsg}>
+                    {answerStatus === 'correct' ? <CheckCircle2 size={18} /> : <XCircle size={18} />}
+                    {answerStatus === 'correct' ? 'Туура! +10 XP' : 'Ката. Дагы аракет кылыңыз.'}
+                  </div>
+                )}
                 <form onSubmit={handleAnswer} className={styles.ansForm}>
                   <input autoFocus type="text" className={styles.mathInput} value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} placeholder="Жооп..." />
-                  <button type="submit" className={styles.submitBtn}>ЖӨНӨТҮҮ ✅</button>
+                  <button type="submit" className={styles.submitBtn}><Send size={18} /> Жөнөтүү</button>
                 </form>
              </div>
           </div>
 
           <div className={styles.liveScore}>
-             <h4>Учурдагы упайлар:</h4>
-             {gameState?.players.map((p: any, i: number) => (
+             <h4><Trophy size={18} /> Учурдагы упайлар</h4>
+             {gameState?.players?.length ? gameState.players.map((p: any, i: number) => (
                <div key={i} className={`${styles.pScoreRow} ${p.name === userName ? styles.isMe : ''}`}>
                   <div className={styles.pInfo}>
                     <span>{p.name}</span>
@@ -198,7 +240,7 @@ const DuelGame: React.FC = () => {
                     <div className={styles.progressFill} style={{width: `${Math.min(p.score, 100)}%`, background: currentSubject.color}}></div>
                   </div>
                </div>
-             ))}
+             )) : <p className={styles.emptyLeaders}>Оюнчулар жүктөлүүдө...</p>}
           </div>
        </div>
     </div>

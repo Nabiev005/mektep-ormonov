@@ -82,9 +82,14 @@
 }
 
 .imageWrapper {
+  display: block;
+  width: 100%;
   height: 230px;
   overflow: hidden;
+  border: 0;
+  padding: 0;
   background: #e2e8f0;
+  cursor: zoom-in;
 }
 
 .imageWrapper img,
@@ -94,7 +99,8 @@
 }
 
 .imageWrapper img {
-  object-fit: cover;
+  object-fit: contain;
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
 }
 
 .pdfFallback {
@@ -108,6 +114,19 @@
 
 .bookInfo {
   padding: 20px;
+}
+
+.planBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin-bottom: 12px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 900;
 }
 
 .bookInfo h3 {
@@ -129,6 +148,14 @@
   -webkit-line-clamp: 3;
 }
 
+.pdfName {
+  margin: 14px 0 0;
+  color: #334155;
+  font-size: 0.86rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
 .bookFooter {
   display: flex;
   align-items: center;
@@ -145,6 +172,7 @@
 }
 
 .readBtn,
+.downloadBtn,
 .disabledBtn {
   border: none;
   border-radius: 12px;
@@ -155,14 +183,33 @@
   text-decoration: none;
 }
 
+.pdfActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .readBtn {
+  border: 0;
   background: #2563eb;
   color: white;
   box-shadow: 0 12px 24px rgba(37, 99, 235, 0.22);
+  cursor: pointer;
 }
 
 .readBtn:hover {
   background: #1d4ed8;
+}
+
+.downloadBtn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.downloadBtn:hover {
+  border-color: #2563eb;
+  color: #1d4ed8;
 }
 
 .disabledBtn {
@@ -192,6 +239,60 @@
   font-size: 1.05rem;
 }
 
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.modalContent {
+  width: min(980px, 100%);
+  max-height: 90vh;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.28);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.1rem;
+  line-height: 1.35;
+}
+
+.modalHeader button {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 13px;
+  background: #0f172a;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.modalContent img {
+  display: block;
+  width: 100%;
+  max-height: calc(90vh - 66px);
+  object-fit: contain;
+  background: #f8fafc;
+}
+
 @media (max-width: 768px) {
   .libraryContainer {
     padding-top: 12px;
@@ -207,6 +308,11 @@
   }
 
   .bookFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pdfActions {
     align-items: stretch;
     flex-direction: column;
   }

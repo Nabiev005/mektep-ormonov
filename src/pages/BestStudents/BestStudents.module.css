@@ -1,162 +1,436 @@
 .container {
-  max-width: 1200px;
+  width: min(1120px, 100%);
   margin: 0 auto;
-  padding: 60px 20px;
-  min-height: 100vh;
+  padding: 10px 0 56px;
 }
 
 .headerSection {
-  text-align: center;
-  margin-bottom: 60px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  gap: 20px;
+  align-items: stretch;
+  margin-bottom: 22px;
+}
+
+.heroText,
+.heroStats,
+.toolbar,
+.studentCard,
+.loaderContainer,
+.noData,
+.modalContent {
+  border: 1px solid rgba(26, 95, 122, 0.12);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+}
+
+.heroText {
+  padding: clamp(24px, 4vw, 42px);
+  background:
+    radial-gradient(circle at 90% 14%, rgba(255, 204, 0, 0.28), transparent 28%),
+    linear-gradient(135deg, #ffffff 0%, #eef8fb 100%);
+}
+
+.eyebrow,
+.modalKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-color);
+  font-weight: 900;
+}
+
+.eyebrow {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(26, 95, 122, 0.1);
 }
 
 .title {
-  font-size: 2.8rem;
-  color: #1a202c;
-  font-weight: 800;
-  margin-bottom: 15px;
-  background: linear-gradient(90deg, #2d3748, #4a90e2);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  margin: 18px 0 12px;
+  color: #12384a;
+  font-size: clamp(2rem, 4vw, 3.55rem);
+  line-height: 1.05;
+  letter-spacing: 0;
 }
 
 .subtitle {
-  color: #718096;
-  font-size: 1.1rem;
+  max-width: 720px;
+  margin: 0;
+  color: #526170;
+  font-size: 1.06rem;
+  line-height: 1.75;
 }
 
-/* 3D Flip Card Styles */
+.heroStats {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  background: linear-gradient(145deg, #1a5f7a, #0f3f56);
+}
+
+.statCard {
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  min-height: 130px;
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.statCard svg {
+  color: #ffdd58;
+}
+
+.statCard strong {
+  font-size: 2.1rem;
+  line-height: 1;
+}
+
+.statCard span {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 800;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  margin-bottom: 22px;
+}
+
+.searchBox {
+  min-height: 50px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border: 1px solid rgba(26, 95, 122, 0.14);
+  border-radius: 16px;
+  background: #f8fbfd;
+  color: var(--primary-color);
+}
+
+.searchBox input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #173244;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.searchBox input::placeholder {
+  color: #8aa0ad;
+}
+
+.resultCount {
+  padding: 12px 14px;
+  border-radius: 999px;
+  background: rgba(255, 204, 0, 0.18);
+  color: #755700;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 35px;
-  perspective: 1500px; /* 3D эффектти күчөтөт */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
 }
 
-.cardContainer {
-  height: 420px;
-  width: 100%;
-  cursor: pointer;
-}
-
-.cardInner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.cardFront, .cardBack {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 30px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+.studentCard {
   overflow: hidden;
+  transition: box-shadow 0.24s ease, border-color 0.24s ease;
 }
 
-/* АЛДЫҢКЫ БЕТИ */
-.cardFront {
-  background: white;
-  display: flex;
-  flex-direction: column;
+.studentCard:hover {
+  border-color: rgba(26, 95, 122, 0.24);
+  box-shadow: 0 24px 58px rgba(15, 23, 42, 0.12);
 }
 
 .imageWrapper {
   width: 100%;
-  height: 75%;
+  aspect-ratio: 4 / 3.35;
+  position: relative;
   overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(26, 95, 122, 0.08), rgba(255, 204, 0, 0.12)),
+    #f8fbfd;
 }
 
 .imageWrapper img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  transition: transform 0.45s ease;
 }
 
-.frontInfo {
-  padding: 20px;
-  text-align: center;
-}
-
-.frontInfo h3 {
-  font-size: 1.3rem;
-  color: #2d3748;
-  margin-bottom: 8px;
+.studentCard:hover .imageWrapper img {
+  transform: scale(1.02);
 }
 
 .badge {
-  font-size: 0.75rem;
-  background: #ebf8ff;
-  color: #3182ce;
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-/* АРТКЫ БЕТИ (Айнек эффект) */
-.cardBack {
-  background: linear-gradient(135deg, #4a90e2 0%, #2b6cb0 100%);
-  color: white;
-  transform: rotateY(180deg);
-  padding: 30px;
-  display: flex;
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--primary-color);
+  font-size: 0.82rem;
+  font-weight: 900;
+  backdrop-filter: blur(12px);
 }
 
-.backContent {
-  text-align: center;
+.cardInfo {
+  padding: 20px;
 }
 
-.backContent h4 {
-  font-size: 1.4rem;
-  margin-bottom: 10px;
+.cardInfo h3 {
+  margin: 0 0 9px;
+  color: #12384a;
+  font-size: 1.24rem;
+  line-height: 1.24;
 }
 
-.divider {
-  width: 50px;
-  height: 3px;
-  background: white;
-  margin: 0 auto 20px;
-  border-radius: 2px;
+.cardInfo p {
+  min-height: 74px;
+  margin: 0;
+  color: #5b6875;
+  line-height: 1.56;
 }
 
-.backContent p {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  max-height: 200px;
-  overflow-y: auto;
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
 }
 
-/* Loader */
+.date,
+.modalDate {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #755700;
+  font-size: 0.88rem;
+  font-weight: 900;
+}
+
+.detailBtn {
+  min-height: 42px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--primary-color), #2a93b9);
+  color: white;
+  cursor: pointer;
+  font-weight: 900;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detailBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(26, 95, 122, 0.22);
+}
+
 .loaderContainer {
-  height: 60vh;
+  width: min(420px, 92vw);
+  margin: 12vh auto;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
+  color: var(--primary-color);
+  font-weight: 900;
 }
 
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #edf2f7;
-  border-top: 5px solid #3182ce;
+  width: 34px;
+  height: 34px;
+  border: 4px solid rgba(26, 95, 122, 0.18);
+  border-top-color: var(--primary-color);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.85s linear infinite;
+}
+
+.noData {
+  grid-column: 1 / -1;
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 32px;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+.noData h3 {
+  margin: 8px 0 0;
+  color: #12384a;
+}
+
+.noData p {
+  max-width: 430px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: rgba(7, 15, 28, 0.68);
+  backdrop-filter: blur(12px);
+}
+
+.modalContent {
+  width: min(760px, 100%);
+  max-height: min(780px, calc(100vh - 40px));
+  position: relative;
+  overflow: hidden;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: #12384a;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+}
+
+.modalImg {
+  width: 100%;
+  height: 340px;
+  object-fit: contain;
+  background:
+    linear-gradient(135deg, rgba(26, 95, 122, 0.08), rgba(255, 204, 0, 0.12)),
+    #f8fbfd;
+}
+
+.modalInfo {
+  padding: clamp(24px, 4vw, 38px);
+  overflow-y: auto;
+}
+
+.modalKicker {
+  font-size: 0.88rem;
+  text-transform: uppercase;
+}
+
+.modalInfo h2 {
+  margin: 10px 0 18px;
+  color: #12384a;
+  font-size: clamp(1.6rem, 4vw, 2.45rem);
+  line-height: 1.12;
+}
+
+.modalInfo strong {
+  display: block;
+  margin-bottom: 10px;
+  color: #263746;
+  font-size: 1.05rem;
+}
+
+.modalInfo p {
+  margin: 0 0 18px;
+  color: #4a5568;
+  line-height: 1.8;
+  white-space: pre-wrap;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Адаптивдүүлүк */
-@media (max-width: 768px) {
-  .title { font-size: 2rem; }
-  .cardContainer { height: 380px; }
+@media (max-width: 900px) {
+  .container {
+    padding-top: 0;
+  }
+
+  .headerSection {
+    grid-template-columns: 1fr;
+  }
+
+  .heroStats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .heroText,
+  .heroStats,
+  .toolbar,
+  .studentCard,
+  .loaderContainer,
+  .noData,
+  .modalContent {
+    border-radius: 18px;
+  }
+
+  .toolbar {
+    display: grid;
+  }
+
+  .resultCount {
+    width: fit-content;
+  }
+
+  .heroStats,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardInfo p {
+    min-height: auto;
+  }
+
+  .cardFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .detailBtn {
+    width: 100%;
+  }
+
+  .modalOverlay {
+    padding: 12px;
+  }
+
+  .modalImg {
+    height: 260px;
+  }
 }

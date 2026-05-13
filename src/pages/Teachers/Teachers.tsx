@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebase'; 
 import { collection, getDocs } from 'firebase/firestore';
-import { motion, AnimatePresence } from 'framer-motion'; // AnimatePresence кошулду
+import { motion, AnimatePresence } from 'framer-motion';
+import { Award, BookOpen, GraduationCap, Search, Users, X } from 'lucide-react';
 import styles from './Teachers.module.css';
 
 interface Teacher {
@@ -14,9 +15,8 @@ interface Teacher {
 const Teachers: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // Тандалган мугалимди сактоо үчүн штат
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchTeachers = async () => {
@@ -27,7 +27,7 @@ const Teachers: React.FC = () => {
           ...doc.data()
         })) as Teacher[];
         
-        setTeachers(data);
+        setTeachers(data.sort((a, b) => a.title.localeCompare(b.title, 'ky')));
       } catch (error) {
         console.error("Мугалимдерди жүктөөнү ката кетти:", error);
       } finally {
@@ -38,57 +38,120 @@ const Teachers: React.FC = () => {
     fetchTeachers();
   }, []);
 
-  if (loading) return <div className={styles.loader}>Мугалимдер жүктөлүүдө...</div>;
+  const filteredTeachers = teachers.filter((teacher) => {
+    const search = `${teacher.title} ${teacher.description}`.toLowerCase();
+    return search.includes(searchTerm.toLowerCase());
+  });
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loader}>
+          <span className={styles.loaderIcon}></span>
+          Мугалимдер жүктөлүүдө...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
-      <motion.h1 
-        initial={{ opacity: 0, y: -20 }}
+      <motion.section
+        initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
-        className={styles.pageTitle}
+        className={styles.hero}
       >
-        Биздин кадырлуу мугалимдерибиз
-      </motion.h1>
+        <div className={styles.heroContent}>
+          <span className={styles.eyebrow}>
+            <GraduationCap size={18} />
+            Мектеп жамааты
+          </span>
+          <h1 className={styles.pageTitle}>Биздин кадырлуу мугалимдерибиз</h1>
+          <p className={styles.subtitle}>
+            Окуучулардын билимин, тарбиясын жана келечегин калыптандырган
+            педагогдор тууралуу маалымат.
+          </p>
+        </div>
+
+        <div className={styles.heroStats}>
+          <div className={styles.statCard}>
+            <Users size={22} />
+            <strong>{teachers.length}</strong>
+            <span>мугалим</span>
+          </div>
+          <div className={styles.statCard}>
+            <BookOpen size={22} />
+            <strong>1-11</strong>
+            <span>класстар</span>
+          </div>
+        </div>
+      </motion.section>
+
+      <div className={styles.toolbar}>
+        <div className={styles.searchBox}>
+          <Search size={19} />
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Мугалимди аты же маалыматы боюнча издөө..."
+          />
+        </div>
+        <span className={styles.resultCount}>{filteredTeachers.length} профиль</span>
+      </div>
 
       <div className={styles.teachersGrid}>
-        {teachers.length > 0 ? (
-          teachers.map((teacher, index) => (
+        {filteredTeachers.length > 0 ? (
+          filteredTeachers.map((teacher, index) => (
             <motion.div 
               key={teacher.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1 }}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.04 }}
               className={styles.teacherCard}
             >
               <div className={styles.imageBox}>
                 <img src={teacher.imageUrl} alt={teacher.title} />
+                <span className={styles.imageBadge}>
+                  <Award size={15} />
+                  Педагог
+                </span>
               </div>
               <div className={styles.infoBox}>
                 <h3>{teacher.title}</h3>
-                {/* Кыскача маалымат (сабагы) */}
                 <p className={styles.subject}>
                   {teacher.description.length > 50 
-                    ? `${teacher.description.substring(0, 50)}...` 
+                    ? `${teacher.description.substring(0, 92)}...` 
                     : teacher.description}
                 </p>
                 <button 
                   className={styles.detailBtn}
                   onClick={() => setSelectedTeacher(teacher)}
+                  type="button"
                 >
-                  Толук маалымат 👁️
+                  Толук маалымат
                 </button>
               </div>
             </motion.div>
           ))
         ) : (
-          <p className={styles.noData}>Мугалимдер тууралуу маалымат табылган жок.</p>
+          <div className={styles.noData}>
+            <Search size={34} />
+            <h3>Маалымат табылган жок</h3>
+            <p>Издөө сөзүн өзгөртүп көрүңүз же мугалимдер базасына маалымат кошуңуз.</p>
+          </div>
         )}
       </div>
 
-      {/* --- МОДАЛДЫК ТЕРЕЗЕ (Мугалимдин толук профили) --- */}
       <AnimatePresence>
         {selectedTeacher && (
-          <div className={styles.modalOverlay} onClick={() => setSelectedTeacher(null)}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.modalOverlay}
+            onClick={() => setSelectedTeacher(null)}
+          >
             <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -96,11 +159,14 @@ const Teachers: React.FC = () => {
               className={styles.modalContent}
               onClick={(e) => e.stopPropagation()}
             >
-              <button className={styles.closeBtn} onClick={() => setSelectedTeacher(null)}>&times;</button>
+              <button className={styles.closeBtn} onClick={() => setSelectedTeacher(null)} type="button" aria-label="Жабуу">
+                <X size={22} />
+              </button>
               
               <div className={styles.modalBody}>
                 <img src={selectedTeacher.imageUrl} alt={selectedTeacher.title} className={styles.modalImg} />
                 <div className={styles.modalInfo}>
+                  <span className={styles.modalKicker}>Мугалимдин профили</span>
                   <h2>{selectedTeacher.title}</h2>
                   <div className={styles.fullBio}>
                     <strong>Биографиясы жана иш тажрыйбасы:</strong>
@@ -109,7 +175,7 @@ const Teachers: React.FC = () => {
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

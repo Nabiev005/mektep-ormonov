@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { aiLevels } from './aiLevels';
 import styles from './AICourse.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Bot, BrainCircuit, Database, MessageSquareText, Play, Rocket, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
 
 const AICourse: React.FC = () => {
+  const [courseStarted, setCourseStarted] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(0);
   const [userInput, setUserInput] = useState('');
   const [isFinished, setIsFinished] = useState(false);
@@ -63,6 +65,91 @@ const AICourse: React.FC = () => {
           <p>Куттуктайбыз! Сиз Жасалма Интеллект дүйнөсүнө биринчи чоң кадамыңызды таштадыңыз.</p>
           <button onClick={() => window.location.href = '/'} className={styles.homeBtn}>Башкы бетке кайтуу</button>
         </motion.div>
+      </div>
+    );
+  }
+
+  if (!courseStarted) {
+    return (
+      <div className={styles.landing}>
+        <motion.section
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={styles.aiHero}
+        >
+          <div className={styles.heroText}>
+            <span className={styles.eyebrow}>
+              <Bot size={18} />
+              AI үйрөнүү курсу
+            </span>
+            <h1>Жасалма интеллектти түшүнүп колдонуу</h1>
+            <p>
+              Бул бөлүмдө окуучу AI эмне экенин, prompt кантип жазыларын,
+              маалымат, модель, output жана жоопкерчиликтүү колдонуу негиздерин практика аркылуу үйрөнөт.
+            </p>
+            <button className={styles.startBtn} onClick={() => setCourseStarted(true)} type="button">
+              <Play size={18} />
+              Курсту баштоо
+            </button>
+          </div>
+
+          <div className={styles.heroStats}>
+            <div>
+              <BrainCircuit size={23} />
+              <strong>{aiLevels.length}</strong>
+              <span>AI темасы</span>
+            </div>
+            <div>
+              <Rocket size={23} />
+              <strong>Практика</strong>
+              <span>суроо-жооп аркылуу</span>
+            </div>
+          </div>
+        </motion.section>
+
+        <section className={styles.roadmap}>
+          <article>
+            <Sparkles size={22} />
+            <h3>AI деген эмне?</h3>
+            <p>
+              AI - компьютердин маалыматтан үйрөнүп, суроого жооп берип,
+              божомол жасап же текст/сүрөт түзө алган системасы.
+            </p>
+          </article>
+          <article>
+            <MessageSquareText size={22} />
+            <h3>Prompt жазуу</h3>
+            <p>
+              Жакшы prompt так, контексттүү жана максаты белгилүү болот.
+              Окуучу AIдан сапаттуу жооп алууну үйрөнөт.
+            </p>
+          </article>
+          <article>
+            <Database size={22} />
+            <h3>Data жана Model</h3>
+            <p>
+              AI маалыматка таянып иштейт. Модель, input, output жана prediction түшүнүктөрү жөнөкөй тилде берилет.
+            </p>
+          </article>
+          <article>
+            <ShieldCheck size={22} />
+            <h3>Коопсуз колдонуу</h3>
+            <p>
+              AI жаңылышы мүмкүн. Ошондуктан жоопту текшерүү, жеке маалыматты коргоо жана этика маанилүү.
+            </p>
+          </article>
+        </section>
+
+        <div className={styles.coursePreview}>
+          <div>
+            <Trophy size={24} />
+            <strong>Максат</strong>
+            <span>AI куралдарын түшүнүп, туура суроо берип, жыйынтыкты сын көз менен текшерүү.</span>
+          </div>
+          <button className={styles.secondaryStartBtn} onClick={() => setCourseStarted(true)} type="button">
+            Биринчи темага өтүү
+          </button>
+        </div>
       </div>
     );
   }

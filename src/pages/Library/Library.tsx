@@ -10,6 +10,7 @@ interface WorkPlan {
   description: string;
   imageUrl: string;
   pdfUrl?: string;
+  pdfName?: string;
   date: string;
 }
 
@@ -17,6 +18,7 @@ const Library: React.FC = () => {
   const [plans, setPlans] = useState<WorkPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPlan, setSelectedPlan] = useState<WorkPlan | null>(null);
 
   useEffect(() => {
     // Мурдагы маалыматтар бузулбашы үчүн коллекциянын аты library бойдон калды.
@@ -80,29 +82,29 @@ const Library: React.FC = () => {
                   exit={{ opacity: 0, scale: 0.9 }}
                   className={styles.bookCard}
                 >
-                  <div className={styles.imageWrapper}>
+                  <button
+                    type="button"
+                    className={styles.imageWrapper}
+                    onClick={() => plan.imageUrl && setSelectedPlan(plan)}
+                  >
                     {plan.imageUrl ? (
                       <img src={plan.imageUrl} alt={plan.title} />
                     ) : (
-                      <div className={styles.pdfFallback}>PDF</div>
+                      <div className={styles.pdfFallback}>Сүрөт</div>
                     )}
-                  </div>
+                  </button>
                   <div className={styles.bookInfo}>
+                    <div className={styles.planBadge}>Сүрөт иш план</div>
                     <h3>{plan.title}</h3>
                     <p className={styles.description}>{plan.description}</p>
                     <div className={styles.bookFooter}>
                       <span className={styles.date}>📅 {plan.date}</span>
-                      {plan.pdfUrl ? (
-                        <a
-                          className={styles.readBtn}
-                          href={plan.pdfUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Иш планы менен таанышуу
-                        </a>
+                      {plan.imageUrl ? (
+                        <button className={styles.readBtn} onClick={() => setSelectedPlan(plan)}>
+                          Чоң ачуу
+                        </button>
                       ) : (
-                        <button className={styles.disabledBtn} disabled>PDF жок</button>
+                        <button className={styles.disabledBtn} disabled>Сүрөт жок</button>
                       )}
                     </div>
                   </div>
@@ -114,6 +116,32 @@ const Library: React.FC = () => {
           </AnimatePresence>
         </motion.div>
       )}
+
+      <AnimatePresence>
+        {selectedPlan && (
+          <motion.div
+            className={styles.modalOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedPlan(null)}
+          >
+            <motion.div
+              className={styles.modalContent}
+              initial={{ scale: 0.94, y: 16 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.94, y: 16 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalHeader}>
+                <h2>{selectedPlan.title}</h2>
+                <button onClick={() => setSelectedPlan(null)}>Жабуу</button>
+              </div>
+              <img src={selectedPlan.imageUrl} alt={selectedPlan.title} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './WarmWords.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Send, Heart } from 'lucide-react';
+import { Heart, MessageCircleHeart, PenLine, Send, ShieldCheck, Sparkles, Trash2, UsersRound } from 'lucide-react';
 
 interface Compliment {
   id: string;
@@ -17,6 +17,8 @@ const WarmWords: React.FC = () => {
   const [text, setText] = useState("");
   const [compliments, setCompliments] = useState<Compliment[]>([]);
   const [myNotes, setMyNotes] = useState<string[]>([]);
+  const remainingChars = 200 - text.length;
+  const myNotesCount = compliments.filter(note => myNotes.includes(note.id)).length;
 
   // 1. Маалыматты жүктөө
   useEffect(() => {
@@ -71,31 +73,82 @@ const WarmWords: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.headerSection}>
-        <motion.h1 
-          initial={{ opacity: 0, y: -20 }} 
+      <section className={styles.hero}>
+        <motion.div
+          className={styles.heroText}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
         >
-          ✨ Жылуу сөздөр дубалы
-        </motion.h1>
-        <p>Бири-бирибизге позитив тартуулайлы!</p>
-        
-        <div className={styles.inputArea}>
-          <textarea 
+          <span className={styles.eyebrow}><MessageCircleHeart size={18} /> Мектептин жылуу бурчу</span>
+          <h1>Анонимдүү сөздөр</h1>
+          <p>
+            Классташыңа, мугалимиңе же досуңа жакшы тилек калтыр. Бул дубал сый-урмат,
+            колдоо жана жакшы маанай үчүн түзүлгөн.
+          </p>
+
+          <div className={styles.heroStats}>
+            <div>
+              <Sparkles size={20} />
+              <strong>{compliments.length}</strong>
+              <span>жылуу сөз</span>
+            </div>
+            <div>
+              <PenLine size={20} />
+              <strong>{myNotesCount}</strong>
+              <span>сен жазган</span>
+            </div>
+            <div>
+              <ShieldCheck size={20} />
+              <strong>таза</strong>
+              <span>сөздөр гана</span>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className={styles.composerCard}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.08 }}
+        >
+          <div className={styles.composerHead}>
+            <div className={styles.composerIcon}><Heart size={22} /></div>
+            <div>
+              <h2>Жакшы сөз калтыр</h2>
+              <p>Атың көрүнбөйт, бирок жакшы ниетиң көрүнөт.</p>
+            </div>
+          </div>
+          <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Кимге жана кандай жакшы сөз айткыңыз келет?.."
+            placeholder="Мисалы: Сен бүгүн сабакта мыкты жооп бердиң, аракетин күчтүү!"
             maxLength={200}
           />
-          <button onClick={handleSend} className={styles.sendBtn}>
-            <Send size={20} /> Жөнөтүү
-          </button>
-        </div>
-      </div>
+          <div className={styles.composerFooter}>
+            <span className={remainingChars < 25 ? styles.warningCount : ''}>{remainingChars} белги калды</span>
+            <button onClick={handleSend} className={styles.sendBtn}>
+              <Send size={19} /> Жөнөтүү
+            </button>
+          </div>
+        </motion.div>
+      </section>
 
       <div className={styles.wall}>
         <AnimatePresence mode='popLayout'>
-          {compliments.map((note) => (
+          {compliments.length === 0 && (
+            <motion.div
+              className={styles.emptyState}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <UsersRound size={42} />
+              <h2>Дубал азырынча бош</h2>
+              <p>Биринчи болуп жакшы сөз жазып, мектепке жылуу маанай кош.</p>
+            </motion.div>
+          )}
+
+          {compliments.map((note, index) => (
             <motion.div 
               key={note.id}
               layout
@@ -110,7 +163,8 @@ const WarmWords: React.FC = () => {
               className={styles.sticker}
               style={{ backgroundColor: note.color }}
             >
-              <div className={styles.pin}></div>
+              <div className={styles.pin}><Heart size={11} fill="currentColor" /></div>
+              <span className={styles.noteNumber}>#{compliments.length - index}</span>
               <p className={styles.noteText}>{note.text}</p>
               <div className={styles.footer}>
                 <span className={styles.date}>{note.date}</span>

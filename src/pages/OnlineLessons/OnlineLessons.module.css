@@ -161,16 +161,17 @@
 .thumbnailWrapper {
   position: relative;
   width: 100%;
-  height: 180px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 12px;
   cursor: pointer;
+  background: #0f172a;
 }
 
 .thumbnail {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 

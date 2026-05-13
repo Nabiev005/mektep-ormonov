@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, Calculator, Clock3, Medal, Play, Sparkles, Target, Trophy, UserRound, Zap } from 'lucide-react';
 import styles from './MathSprint.module.css';
 
 interface Leader {
@@ -115,10 +116,10 @@ const MathSprint = () => {
   return (
     <div className={styles.container}>
       <aside className={styles.sidePanel}>
-        <div className={styles.panelTitle}>🏆 ТОП 3 Мыкты</div>
+        <div className={styles.panelTitle}><Trophy size={20} /> ТОП 3 Мыкты</div>
         {leaders.length > 0 ? leaders.map((leader, index) => (
           <div key={index} className={styles.leaderItem}>
-            <span>{index + 1}. {leader.name}</span> 
+            <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} {leader.name}</span> 
             <span className={styles.leaderScore}>{leader.score}</span>
           </div>
         )) : <p>Азырынча рекорд жок</p>}
@@ -138,27 +139,42 @@ const MathSprint = () => {
                 onSubmit={handleLogin}
                 className={styles.loginForm}
               >
-                <div className={styles.bigIcon}>👋</div>
-                <h2>Салам! Атың ким?</h2>
-                <p>Оюнду баштоо үчүн атыңызды жазыңыз</p>
-                <input 
-                  autoFocus
-                  type="text" 
-                  placeholder="Атыңыз..." 
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                  className={styles.nameInput}
-                  required
-                />
-                <button type="submit" className={styles.mainBtn}>Кирүү</button>
+                <span className={styles.eyebrow}>
+                  <Calculator size={18} />
+                  Математикалык спринт
+                </span>
+                <h1>Тез эсепте</h1>
+                <p>
+                  15 секунд ичинде мүмкүн болушунча көп мисал чыгарыңыз.
+                  Туура жооп +10 упай жана +2 секунд, ката жооп -3 секунд.
+                </p>
+                <div className={styles.rulesGrid}>
+                  <span><Clock3 size={17} /> 15 секунд</span>
+                  <span><Zap size={17} /> Ылдамдык</span>
+                  <span><Target size={17} /> Так жооп</span>
+                </div>
+                <label className={styles.nameBox}>
+                  <UserRound size={20} />
+                  <input 
+                    autoFocus
+                    type="text" 
+                    placeholder="Атыңыз..." 
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    className={styles.nameInput}
+                    required
+                  />
+                </label>
+                <button type="submit" className={styles.mainBtn}><Play size={18} /> Кирүү</button>
               </motion.form>
             ) : !isActive && !isGameOver ? (
               // БАШТОО ЭКРАНЫ
-              <motion.div key="start" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className={styles.highScoreLabel}>Рекорд: {highScore}</div>
-                <div className={styles.bigIcon}>🔢</div>
+              <motion.div key="start" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.startScreen}>
+                <div className={styles.highScoreLabel}><Medal size={16} /> Рекорд: {highScore}</div>
+                <div className={styles.bigIcon}><Brain size={58} /></div>
                 <h1>Даярсыңбы, {playerName}?</h1>
-                <button onClick={startGame} className={styles.mainBtn}>Баштадык!</button>
+                <p>Мисал чыккандан кийин туура жоопту тез тандаңыз.</p>
+                <button onClick={startGame} className={styles.mainBtn}><Zap size={18} /> Баштадык!</button>
               </motion.div>
             ) : isGameOver ? (
               // ОЮН БҮТТҮ
@@ -172,8 +188,8 @@ const MathSprint = () => {
               // ОЮН ПРОЦЕССИ
               <div className={styles.gameWrap}>
                 <div className={styles.gameStats}>
-                  <div className={styles.statBox}>⏳ {timeLeft}с</div>
-                  <div className={styles.statBox}>⭐ {score}</div>
+                  <div className={styles.statBox}><Clock3 size={18} /> {timeLeft}с</div>
+                  <div className={styles.statBox}><Sparkles size={18} /> {score}</div>
                 </div>
                 <div className={styles.progressBg}>
                   <motion.div animate={{ width: `${(timeLeft / 20) * 100}%` }} className={styles.progressBar} />
@@ -191,7 +207,7 @@ const MathSprint = () => {
       </main>
 
       <aside className={styles.sidePanel}>
-        <div className={styles.panelTitle}>👤 Катышуучу</div>
+        <div className={styles.panelTitle}><UserRound size={20} /> Катышуучу</div>
         {isLogged ? (
           <div className={styles.userInfo}>
             <p><strong>Аты:</strong> {playerName}</p>

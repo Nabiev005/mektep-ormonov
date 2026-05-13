@@ -1,12 +1,48 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Braces, Code2, FileCode2, Layers3, Palette, Rocket, Sparkles, Trophy } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { levels as jsLevels } from './levels';
 import { htmlLevels } from './htmlLevels';
 import { cssLevels } from './cssLevels';
 import styles from './JSGame.module.css';
 
 type GameMode = 'JS' | 'HTML' | 'CSS';
+
+const modeMeta = {
+  HTML: {
+    title: 'HTML',
+    icon: FileCode2,
+    emoji: '🏗️',
+    subtitle: 'Сайттын түзүлүшү',
+    description: 'Текст, сүрөт, кнопка, бөлүм жана баракчанын негизги скелетин түзүүнү үйрөнөсүз.',
+    points: ['Тегдер', 'Заголовок жана текст', 'Сүрөт жана шилтеме'],
+  },
+  CSS: {
+    title: 'CSS',
+    icon: Palette,
+    emoji: '🎨',
+    subtitle: 'Дизайн жана стиль',
+    description: 'Түстөр, өлчөмдөр, аралык, карточка, responsive көрүнүш жана кооз интерфейс түзөсүз.',
+    points: ['Түс жана фон', 'Layout', 'Адаптив дизайн'],
+  },
+  JS: {
+    title: 'JavaScript',
+    icon: Braces,
+    emoji: '⚡',
+    subtitle: 'Логика жана аракет',
+    description: 'Өзгөрмө, шарт, функция жана интерактивдүү логика аркылуу сайтты жандандырасыз.',
+    points: ['Variable', 'Function', 'Шарт жана эсеп'],
+  },
+} satisfies Record<GameMode, {
+  title: string;
+  icon: LucideIcon;
+  emoji: string;
+  subtitle: string;
+  description: string;
+  points: string[];
+}>;
 
 const JSGame: React.FC = () => {
   const [mode, setMode] = useState<GameMode | null>(null);
@@ -121,13 +157,54 @@ const JSGame: React.FC = () => {
     return (
       <div className={styles.dashboardContainer}>
         <motion.div 
-          initial={{ opacity: 0, y: -20 }} 
+          initial={{ opacity: 0, y: 18 }} 
           animate={{ opacity: 1, y: 0 }}
-          className={styles.welcomeText}
+          className={styles.frontendHero}
         >
-          <h1 className={styles.mainTitle}>Программисттин Саякаты</h1>
-          <p>Кайсы багытты өздөштүрүүнү каалайсыз? (3 этапты толук бүтүрсөнүз сертифкат берилет!)</p>
+          <div className={styles.frontendHeroText}>
+            <span className={styles.frontendEyebrow}>
+              <Code2 size={18} />
+              Frontend IT курсу
+            </span>
+            <h1 className={styles.mainTitle}>Frontend программисттин саякаты</h1>
+            <p>
+              Бул бөлүмдө окуучу сайттын көрүнгөн бөлүгүн жасоону үйрөнөт:
+              HTML менен түзүлүш, CSS менен дизайн, JavaScript менен интерактивдүү аракет.
+            </p>
+          </div>
+
+          <div className={styles.frontendStats}>
+            <div>
+              <Layers3 size={23} />
+              <strong>3 этап</strong>
+              <span>HTML, CSS, JS</span>
+            </div>
+            <div>
+              <Rocket size={23} />
+              <strong>Практика</strong>
+              <span>Код жазып үйрөнүү</span>
+            </div>
+          </div>
         </motion.div>
+
+        <div className={styles.frontendExplain}>
+          <article>
+            <Sparkles size={22} />
+            <h3>Frontend деген эмне?</h3>
+            <p>
+              Frontend - колдонуучу көргөн бет: меню, текст, сүрөт, кнопка,
+              форма жана анимация. Башкача айтканда, сайттын жүзү жана колдонуу ыңгайлуулугу.
+            </p>
+          </article>
+          <article>
+            <Trophy size={22} />
+            <h3>Кантип окуйт?</h3>
+            <p>
+              Ар бир деңгээлде кыска түшүндүрмө, тапшырма, код жазуу жана дароо preview бар.
+              Үч багытты бүтүргөндө сертификат ачылат.
+            </p>
+          </article>
+        </div>
 
         {isAllCompleted && (
           <motion.div 
@@ -160,12 +237,27 @@ const JSGame: React.FC = () => {
                   setCode('');
                 }}
               >
-                <div className={styles.cardIcon}>
-                  {m === 'HTML' ? '🏗️' : m === 'CSS' ? '🎨' : '⚡'}
-                </div>
-                <h2>{m === 'JS' ? 'JavaScript' : m}</h2>
-                <p>{m === 'HTML' ? 'Сайттын пайдубалы' : m === 'CSS' ? 'Дизайн жана стиль' : 'Логика жана акыл'}</p>
-                
+                {(() => {
+                  const meta = modeMeta[m];
+                  const Icon = meta.icon;
+                  return (
+                    <>
+                      <div className={styles.cardIcon}>
+                        <Icon size={40} />
+                        <span>{meta.emoji}</span>
+                      </div>
+                      <h2>{meta.title}</h2>
+                      <strong className={styles.modeSubtitle}>{meta.subtitle}</strong>
+                      <p>{meta.description}</p>
+                      <ul className={styles.modePoints}>
+                        {meta.points.map((point) => (
+                          <li key={point}>{point}</li>
+                        ))}
+                      </ul>
+                    </>
+                  );
+                })()}
+
                 <div className={styles.progressContainer}>
                   <div className={styles.progressLabel}>
                     <span>{percent}% бүтүрүлдү</span>

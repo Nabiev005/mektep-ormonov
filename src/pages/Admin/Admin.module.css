@@ -162,7 +162,8 @@
 .adminCard img {
   width: 100%;
   height: 200px;
-  object-fit: cover;
+  object-fit: contain;
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
 }
 
 .adminCardInfo {
@@ -277,7 +278,8 @@
 .imagePreview {
   width: 120px;
   height: 120px;
-  object-fit: cover;
+  object-fit: contain;
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
   border-radius: 12px;
   border: 2px solid #e2e8f0;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -371,7 +373,8 @@
 .modalImg {
   width: 100%;
   height: 250px;
-  object-fit: cover;
+  object-fit: contain;
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
 }
 
 .modalBody {
@@ -853,7 +856,8 @@
 .adminCard img {
   width: 100%;
   height: 180px;
-  object-fit: cover;
+  object-fit: contain;
+  background: linear-gradient(135deg, #dbeafe, #ccfbf1);
 }
 
 .adminCardInfo {
@@ -1454,6 +1458,7 @@ button:active {
 }
 
 .adminCard img {
+  object-fit: contain;
   background: linear-gradient(135deg, #dbeafe, #ccfbf1);
 }
 
@@ -1511,6 +1516,95 @@ button:active {
   place-items: center;
   color: #0f172a;
   font-size: 0.84rem;
+}
+
+.pdfUploadBox {
+  padding: 16px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(20, 184, 166, 0.08));
+}
+
+.pdfHint {
+  margin: 4px 0 12px;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.pdfUploadLabel {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  color: #ffffff;
+  overflow-wrap: anywhere;
+}
+
+.pdfUploadLabel:hover {
+  background: #1d4ed8;
+  border-color: #2563eb;
+}
+
+.pdfSelected {
+  display: grid;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.pdfSelected span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.pdfSelected strong {
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.pdfSelected small,
+.pdfSelected a {
+  color: #64748b;
+  font-weight: 800;
+}
+
+.pdfSelected a {
+  color: #1d4ed8;
+  text-decoration: none;
+}
+
+.pdfUrlField {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.pdfUrlField label {
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.pdfUrlField input {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0 14px;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.pdfUrlField input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
 @media (max-width: 768px) {
