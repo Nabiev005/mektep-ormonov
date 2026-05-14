@@ -1,0 +1,53 @@
+{
+  "name": "Зайил Ормонов атындагы мектеп",
+  "short_name": "З.Ормонов",
+  "description": "Зайил Ормонов атындагы жалпы билим берүү мектебинин санарип порталы.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "lang": "ky",
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["education"],
+  "shortcuts": [
+    {
+      "name": "Расписание",
+      "short_name": "Расписание",
+      "url": "/schedule",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Жаңылыктар",
+      "short_name": "Жаңылык",
+      "url": "/news",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Байланыш",
+      "short_name": "Байланыш",
+      "url": "/contact",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
