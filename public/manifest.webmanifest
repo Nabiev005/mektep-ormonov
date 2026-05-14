@@ -48,6 +48,24 @@
       "short_name": "Байланыш",
       "url": "/contact",
       "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Түрк тили",
+      "short_name": "Түркчө",
+      "url": "/community/turkish-course",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Англис тили",
+      "short_name": "English",
+      "url": "/community/english-course",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Орус тили",
+      "short_name": "Русский",
+      "url": "/community/russian-course",
+      "icons": [{ "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

@@ -283,6 +283,15 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
           <Link to="/community/ai-course" style={s.navLink(isActive('/community/ai-course'))} className={navClass('/community/ai-course')} title="AI үйрөнүү">
             <span className="nav-icon">🕹️</span><span className="nav-label">AI үйрөнүү</span> <span className="nav-badge" style={s.badge('blue')}>ЖАҢЫ</span>
           </Link>
+          <Link to="/community/turkish-course" style={s.navLink(isActive('/community/turkish-course'))} className={navClass('/community/turkish-course')} title="Түрк тили">
+            <span className="nav-icon">🇹🇷</span><span className="nav-label">Түрк тили</span> <span className="nav-badge" style={s.badge('blue')}>КУРС</span>
+          </Link>
+          <Link to="/community/english-course" style={s.navLink(isActive('/community/english-course'))} className={navClass('/community/english-course')} title="Англис тили">
+            <span className="nav-icon">🇬🇧</span><span className="nav-label">Англис тили</span> <span className="nav-badge" style={s.badge('blue')}>КУРС</span>
+          </Link>
+          <Link to="/community/russian-course" style={s.navLink(isActive('/community/russian-course'))} className={navClass('/community/russian-course')} title="Орус тили">
+            <span className="nav-icon">🇷🇺</span><span className="nav-label">Орус тили</span> <span className="nav-badge" style={s.badge('blue')}>КУРС</span>
+          </Link>
           <Link to="/resources" style={s.navLink(isActive('/resources'))} className={navClass('/resources')} title="Пайдалуу ресурстар"><span className="nav-icon">🔗</span><span className="nav-label">Пайдалуу ресурстар</span></Link>
         </div>
 

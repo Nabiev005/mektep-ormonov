@@ -9,6 +9,7 @@ interface WorkPlan {
   title: string;
   description: string;
   imageUrl: string;
+  imageUrls?: string[];
   date: string;
 }
 
@@ -48,6 +49,12 @@ const Library: React.FC = () => {
     plan.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     plan.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getPlanImages = (plan?: WorkPlan | null) => {
+    if (!plan) return [];
+    if (Array.isArray(plan.imageUrls) && plan.imageUrls.length > 0) return plan.imageUrls.slice(0, 5);
+    return plan.imageUrl ? [plan.imageUrl] : [];
+  };
 
   return (
     <div className={styles.libraryContainer}>
@@ -94,10 +101,15 @@ const Library: React.FC = () => {
                   <button
                     type="button"
                     className={styles.imageWrapper}
-                    onClick={() => plan.imageUrl && setSelectedPlan(plan)}
+                    onClick={() => getPlanImages(plan).length > 0 && setSelectedPlan(plan)}
                   >
-                    {plan.imageUrl ? (
-                      <img src={plan.imageUrl} alt={plan.title} />
+                    {getPlanImages(plan)[0] ? (
+                      <>
+                        <img src={getPlanImages(plan)[0]} alt={plan.title} />
+                        {getPlanImages(plan).length > 1 && (
+                          <span className={styles.imageCount}>📷 {getPlanImages(plan).length}</span>
+                        )}
+                      </>
                     ) : (
                       <div className={styles.imageFallback}>Сүрөт</div>
                     )}
@@ -108,7 +120,7 @@ const Library: React.FC = () => {
                     <p className={styles.description}>{plan.description}</p>
                     <div className={styles.bookFooter}>
                       <span className={styles.date}>📅 {plan.date}</span>
-                      {plan.imageUrl ? (
+                      {getPlanImages(plan).length > 0 ? (
                         <button className={styles.readBtn} onClick={() => setSelectedPlan(plan)}>
                           Чоң ачуу
                         </button>
@@ -146,7 +158,16 @@ const Library: React.FC = () => {
                 <h2>{selectedPlan.title}</h2>
                 <button onClick={() => setSelectedPlan(null)}>Жабуу</button>
               </div>
-              <img src={selectedPlan.imageUrl} alt={selectedPlan.title} />
+              <div className={styles.modalImages}>
+                {getPlanImages(selectedPlan).map((url, index) => (
+                  <figure key={url}>
+                    <img src={url} alt={`${selectedPlan.title} ${index + 1}`} />
+                    {getPlanImages(selectedPlan).length > 1 && (
+                      <figcaption>{index + 1} / {getPlanImages(selectedPlan).length}</figcaption>
+                    )}
+                  </figure>
+                ))}
+              </div>
             </motion.div>
           </motion.div>
         )}

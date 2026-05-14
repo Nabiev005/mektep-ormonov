@@ -255,8 +255,9 @@ const Dashboard: React.FC = () => {
         const uploadedImageUrls = imageFiles.length > 0
           ? await Promise.all(imageFiles.map((file) => uploadImage(file)))
           : null;
+        const allowsMultipleImages = activeTab === 'news' || activeTab === 'library';
         const currentImageUrls = uploadedImageUrls
-          ? (activeTab === 'news' ? uploadedImageUrls.slice(0, 5) : uploadedImageUrls.slice(0, 1))
+          ? (allowsMultipleImages ? uploadedImageUrls.slice(0, 5) : uploadedImageUrls.slice(0, 1))
           : getItemImages(editingItem);
         const currentImageUrl = currentImageUrls[0] || '';
 
@@ -270,7 +271,7 @@ const Dashboard: React.FC = () => {
           title, description: desc,
           category: activeTab === 'news' ? category : activeTab === 'gallery' ? 'gallery' : activeTab === 'best-students' ? 'student' : activeTab === 'library' ? 'work-plan' : 'teacher',
           imageUrl: currentImageUrl,
-          imageUrls: activeTab === 'news' ? currentImageUrls : currentImageUrls.slice(0, 1),
+          imageUrls: allowsMultipleImages ? currentImageUrls : currentImageUrls.slice(0, 1),
           updatedAt: serverTimestamp()
         };
       }
@@ -601,16 +602,16 @@ const Dashboard: React.FC = () => {
                     
                     <div className={styles.inputGroup}>
                       <label>
-                        Сүрөт {activeTab === 'library' ? '(иш пландын сүрөтү)' : activeTab === 'news' ? '(5ке чейин)' : ''}
+                        Сүрөт {activeTab === 'library' ? '(иш план үчүн 5ке чейин)' : activeTab === 'news' ? '(5ке чейин)' : ''}
                       </label>
                       <input
                         id="fileInput"
                         type="file"
                         accept="image/*"
-                        multiple={activeTab === 'news'}
+                        multiple={activeTab === 'news' || activeTab === 'library'}
                         onChange={(e) => {
                           const files = Array.from(e.target.files || []);
-                          setImageFiles(activeTab === 'news' ? files.slice(0, 5) : files.slice(0, 1));
+                          setImageFiles(activeTab === 'news' || activeTab === 'library' ? files.slice(0, 5) : files.slice(0, 1));
                         }}
                         className={styles.fileInputHidden}
                       />
@@ -620,7 +621,7 @@ const Dashboard: React.FC = () => {
                           : editingId
                             ? "📷 Сүрөттү алмаштыруу"
                             : activeTab === 'library'
-                              ? "🖼️ Иш план сүрөтүн тандаңыз"
+                              ? "🖼️ Иш план сүрөттөрүн тандаңыз"
                               : activeTab === 'news'
                               ? "📁 Сүрөттөрдү тандаңыз"
                               : "📁 Сүрөттү тандаңыз"}
@@ -693,7 +694,7 @@ const Dashboard: React.FC = () => {
                           )}
                           <div className={styles.adminCardInfo}>
                             <h4>{item.title}</h4>
-                            {activeTab === 'news' && getItemImages(item).length > 1 && (
+                            {(activeTab === 'news' || activeTab === 'library') && getItemImages(item).length > 1 && (
                               <p style={{fontSize: '12px', color: '#718096'}}>📷 {getItemImages(item).length} сүрөт</p>
                             )}
                             <div className={styles.cardActions}>
