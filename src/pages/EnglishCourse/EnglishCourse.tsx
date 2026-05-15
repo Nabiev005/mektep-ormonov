@@ -250,7 +250,7 @@ const EnglishCourse: React.FC = () => {
           <section className={styles.lessonHub}>
             <div className={styles.sectionHead}>
               <span className={styles.kicker}>Сөздүк жол картасы</span>
-              <h2>Категорияны тандап сабак башта</h2>
+              <h2>Категорияны тандап сабак башта</h2> 
             </div>
             <div className={styles.pathGrid}>
               {wordCategories.map((category, index) => {
