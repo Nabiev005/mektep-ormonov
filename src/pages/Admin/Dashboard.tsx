@@ -52,6 +52,7 @@ const Dashboard: React.FC = () => {
   const [, setUploadProgress] = useState(0);
   const [formError, setFormError] = useState('');
   const [items, setItems] = useState<ListItem[]>([]);
+  const [studentProgressItems, setStudentProgressItems] = useState<any[]>([]);
   
   // ДУЭЛЬ ҮЧҮН STATE'ТЕР
   const [question, setQuestion] = useState('');
@@ -68,7 +69,8 @@ const Dashboard: React.FC = () => {
     library: 0,
     onlineLessons: 0,
     mediaCenter: 0,
-    duelQuestions: 0 // СТАТИСТИКА ҮЧҮН
+    duelQuestions: 0,
+    students: 0
   });
 
   const certificateRef = useRef<HTMLDivElement>(null);
@@ -103,6 +105,7 @@ const Dashboard: React.FC = () => {
       const onlineCount = await getCountFromServer(collection(db, 'online-lessons'));
       const mediaCount = await getCountFromServer(collection(db, 'media-center'));
       const duelCount = await getCountFromServer(collection(db, 'duel-questions')); // КОШУЛДУ
+      const studentsCount = await getCountFromServer(collection(db, 'student_progress'));
       
       setStats({
         news: newsCount.data().count,
@@ -114,7 +117,8 @@ const Dashboard: React.FC = () => {
         library: libraryCount.data().count,
         onlineLessons: onlineCount.data().count,
         mediaCenter: mediaCount.data().count,
-        duelQuestions: duelCount.data().count // КОШУЛДУ
+        duelQuestions: duelCount.data().count,
+        students: studentsCount.data().count
       });
     } catch (e) {
       console.error("Статистика алууда ката:", e);
@@ -140,6 +144,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchStats();
     if (activeTab === 'stats' || activeTab === 'certificate') return;
+
+    if (activeTab === 'student-progress') {
+      const unsubscribe = onSnapshot(collection(db, 'student_progress'), (snapshot) => {
+        setStudentProgressItems(snapshot.docs.map((item) => ({ id: item.id, ...item.data() })));
+      });
+      return () => unsubscribe();
+    }
 
     const q = query(collection(db, activeTab === 'duel-questions' ? 'duel-questions' : activeTab));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -323,6 +334,7 @@ const Dashboard: React.FC = () => {
       <motion.aside initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className={styles.sidebar}>
         <h2>⚙️ Админ</h2>
         <div className={`${styles.menuItem} ${activeTab === 'stats' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('stats'); setEditingId(null);}}>📊 Статистика</div>
+        <div className={`${styles.menuItem} ${activeTab === 'student-progress' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('student-progress'); setEditingId(null);}}>🎓 Окуучу прогресси</div>
         <div className={`${styles.menuItem} ${activeTab === 'duel-questions' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('duel-questions'); setEditingId(null);}}>🎮 Ким акылдуу?</div>
         <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('news'); setEditingId(null);}}>📰 Жаңылыктар</div>
         <div className={`${styles.menuItem} ${activeTab === 'media-center' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('media-center'); setEditingId(null);}}>🎙️ Медиа-борбор</div>
@@ -371,6 +383,7 @@ const Dashboard: React.FC = () => {
                 <div className={styles.statSummary}>
                   <div className={styles.miniCard}><h4>{stats.duelQuestions}</h4><p>Оюн суроолору</p></div>
                   <div className={styles.miniCard}><h4>{stats.news}</h4><p>Жаңылыктар</p></div>
+                  <div className={styles.miniCard}><h4>{stats.students}</h4><p>Окуучу прогресси</p></div>
                   <div className={styles.systemStatusCard}>
                     <h4>💻 Статус</h4>
                     <div className={styles.statusItem}>
@@ -383,6 +396,67 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          ) : activeTab === 'student-progress' ? (
+            <motion.div key="student-progress" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
+              <h1>🎓 Окуучулардын прогресси</h1>
+              <div className={styles.studentProgressHero}>
+                <div>
+                  <span>Google аккаунт менен кирген окуучулар</span>
+                  <strong>{studentProgressItems.length}</strong>
+                  <p>IT, тил курстары, оюндар жана сертификатка даяр статустар ушул жерге түшөт.</p>
+                </div>
+                <div>
+                  <span>Сертификатка даяр</span>
+                  <strong>{studentProgressItems.reduce((sum, item) => sum + Object.keys(item.certificates || {}).length, 0)}</strong>
+                  <p>Админ “Сертификат жасоо” бөлүмүнөн PDF чыгара алат.</p>
+                </div>
+              </div>
+
+              <div className={styles.studentProgressGrid}>
+                {studentProgressItems.map((student) => {
+                  const courses = Object.entries(student.courses || {}) as Array<[string, any]>;
+                  const certificates = Object.values(student.certificates || {}) as any[];
+                  return (
+                    <article key={student.id} className={styles.studentProgressCard}>
+                      <div className={styles.studentProgressHead}>
+                        {student.photoURL ? <img src={student.photoURL} alt="" referrerPolicy="no-referrer" /> : <span>🎓</span>}
+                        <div>
+                          <h3>{student.displayName || 'Окуучу'}</h3>
+                          <p>{student.email || student.id}</p>
+                        </div>
+                        <strong>{student.totalXP || 0} XP</strong>
+                      </div>
+
+                      <div className={styles.courseProgressList}>
+                        {courses.length > 0 ? courses.map(([key, course]) => (
+                          <div key={key} className={styles.courseProgressItem}>
+                            <div>
+                              <b>{course.title || key}</b>
+                              <small>{course.completed || 0}/{course.total || 0} · {course.score || 0} упай</small>
+                            </div>
+                            <span>{course.progressPercent || 0}%</span>
+                            <div className={styles.courseProgressTrack}>
+                              <i style={{ width: `${Math.min(course.progressPercent || 0, 100)}%` }} />
+                            </div>
+                          </div>
+                        )) : (
+                          <p className={styles.emptyProgressText}>Курс прогресси азырынча жок.</p>
+                        )}
+                      </div>
+
+                      {certificates.length > 0 && (
+                        <div className={styles.certificateReadyBox}>
+                          <b>📜 Сертификатка даяр</b>
+                          {certificates.map((cert, index) => (
+                            <span key={`${cert.title}-${index}`}>{cert.title} · {cert.reason}</span>
+                          ))}
+                        </div>
+                      )}
+                    </article>
+                  );
+                })}
               </div>
             </motion.div>
           ) : activeTab === 'duel-questions' ? (

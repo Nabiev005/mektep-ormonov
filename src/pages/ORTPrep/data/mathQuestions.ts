@@ -160,5 +160,117 @@ export const mathQuestions: MathQuestion[] = [
     condition: "x > y жана y > 0",
     correct: 'A',
     explanation: "Эгер алымы бөлүмүнөн чоң болсо, тийинди 1ден чоң болот."
+  },
+  {
+    id: 21,
+    columnA: "25% of 80",
+    columnB: "10% of 200",
+    correct: 'Equal',
+    explanation: "80дин 25%ы 20, 200дүн 10%ы да 20."
+  },
+  {
+    id: 22,
+    columnA: "2x + 3",
+    columnB: "x + 8",
+    condition: "x = 5",
+    correct: 'Equal',
+    explanation: "2*5+3 = 13 жана 5+8 = 13."
+  },
+  {
+    id: 23,
+    columnA: "Орточо арифметикалык",
+    columnB: "7",
+    condition: "Сандар: 4, 7, 10",
+    correct: 'Equal',
+    explanation: "(4+7+10)/3 = 21/3 = 7."
+  },
+  {
+    id: 24,
+    columnA: "5!",
+    columnB: "100",
+    correct: 'A',
+    explanation: "5! = 5*4*3*2*1 = 120, ал 100дөн чоң."
+  },
+  {
+    id: 25,
+    columnA: "0.2 + 0.03",
+    columnB: "0.203",
+    correct: 'A',
+    explanation: "0.2 + 0.03 = 0.23, ал 0.203төн чоң."
+  },
+  {
+    id: 26,
+    columnA: "Үч бурчтуктун сырткы бурчу",
+    columnB: "Ага жанаша эмес эки ички бурчтун суммасы",
+    correct: 'Equal',
+    explanation: "Үч бурчтуктун сырткы бурчу ага жанаша эмес эки ички бурчтун суммасына барабар."
+  },
+  {
+    id: 27,
+    columnA: "x",
+    columnB: "0",
+    condition: "x^2 = 9",
+    correct: 'NotEnough',
+    explanation: "x = 3 же x = -3 болушу мүмкүн. Маалымат жетишсиз."
+  },
+  {
+    id: 28,
+    columnA: "12 км",
+    columnB: "12000 м",
+    correct: 'Equal',
+    explanation: "1 км = 1000 м, демек 12 км = 12000 м."
+  },
+  {
+    id: 29,
+    columnA: "3/5",
+    columnB: "5/8",
+    correct: 'B',
+    explanation: "3/5 = 0.6, 5/8 = 0.625."
+  },
+  {
+    id: 30,
+    columnA: "a^2",
+    columnB: "a",
+    condition: "0 < a < 1",
+    correct: 'B',
+    explanation: "0 менен 1дин ортосундагы сан квадратталса кичирейет."
+  },
+  {
+    id: 31,
+    columnA: "Квадраттын периметри",
+    columnB: "20 см",
+    condition: "Квадраттын жагы 5 см",
+    correct: 'Equal',
+    explanation: "Периметр = 4*5 = 20 см."
+  },
+  {
+    id: 32,
+    columnA: "2/3 + 1/6",
+    columnB: "5/6",
+    correct: 'Equal',
+    explanation: "2/3 = 4/6, 4/6 + 1/6 = 5/6."
+  },
+  {
+    id: 33,
+    columnA: "Орточо ылдамдык",
+    columnB: "60 км/саат",
+    condition: "120 км жол 2 саатта жүрүлдү",
+    correct: 'Equal',
+    explanation: "Ылдамдык = жол/убакыт = 120/2 = 60 км/саат."
+  },
+  {
+    id: 34,
+    columnA: "9^2",
+    columnB: "2^6",
+    correct: 'A',
+    explanation: "9^2 = 81, 2^6 = 64."
+  },
+  {
+    id: 35,
+    columnA: "x + 2",
+    columnB: "2x",
+    condition: "x > 2",
+    correct: 'B',
+    explanation: "x > 2 болсо, 2x - (x+2) = x-2 > 0, демек Б чоң."
   }
 ];

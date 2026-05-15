@@ -20,6 +20,7 @@ const NewsPage = lazy(() => import('./pages/News/News'));
 const About = lazy(() => import('./pages/About/About'));
 const Schedule = lazy(() => import('./components/Schedule/Schedule'));
 const TeacherPanel = lazy(() => import('./pages/Teacher/TeacherPanel'));
+const StudentPanel = lazy(() => import('./pages/StudentPanel/StudentPanel'));
 const Dashboard = lazy(() => import('./pages/Admin/Dashboard'));
 const Login = lazy(() => import('./pages/Admin/Login'));
 const Resources = lazy(() => import('./pages/Resources/Resources'));
@@ -51,6 +52,7 @@ const Reading = lazy(() => import('./pages/ORTPrep/Reading'));
 const GrammarGame = lazy(() => import('./pages/ORTPrep/GrammarGame'));
 const Tips = lazy(() => import('./pages/ORTPrep/Tips'));
 const Methodology = lazy(() => import('./pages/ORTPrep/Methodology'));
+const SubjectQuiz = lazy(() => import('./pages/ORTPrep/SubjectQuiz'));
 const NotFound = lazy(() => import('./pages/NotFound/NotFound'));
 
 const AnimatedRoutes = () => {
@@ -115,10 +117,12 @@ const AnimatedRoutes = () => {
           <Route path="/ort/math" element={<MathGame />} />
           <Route path="/ort/reading" element={<Reading />} />
           <Route path="/ort/grammar" element={<GrammarGame />} />
+          <Route path="/ort/subject/:subjectId" element={<SubjectQuiz />} />
           <Route path="/ort-tips" element={<Tips />} />
           <Route path="/ort/methodology" element={<Methodology />} />
           
           {/* Панелдер */}
+          <Route path="/student-panel" element={<StudentPanel />} />
           <Route path="/teacher-panel" element={<TeacherPanel />} />
           <Route 
             path="/admin-panel" 

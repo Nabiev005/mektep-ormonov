@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Файлдын жолун өзүңүздүн папкаңызга жараша тактаңыз
 import { grammarData } from '../../pages/ORTPrep/data/grammarData'; 
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 
 const GrammarGame: React.FC = () => {
   const navigate = useNavigate();
@@ -23,9 +25,20 @@ const GrammarGame: React.FC = () => {
     if (showFeedback) return;
     setSelected(index);
     setShowFeedback(true);
+    const nextScore = index === q.correct ? score + 10 : score;
     if (index === q.correct) {
-      setScore((prevScore) => prevScore + 10);
+      setScore(nextScore);
     }
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'ort_grammar',
+      title: 'ОРТ: Кыргыз тили',
+      progressPercent: Math.round(((currentIdx + 1) / grammarData.length) * 100),
+      completed: currentIdx + 1,
+      total: grammarData.length,
+      score: nextScore,
+      record: nextScore,
+      certificateEligible: nextScore >= Math.ceil(grammarData.length * 10 * 0.8),
+    }).catch(() => undefined);
   };
 
   const handleNext = () => {

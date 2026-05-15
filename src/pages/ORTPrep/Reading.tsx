@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Бул жерде жолун туура экенин текшериңиз (мисалы: ../../data/readingData)
 import { readingData } from '../../pages/ORTPrep/data/readingData'; 
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 
 const ReadingGame = () => {
   const navigate = useNavigate();
@@ -11,10 +13,32 @@ const ReadingGame = () => {
   const [currentQIdx, setCurrentQIdx] = useState(0);       
   const [selected, setSelected] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [score, setScore] = useState(0);
 
   // 2. Маалыматты датадан алуу
   const currentData = readingData[currentTextIdx];
   const q = currentData.questions[currentQIdx];
+  const totalQuestions = readingData.reduce((sum, item) => sum + item.questions.length, 0);
+  const completedBefore = readingData
+    .slice(0, currentTextIdx)
+    .reduce((sum, item) => sum + item.questions.length, 0);
+  const completedNow = completedBefore + currentQIdx + 1;
+
+  const handleCheck = () => {
+    const nextScore = selected === q.correct ? score + 1 : score;
+    setScore(nextScore);
+    setShowFeedback(true);
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'ort_reading',
+      title: 'ОРТ: Окуу жана түшүнүү',
+      progressPercent: Math.round((completedNow / totalQuestions) * 100),
+      completed: completedNow,
+      total: totalQuestions,
+      score: nextScore,
+      record: nextScore,
+      certificateEligible: nextScore >= Math.ceil(totalQuestions * 0.8),
+    }).catch(() => undefined);
+  };
 
   // 3. Кийинкиге өтүү логикасы
   const handleNext = () => {
@@ -52,6 +76,7 @@ const ReadingGame = () => {
           <div style={{ marginBottom: '10px', color: '#718096' }}>
             Текст: {currentTextIdx + 1}/{readingData.length} | Суроо: {currentQIdx + 1}/{currentData.questions.length}
           </div>
+          <div style={{ marginBottom: '12px', color: '#2563eb', fontWeight: 800 }}>Упай: {score}/{totalQuestions}</div>
           <p style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '20px' }}>{q.question}</p>
           
           <div style={{ display: 'grid', gap: '10px' }}>
@@ -67,7 +92,7 @@ const ReadingGame = () => {
           </div>
 
           {selected !== null && !showFeedback && (
-            <button onClick={() => setShowFeedback(true)} style={checkBtnStyle}>Текшерүү</button>
+            <button onClick={handleCheck} style={checkBtnStyle}>Текшерүү</button>
           )}
 
           {showFeedback && (

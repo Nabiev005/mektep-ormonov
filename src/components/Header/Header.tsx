@@ -298,6 +298,9 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
         {/* КООМЧУЛУК */}
         <div style={s.menuSection}>
           <span style={s.sectionTitle} className="section-title">Коомчулук</span>
+          <Link to="/student-panel" style={s.navLink(isActive('/student-panel'))} className={navClass('/student-panel')} title="Окуучу панели">
+            <span className="nav-icon">🎓</span><span className="nav-label">Окуучу панели</span> <span className="nav-badge" style={s.badge('blue')}>GOOGLE</span>
+          </Link>
           <Link to="/community/warm-words" style={s.navLink(isActive('/community/warm-words'))} className={navClass('/community/warm-words')} title="Анонимдүү сөздөр"><span className="nav-icon">💌</span><span className="nav-label">Анонимдүү сөздөр</span></Link>
           <Link to="/community/duel-game" style={s.navLink(isActive('/community/duel-game'))} className={navClass('/community/duel-game')} title="Ким акылдуу?"><span className="nav-icon">🧠</span><span className="nav-label">Ким акылдуу?</span></Link>
           <Link to="/community/math-sprint" style={s.navLink(isActive('/community/math-sprint'))} className={navClass('/community/math-sprint')} title="Тез Эсепте"><span className="nav-icon">🧮</span><span className="nav-label">Тез Эсепте</span></Link>

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { aiLevels } from './aiLevels';
 import styles from './AICourse.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, BrainCircuit, Database, MessageSquareText, Play, Rocket, ShieldCheck, Sparkles, Trophy } from 'lucide-react';
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 
 const AICourse: React.FC = () => {
   const [courseStarted, setCourseStarted] = useState(false);
@@ -15,6 +17,19 @@ const AICourse: React.FC = () => {
 
   const level = aiLevels[currentLevel];
   const progressPercent = ((currentLevel + 1) / aiLevels.length) * 100;
+  const completedLevels = Math.min(aiLevels.length, currentLevel + (isCorrect || isFinished ? 1 : 0));
+  const savedProgressPercent = Math.round((completedLevels / aiLevels.length) * 100);
+
+  useEffect(() => {
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'ai_course',
+      title: 'AI үйрөнүү',
+      progressPercent: savedProgressPercent,
+      completed: completedLevels,
+      total: aiLevels.length,
+      score: completedLevels,
+    }).catch(() => undefined);
+  }, [completedLevels, savedProgressPercent]);
 
   const prevLevel = () => {
     if (currentLevel > 0) {

@@ -1,12 +1,15 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
-import { db } from '../../../firebase';
+import type { User } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
+import { db, auth } from '../../../firebase';
 import { 
   collection, doc, onSnapshot, setDoc, updateDoc, 
   getDocs, query, where, arrayUnion, orderBy, limit 
 } from 'firebase/firestore'; 
-import { ArrowLeft, Brain, CheckCircle2, Crown, Loader2, Send, Sparkles, Trophy, UserRound, XCircle } from 'lucide-react';
+import { ArrowLeft, Brain, CheckCircle2, Crown, Loader2, Lock, Send, Sparkles, Trophy, XCircle } from 'lucide-react';
+import { addStudentXP, ensureStudentProfile, signInStudentWithGoogle } from '../../../utils/studentAccount';
 import styles from './DuelGame.module.css';
 
 const SUBJECTS = [
@@ -17,7 +20,9 @@ const SUBJECTS = [
 ];
 
 const DuelGame: React.FC = () => {
-  const [userName, setUserName] = useState('');
+  const [student, setStudent] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [loginLoading, setLoginLoading] = useState(false);
   const [gameId, setGameId] = useState<string | null>(null);
   const [gameState, setGameState] = useState<any>(null);
   const [currentSubject, setCurrentSubject] = useState<any>(null);
@@ -28,6 +33,36 @@ const DuelGame: React.FC = () => {
   const [starting, setStarting] = useState(false);
   const [nameError, setNameError] = useState('');
   const [answerStatus, setAnswerStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const userName = student?.displayName || student?.email?.split('@')[0] || 'Окуучу';
+  const initials = userName
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setStudent(currentUser);
+      setAvatarFailed(false);
+      setAuthLoading(false);
+      if (currentUser) await ensureStudentProfile(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    setLoginLoading(true);
+    setNameError('');
+    try {
+      await signInStudentWithGoogle();
+    } catch {
+      setNameError('Google менен кирүү ишке ашкан жок. Firebase Authentication ичинде Google provider күйгүзүлгөнүн текшериңиз.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
 
   // 1. Лидерлер тактасы (Баардык оюндардагы мыкты оюнчулар)
   useEffect(() => {
@@ -70,8 +105,8 @@ const DuelGame: React.FC = () => {
   };
 
   const startSubject = async (subject: any) => {
-    if (!userName.trim()) {
-      setNameError("Оюнга кирүү үчүн атыңызды жазыңыз.");
+    if (!student) {
+      setNameError("Оюнга кирүү үчүн Google аккаунт менен кириңиз.");
       return;
     }
     setNameError('');
@@ -106,7 +141,14 @@ const DuelGame: React.FC = () => {
       // Аренага (Duel Mode) кошулуу же түзүү
       const qArena = query(collection(db, 'math_arena'), where('status', '==', 'active'), where('subject', '==', subject.id));
       const snapArena = await getDocs(qArena);
-      const playerObj = { name: userName.trim(), score: 0, avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${userName}`, subject: subject.id };
+      const playerObj = {
+        uid: student.uid,
+        name: userName,
+        email: student.email || '',
+        score: 0,
+        avatar: student.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${student.uid}`,
+        subject: subject.id
+      };
 
       if (snapArena.empty) {
         const newRef = doc(collection(db, 'math_arena'));
@@ -134,9 +176,12 @@ const DuelGame: React.FC = () => {
 
     if (userAnswer.toLowerCase().trim() === problem.a) {
       const updatedPlayers = gameState.players.map((p: any) => 
-        p.name === userName ? { ...p, score: (p.score || 0) + 10 } : p
+        p.uid === student?.uid || p.name === userName ? { ...p, score: (p.score || 0) + 10 } : p
       );
       await updateDoc(doc(db, 'math_arena', gameId), { players: updatedPlayers });
+      if (student) {
+        await addStudentXP(student, 10, 'duel_game', { subject: currentSubject?.id || 'unknown' });
+      }
       setAnswerStatus('correct');
       setUserAnswer('');
       setTimeout(() => {
@@ -156,25 +201,33 @@ const DuelGame: React.FC = () => {
         <header className={styles.dashHeader}>
           <span className={styles.heroBadge}><Brain size={18} /> Интеллект аренасы</span>
           <h1>Ким акылдуу?</h1>
-          <p>Предметти тандап, суроолорго тез жооп бериңиз. Ар бир туура жооп 10 XP алып келет.</p>
-          <div className={styles.nameBox}>
-            <UserRound size={20} />
-            <input
-              className={styles.nameInput}
-              placeholder="Атыңызды жазыңыз..."
-              value={userName}
-              onChange={(e) => {
-                setUserName(e.target.value);
-                if (nameError) setNameError('');
-              }}
-            />
-          </div>
+          <p>Предметти тандап, суроолорго тез жооп бериңиз. Ар бир туура жооп жеке Google аккаунтуңузга 10 XP болуп сакталат.</p>
+          {authLoading ? (
+            <div className={styles.nameBox}><Loader2 size={20} /> Аккаунт текшерилүүдө...</div>
+          ) : student ? (
+            <div className={styles.studentBox}>
+              {student.photoURL && !avatarFailed ? (
+                <img src={student.photoURL} alt="" referrerPolicy="no-referrer" onError={() => setAvatarFailed(true)} />
+              ) : (
+                <span className={styles.avatarFallback}>{initials || <Lock size={20} />}</span>
+              )}
+              <div>
+                <strong>{userName}</strong>
+                <span>{student.email}</span>
+              </div>
+            </div>
+          ) : (
+            <button type="button" className={styles.googleLoginBtn} onClick={handleGoogleLogin} disabled={loginLoading}>
+              <span>G</span>
+              {loginLoading ? 'Кирүүдө...' : 'Google менен кирүү'}
+            </button>
+          )}
           {nameError && <span className={styles.nameError}>{nameError}</span>}
         </header>
         <div className={styles.mainLayout}>
           <div className={styles.subjectGrid}>
             {SUBJECTS.map(s => (
-              <button key={s.id} className={styles.sCard} onClick={() => startSubject(s)} style={{'--clr': s.color} as any} disabled={starting}>
+              <button key={s.id} className={styles.sCard} onClick={() => startSubject(s)} style={{'--clr': s.color} as any} disabled={starting || !student}>
                 <span className={styles.sIcon}>{s.icon}</span>
                 <h3>{s.name}</h3>
                 <p>{s.id === 'math' ? 'Ыкчам эсептер' : 'Базадагы суроолор'}</p>
@@ -231,7 +284,7 @@ const DuelGame: React.FC = () => {
           <div className={styles.liveScore}>
              <h4><Trophy size={18} /> Учурдагы упайлар</h4>
              {gameState?.players?.length ? gameState.players.map((p: any, i: number) => (
-               <div key={i} className={`${styles.pScoreRow} ${p.name === userName ? styles.isMe : ''}`}>
+               <div key={i} className={`${styles.pScoreRow} ${p.uid === student?.uid || p.name === userName ? styles.isMe : ''}`}>
                   <div className={styles.pInfo}>
                     <span>{p.name}</span>
                     <b>{p.score}</b>

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookOpenCheck, Brain, Calculator, Clock3, GraduationCap, Lightbulb, PenLine, Route, Sparkles, Trophy } from 'lucide-react';
+import { BookOpenCheck, Brain, Calculator, Clock3, Dna, Earth, GraduationCap, Languages, Landmark, Lightbulb, PenLine, Route, Sparkles, Trophy } from 'lucide-react';
 import styles from './ORTPrep.module.css';
 
 const subjects = [
@@ -41,6 +41,42 @@ const subjects = [
     type: 'Негизги бөлүм',
   },
   {
+    id: 'history',
+    title: 'Тарых',
+    desc: 'Кыргызстан жана дүйнө тарыхы боюнча факт, окуя жана тарыхый байланыштарды текшерүү.',
+    icon: Landmark,
+    color: '#b45309',
+    progress: 0,
+    type: 'Кошумча предмет',
+  },
+  {
+    id: 'english',
+    title: 'Англис тили',
+    desc: 'Сөз байлыгы, грамматика жана жөнөкөй сүйлөмдөр боюнча тез тесттер.',
+    icon: Languages,
+    color: '#2563eb',
+    progress: 0,
+    type: 'Кошумча предмет',
+  },
+  {
+    id: 'biology',
+    title: 'Биология',
+    desc: 'Клетка, адам организми, өсүмдүк жана экология боюнча негизги суроолор.',
+    icon: Dna,
+    color: '#16a34a',
+    progress: 0,
+    type: 'Кошумча предмет',
+  },
+  {
+    id: 'geography',
+    title: 'География',
+    desc: 'Карта, материк, климат жана Кыргызстан географиясы боюнча машыгуу.',
+    icon: Earth,
+    color: '#0891b2',
+    progress: 0,
+    type: 'Кошумча предмет',
+  },
+  {
     id: 'tips',
     title: 'ЖРТ лайфхактар',
     desc: 'Убакытты үнөмдөө, жооп тандоо жана тест күнү өзүн туура алып жүрүү кеңештери.',
@@ -65,6 +101,7 @@ const ORTPrep = () => {
 
   const openSubject = (id: string) => {
     if (id === 'tips') navigate('/ort-tips');
+    else if (['history', 'english', 'biology', 'geography'].includes(id)) navigate(`/ort/subject/${id}`);
     else navigate(`/ort/${id}`);
   };
 

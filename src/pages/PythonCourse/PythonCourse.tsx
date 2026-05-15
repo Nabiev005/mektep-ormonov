@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { pythonLevels } from './pythonLevels';
 import styles from './PythonCourse.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Binary, Brain, Code2, Database, Play, Rocket, Sparkles, TerminalSquare, Trophy } from 'lucide-react';
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 
 const PythonCourse: React.FC = () => {
   const [courseStarted, setCourseStarted] = useState(false);
@@ -15,6 +17,19 @@ const PythonCourse: React.FC = () => {
 
   const level = pythonLevels[currentLevel];
   const progressPercent = ((currentLevel + 1) / pythonLevels.length) * 100;
+  const completedLevels = Math.min(pythonLevels.length, currentLevel + (isCorrect || isFinished ? 1 : 0));
+  const savedProgressPercent = Math.round((completedLevels / pythonLevels.length) * 100);
+
+  useEffect(() => {
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'python_course',
+      title: 'Python',
+      progressPercent: savedProgressPercent,
+      completed: completedLevels,
+      total: pythonLevels.length,
+      score: completedLevels,
+    }).catch(() => undefined);
+  }, [completedLevels, savedProgressPercent]);
 
   // Мурунку деңгээлге кайтуу
   const prevLevel = () => {

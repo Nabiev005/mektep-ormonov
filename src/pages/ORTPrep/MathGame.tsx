@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mathQuestions } from './data/mathQuestions';
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 
 const MathGame = () => {
   const navigate = useNavigate();
@@ -8,6 +10,7 @@ const MathGame = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(1200); // 20 мүнөт
+  const [score, setScore] = useState(0);
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -28,6 +31,18 @@ const MathGame = () => {
   const handleAnswer = (ans: string) => {
     setSelected(ans);
     setShowFeedback(true);
+    const nextScore = ans === q.correct ? score + 1 : score;
+    setScore(nextScore);
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'ort_math',
+      title: 'ОРТ: Математика',
+      progressPercent: Math.round(((currentIdx + 1) / mathQuestions.length) * 100),
+      completed: currentIdx + 1,
+      total: mathQuestions.length,
+      score: nextScore,
+      record: nextScore,
+      certificateEligible: nextScore >= Math.ceil(mathQuestions.length * 0.8),
+    }).catch(() => undefined);
   };
 
   const nextQuestion = () => {
@@ -53,6 +68,7 @@ const MathGame = () => {
       </div>
 
       <h2 style={{ textAlign: 'center', color: '#2d3748' }}>Математика: Салыштыруу</h2>
+      <p style={{ textAlign: 'center', color: '#64748b', fontWeight: 700 }}>Жыйынтык: {score}/{mathQuestions.length}</p>
       
       {/* Кошумча шарт болсо көрсөтүлөт */}
       {q.condition && (

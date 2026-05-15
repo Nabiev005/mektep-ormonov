@@ -6,6 +6,8 @@ import type { LucideIcon } from 'lucide-react';
 import { levels as jsLevels } from './levels';
 import { htmlLevels } from './htmlLevels';
 import { cssLevels } from './cssLevels';
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 import styles from './JSGame.module.css';
 
 type GameMode = 'JS' | 'HTML' | 'CSS';
@@ -71,6 +73,21 @@ const JSGame: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('dev_journey_progress', JSON.stringify(progress));
+    const completed = progress.HTML + progress.CSS + progress.JS;
+    const total = htmlLevels.length + cssLevels.length + jsLevels.length;
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'frontend_course',
+      title: 'Frontend',
+      progressPercent: Math.round((completed / total) * 100),
+      completed,
+      total,
+      score: completed,
+      meta: {
+        html: progress.HTML,
+        css: progress.CSS,
+        js: progress.JS,
+      },
+    }).catch(() => undefined);
   }, [progress]);
 
   // ЖАҢЫ КОШУЛДУ: JavaScript кодун реалдуу убакытта текшерүү

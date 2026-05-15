@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { analogyQuestions } from './data/analogyQuestions';
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 
 const AnalogiesGame = () => {
   const navigate = useNavigate();
@@ -44,6 +46,16 @@ const AnalogiesGame = () => {
   const nextQuestion = () => {
     setShowFeedback(false);
     setSelectedOption(null);
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'ort_analogies',
+      title: 'ОРТ: Аналогиялар',
+      progressPercent: Math.round(((currentIdx + 1) / analogyQuestions.length) * 100),
+      completed: currentIdx + 1,
+      total: analogyQuestions.length,
+      score,
+      record: score,
+      certificateEligible: score >= Math.ceil(analogyQuestions.length * 0.8),
+    }).catch(() => undefined);
     if (currentIdx + 1 < analogyQuestions.length) {
       setCurrentIdx(prev => prev + 1);
     } else {

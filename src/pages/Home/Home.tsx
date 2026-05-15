@@ -39,6 +39,12 @@ const highlights = [
 
 const directions = [
   {
+    icon: '🎓',
+    title: 'Окуучунун жеке панели',
+    text: 'Google аккаунт менен кирип, XP, оюндардагы жыйынтык жана окуу прогрессин көрүү.',
+    path: '/student-panel',
+  },
+  {
     icon: '💻',
     title: 'IT жана санариптик сабактар',
     text: 'Frontend, Python, AI жана робототехника боюнча практикалык тапшырмалар.',
@@ -82,6 +88,7 @@ const Home: React.FC = () => {
 
           <div className={styles.heroActions}>
             <Link to="/about" className={styles.primaryBtn}>Мектеп жөнүндө</Link>
+            <Link to="/student-panel" className={styles.secondaryBtn}>Окуучу панели</Link>
             <Link to="/news" className={styles.secondaryBtn}>Жаңылыктар</Link>
           </div>
 
@@ -111,6 +118,7 @@ const Home: React.FC = () => {
             билим берүү оюндар жайгаштырылган.
           </p>
           <div className={styles.introLinks}>
+            <Link to="/student-panel">Окуучу панели</Link>
             <Link to="/teachers">Мугалимдер</Link>
             <Link to="/schedule">Расписание</Link>
             <Link to="/contact">Байланыш</Link>

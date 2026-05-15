@@ -77,6 +77,88 @@
   font-weight: 800;
 }
 
+.studentBox,
+.googleLoginBtn {
+  display: inline-flex;
+  min-height: 56px;
+  align-items: center;
+  gap: 12px;
+  border-radius: 18px;
+  font-weight: 900;
+}
+
+.studentBox {
+  max-width: min(460px, 100%);
+  margin: 0 auto;
+  border: 1px solid rgba(26, 95, 122, 0.16);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.07);
+  padding: 8px 14px 8px 8px;
+  text-align: left;
+}
+
+.studentBox img,
+.studentBox > svg,
+.avatarFallback {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  object-fit: cover;
+  color: var(--primary-color);
+}
+
+.avatarFallback {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #2563eb, #14b8a6);
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 950;
+}
+
+.studentBox div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.studentBox strong,
+.studentBox span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studentBox span {
+  color: #64748b;
+  font-size: 0.86rem;
+}
+
+.googleLoginBtn {
+  border: 0;
+  background: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0 18px;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.2);
+}
+
+.googleLoginBtn span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #2563eb;
+}
+
+.googleLoginBtn:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .mainLayout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);

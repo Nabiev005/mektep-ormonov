@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
@@ -17,6 +17,8 @@ import {
   XCircle,
 } from 'lucide-react';
 import { allWords, alphabet, dialogs, grammarTopics, wordCategories } from './englishData';
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 import styles from '../TurkishCourse/TurkishCourse.module.css';
 
 const shuffle = <T,>(items: T[]) => [...items].sort(() => Math.random() - 0.5);
@@ -100,6 +102,18 @@ const EnglishCourse: React.FC = () => {
   const lessonWord = activeWords[lessonIndex % Math.max(activeWords.length, 1)] || allWords[0];
   const progress = Math.round((learned.length / allWords.length) * 100);
   const activeSectionTitle = courseSections.find((section) => section.id === activeSection)?.title || 'Курс';
+
+  useEffect(() => {
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'english_language',
+      title: 'Англис тили',
+      progressPercent: progress,
+      completed: learned.length,
+      total: allWords.length,
+      score,
+      record: score,
+    }).catch(() => undefined);
+  }, [learned.length, progress, score]);
 
   const speak = (text: string) => {
     if (!('speechSynthesis' in window)) return;
