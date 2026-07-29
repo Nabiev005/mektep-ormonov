@@ -1,0 +1,91 @@
+.page {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+
+.header {
+  text-align: center;
+  padding: 6px 0 4px;
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 3.4vw, 32px);
+  color: #0f172a;
+}
+
+.header p {
+  margin: 0 auto;
+  max-width: 620px;
+  color: #64748b;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tabBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tabBtn:hover {
+  transform: translateY(-1px);
+}
+
+.tabBtnActive {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #14b8a6);
+  border-color: transparent;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+}
+
+.tabDesc {
+  margin: -4px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.panel {
+  min-height: 620px;
+}
+
+@media (max-width: 640px) {
+  .tabBtn span {
+    display: none;
+  }
+}

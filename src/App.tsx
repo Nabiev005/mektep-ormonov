@@ -36,6 +36,7 @@ const TurkishCourse = lazy(() => import('./pages/TurkishCourse/TurkishCourse'));
 const EnglishCourse = lazy(() => import('./pages/EnglishCourse/EnglishCourse'));
 const RussianCourse = lazy(() => import('./pages/RussianCourse/RussianCourse'));
 const GamedevCourse = lazy(() => import('./pages/Gamedev/GamedevCourse'));
+const InteractiveLab = lazy(() => import('./pages/InteractiveLab/InteractiveLab'));
 const ORTPrep = lazy(() => import('./pages/ORTPrep/ORTPrep'));
 const DuelGame = lazy(() => import('./pages/Community/DuelGame/DuelGame'));
 const WarmWordsPage = lazy(() => import('./pages/WarmWords/WarmWords'));
@@ -99,6 +100,7 @@ const AnimatedRoutes = () => {
           <Route path="/community/english-course" element={<EnglishCourse />} />
           <Route path="/community/russian-course" element={<RussianCourse />} />
           <Route path="/community/gamedev" element={<GamedevCourse />} />
+          <Route path="/community/interactive-lab" element={<InteractiveLab />} />
           <Route path="/online-lessons" element={<OnlineLessons />} />
           <Route path="/community/warm-words" element={<WarmWordsPage />} />
 
