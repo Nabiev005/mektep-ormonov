@@ -176,3 +176,10 @@
   .bottomBar { justify-content: center; text-align: center; }
   .glassContainer { padding: 30px 20px; }
 }
+
+/* Ылдыйкы таб-бар астында калып калбашы үчүн */
+@media (max-width: 1023px) {
+  .footer {
+    padding-bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  }
+}

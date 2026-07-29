@@ -176,6 +176,13 @@
 
 .fabActive { border-radius: 50%; background: #1c1c1e; }
 
+/* Ылдыйкы таб-барга такалып калбашы үчүн (телефон/планшет) */
+@media (max-width: 1023px) {
+  .botWrapper {
+    bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* --- МОБИЛДИК ТҮЗӨТҮҮЛӨР --- */
 @media (max-width: 480px) {
   .chatWindow {

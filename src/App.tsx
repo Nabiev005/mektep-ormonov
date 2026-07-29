@@ -165,7 +165,8 @@ function App() {
     },
     main: {
       flex: 1,
-      padding: isMobile ? '60px 15px 20px 15px' : '20px', // Телефондо бургер баскычы үчүн жогорудан боштук
+      // Телефондо ылдыйкы таб-бар үчүн астынан, туткасы бар түзмөктөр үчүн коопсуз аймактан боштук
+      padding: isMobile ? '14px 15px calc(86px + env(safe-area-inset-bottom, 0px)) 15px' : '20px',
     }
   };
 

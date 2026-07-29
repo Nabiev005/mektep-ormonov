@@ -20,6 +20,7 @@ import {
   BookOpen,
   Link2,
   Mail,
+  Menu,
   Newspaper,
   Phone,
   School,
@@ -30,6 +31,15 @@ import {
 interface HeaderProps {
   onExpandedChange?: (expanded: boolean) => void;
 }
+
+const MOBILE_TABS: { key: string; label: string; path?: string; icon: React.ReactNode; isMenu?: boolean }[] = [
+  { key: 'home', label: 'Башкы', path: '/', icon: <Home size={24} /> },
+  { key: 'news', label: 'Жаңылык', path: '/news', icon: <Newspaper size={24} /> },
+  { key: 'schedule', label: 'Расп.', path: '/schedule', icon: <CalendarDays size={24} /> },
+  { key: 'lab', label: 'Лаборат.', path: '/community/interactive-lab', icon: <FlaskConical size={24} /> },
+  { key: 'student', label: 'Окуучу', path: '/student-panel', icon: <GraduationCap size={24} /> },
+  { key: 'menu', label: 'Меню', icon: <Menu size={24} />, isMenu: true },
+];
 
 const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,7 +93,7 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
       borderRadius: '14px',
       padding: '12px',
       cursor: 'pointer',
-      display: 'flex',
+      display: isMobile ? 'none' : 'flex',
       // eslint-disable-next-line @typescript-eslint/prefer-as-const
       flexDirection: 'column' as 'column',
       alignItems: 'center',
@@ -92,6 +102,41 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
       boxShadow: '0 14px 28px rgba(37, 99, 235, 0.28)',
       transition: 'left 0.26s ease, transform 0.2s ease, box-shadow 0.2s ease',
     },
+    tabbar: {
+      // eslint-disable-next-line @typescript-eslint/prefer-as-const
+      position: 'fixed' as 'fixed',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 5500,
+      display: 'flex',
+      alignItems: 'stretch',
+      minHeight: '68px',
+      background: 'rgba(255, 255, 255, 0.98)',
+      backdropFilter: 'blur(16px)',
+      borderTop: '1px solid rgba(148, 163, 184, 0.22)',
+      boxShadow: '0 -10px 26px rgba(15, 23, 42, 0.1)',
+      paddingBottom: 'env(safe-area-inset-bottom, 6px)',
+    },
+    tabbarItem: (active: boolean): CSSProperties => ({
+      position: 'relative',
+      flex: 1,
+      display: 'flex',
+      // eslint-disable-next-line @typescript-eslint/prefer-as-const
+      flexDirection: 'column' as 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '5px',
+      padding: '12px 4px 8px',
+      textDecoration: 'none',
+      fontSize: '11.5px',
+      fontWeight: active ? '750' : '600',
+      color: active ? '#2563eb' : '#64748b',
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      fontFamily: '"Inter", sans-serif',
+    }),
     line: {
       width: '20px',
       height: '2px',
@@ -351,6 +396,36 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
         </div>
       </motion.aside>
 
+      {/* Мобилдик ылдыйкы такта (app-style bottom nav) */}
+      {isMobile && (
+        <nav style={s.tabbar} className="mobile-tabbar" aria-label="Мобилдик навигация">
+          {MOBILE_TABS.map((tab) =>
+            tab.isMenu ? (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={toggleMenu}
+                style={s.tabbarItem(isOpen)}
+                className={`tabbar-item${isOpen ? ' active' : ''}`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ) : (
+              <Link
+                key={tab.key}
+                to={tab.path!}
+                style={s.tabbarItem(isActive(tab.path!))}
+                className={`tabbar-item${isActive(tab.path!) ? ' active' : ''}`}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </Link>
+            ),
+          )}
+        </nav>
+      )}
+
       <style>{`
         @media (min-width: 1024px) {
           .burger-btn:hover {
@@ -406,6 +481,28 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
         .admin-link:hover {
           filter: brightness(1.08);
           transform: translateY(-1px);
+        }
+
+        .tabbar-item::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 26px;
+          height: 3px;
+          border-radius: 0 0 4px 4px;
+          background: linear-gradient(90deg, #2563eb, #14b8a6);
+          opacity: 0;
+          transition: opacity 0.15s ease;
+        }
+
+        .tabbar-item.active::before {
+          opacity: 1;
+        }
+
+        .tabbar-item:active {
+          background: rgba(37, 99, 235, 0.08) !important;
         }
       `}</style>
     </>
