@@ -1,8 +1,8 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const MAX_TOPIC_LENGTH = 200;
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
@@ -68,4 +68,4 @@ module.exports = async (req, res) => {
     console.error('Gemini API ката:', error);
     res.status(502).json({ error: 'Түшүндүрмө алууда ката кетти. Кайра аракет кылыңыз.' });
   }
-};
+}
