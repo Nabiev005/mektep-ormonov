@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { auth } from '../../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '../../firebase';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'; // Иконкалар
@@ -17,10 +18,17 @@ const Login: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const adminSnap = await getDoc(doc(db, 'admins', result.user.uid));
+
+      if (!adminSnap.exists()) {
+        await signOut(auth);
+        alert("Бул аккаунттун админ укугу жок.");
+        return;
+      }
+
       navigate('/admin-panel');
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       alert("Логин же пароль туура эмес! Же тармактан ката кетти.");
     } finally {
       setLoading(false);

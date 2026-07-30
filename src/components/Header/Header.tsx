@@ -17,6 +17,7 @@ import {
   Images,
   Languages,
   Library,
+  Sparkles,
   BookOpen,
   Link2,
   Mail,
@@ -346,6 +347,9 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
           <Link to="/community/ort" style={s.navLink(isActive('/community/ort'))} className={navClass('/community/ort')} title="ORT даярдоо"><span className="nav-icon"><Library size={20} /></span><span className="nav-label">ORT даярдоо</span></Link>
           <Link to="/community/interactive-lab" style={s.navLink(isActive('/community/interactive-lab'))} className={navClass('/community/interactive-lab')} title="Интерактивдүү лаборатория">
             <span className="nav-icon"><FlaskConical size={20} /></span><span className="nav-label">Интерактивдүү лаборатория</span> <span className="nav-badge" style={s.badge('blue')}>ЖАҢЫ</span>
+          </Link>
+          <Link to="/community/ai-tutor" style={s.navLink(isActive('/community/ai-tutor'))} className={navClass('/community/ai-tutor')} title="Түшүндүр мага">
+            <span className="nav-icon"><Sparkles size={20} /></span><span className="nav-label">Түшүндүр мага (AI)</span> <span className="nav-badge" style={s.badge('red')}>ЖАҢЫ</span>
           </Link>
           <Link to="/community/js-game" style={s.navLink(isActive('/community/js-game'))} className={navClass('/community/js-game')} title="Frontend">
             <span className="nav-icon"><Code2 size={20} /></span><span className="nav-label">Frontend</span> <span className="nav-badge" style={s.badge('red')}>ХИТ</span>

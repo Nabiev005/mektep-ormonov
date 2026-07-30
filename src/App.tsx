@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { lazy, Suspense, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
-import { auth } from './firebase'; 
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from './firebase';
 import { AnimatePresence } from 'framer-motion';
 
 // КОМПОНЕНТТЕР
@@ -37,6 +38,7 @@ const EnglishCourse = lazy(() => import('./pages/EnglishCourse/EnglishCourse'));
 const RussianCourse = lazy(() => import('./pages/RussianCourse/RussianCourse'));
 const GamedevCourse = lazy(() => import('./pages/Gamedev/GamedevCourse'));
 const InteractiveLab = lazy(() => import('./pages/InteractiveLab/InteractiveLab'));
+const AITutor = lazy(() => import('./pages/AITutor/AITutor'));
 const ORTPrep = lazy(() => import('./pages/ORTPrep/ORTPrep'));
 const DuelGame = lazy(() => import('./pages/Community/DuelGame/DuelGame'));
 const WarmWordsPage = lazy(() => import('./pages/WarmWords/WarmWords'));
@@ -59,11 +61,20 @@ const NotFound = lazy(() => import('./pages/NotFound/NotFound'));
 const AnimatedRoutes = () => {
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+
+      if (currentUser) {
+        const adminSnap = await getDoc(doc(db, 'admins', currentUser.uid));
+        setIsAdmin(adminSnap.exists());
+      } else {
+        setIsAdmin(false);
+      }
+
       setLoading(false);
     });
     return () => unsubscribe();
@@ -101,6 +112,7 @@ const AnimatedRoutes = () => {
           <Route path="/community/russian-course" element={<RussianCourse />} />
           <Route path="/community/gamedev" element={<GamedevCourse />} />
           <Route path="/community/interactive-lab" element={<InteractiveLab />} />
+          <Route path="/community/ai-tutor" element={<AITutor />} />
           <Route path="/online-lessons" element={<OnlineLessons />} />
           <Route path="/community/warm-words" element={<WarmWordsPage />} />
 
@@ -126,10 +138,10 @@ const AnimatedRoutes = () => {
           {/* Панелдер */}
           <Route path="/student-panel" element={<StudentPanel />} />
           <Route path="/teacher-panel" element={<TeacherPanel />} />
-          <Route 
-            path="/admin-panel" 
-            element={user ? <Dashboard /> : <Login />} 
-          /> 
+          <Route
+            path="/admin-panel"
+            element={user && isAdmin ? <Dashboard /> : <Login />}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>

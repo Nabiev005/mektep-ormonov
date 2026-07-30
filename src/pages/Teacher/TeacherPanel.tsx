@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { db, auth } from '../../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import styles from './TeacherPanel.module.css';
 
 const TeacherPanel: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [teacherData, setTeacherData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -15,12 +17,14 @@ const TeacherPanel: React.FC = () => {
   const [description, setDescription] = useState('');
 
   useEffect(() => {
-    const fetchMyData = async () => {
-      const user = auth.currentUser;
-      if (user) {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      setTeacherData(null);
+
+      if (currentUser) {
         // Мугалимдин IDси менен "teachers" коллекциясынан маалыматты табабыз
         // Эскертүү: Мугалимдин Firestore'догу IDси анын Auth UIDси менен бирдей болушу керек
-        const docRef = doc(db, "teachers", user.uid);
+        const docRef = doc(db, "teachers", currentUser.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -31,29 +35,28 @@ const TeacherPanel: React.FC = () => {
         }
       }
       setLoading(false);
-    };
+    });
 
-    fetchMyData();
+    return () => unsubscribe();
   }, []);
 
   const handleUpdate = async () => {
-    if (!auth.currentUser) return;
+    if (!user) return;
     try {
-      const docRef = doc(db, "teachers", auth.currentUser.uid);
+      const docRef = doc(db, "teachers", user.uid);
       await updateDoc(docRef, {
         title,
         description,
       });
       alert("Маалыматыңыз ийгиликтүү жаңыртылды! ✨");
       setEditMode(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       alert("Жаңыртууда ката кетти.");
     }
   };
 
   if (loading) return <div>Жүктөлүүдө...</div>;
-  if (!teacherData) return <div>Сизге мугалим катары кирүүгө уруксат берилген эмес.</div>;
+  if (!user || !teacherData) return <div>Сизге мугалим катары кирүүгө уруксат берилген эмес.</div>;
 
   return (
     <div className={styles.container}>
