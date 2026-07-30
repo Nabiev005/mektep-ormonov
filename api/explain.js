@@ -66,6 +66,7 @@ export default async function handler(req, res) {
     res.status(200).json(data);
   } catch (error) {
     console.error('Gemini API ката:', error);
-    res.status(502).json({ error: 'Түшүндүрмө алууда ката кетти. Кайра аракет кылыңыз.' });
+    const detail = error instanceof Error ? error.message : String(error);
+    res.status(502).json({ error: `Түшүндүрмө алууда ката кетти: ${detail}` });
   }
 }
