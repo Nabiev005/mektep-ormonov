@@ -5,8 +5,44 @@ import { db, auth } from '../../firebase';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc, } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Award,
+  BarChart3,
+  Brain,
+  CalendarDays,
+  FileText,
+  GraduationCap,
+  Images,
+  Inbox,
+  LogOut,
+  MessageSquare,
+  Mic,
+  Newspaper,
+  School,
+  Sparkles,
+  Trophy,
+  Users,
+  Video,
+  X,
+} from 'lucide-react';
 import { classList } from '../../data/classList';
 import styles from './Admin.module.css';
+
+const MENU_ITEMS = [
+  { key: 'stats', label: 'Статистика', icon: BarChart3 },
+  { key: 'student-progress', label: 'Окуучу прогресси', icon: GraduationCap },
+  { key: 'duel-questions', label: 'Ким акылдуу?', icon: Brain },
+  { key: 'news', label: 'Жаңылыктар', icon: Newspaper },
+  { key: 'media-center', label: 'Медиа-борбор', icon: Mic },
+  { key: 'online-lessons', label: 'Онлайн сабактар', icon: Video },
+  { key: 'gallery', label: 'Галерея', icon: Images },
+  { key: 'library', label: 'Иш пландар', icon: FileText },
+  { key: 'teachers', label: 'Мугалимдер', icon: Users },
+  { key: 'best-students', label: 'Мыктылар', icon: Trophy },
+  { key: 'schedule', label: 'Расписание', icon: CalendarDays },
+  { key: 'feedback', label: 'Пикирлер', icon: MessageSquare },
+  { key: 'certificate', label: 'Сертификат жасоо', icon: Award },
+] as const;
 
 interface ListItem {
   id: string;
@@ -388,6 +424,13 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const EmptyState: React.FC<{ text: string }> = ({ text }) => (
+    <div className={styles.emptyState}>
+      <Inbox size={34} />
+      <p>{text}</p>
+    </div>
+  );
+
   const filteredItems = items.filter(item => {
     const searchStr = (item.title || item.className || item.description || item.teacherName || item.author || item.question || '').toLowerCase();
     return searchStr.includes(searchTerm.toLowerCase());
@@ -396,21 +439,37 @@ const Dashboard: React.FC = () => {
   return (
     <div className={styles.adminWrapper}>
       <motion.aside initial={{ x: -100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className={styles.sidebar}>
-        <h2>⚙️ Админ</h2>
-        <div className={`${styles.menuItem} ${activeTab === 'stats' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('stats'); setEditingId(null);}}>📊 Статистика</div>
-        <div className={`${styles.menuItem} ${activeTab === 'student-progress' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('student-progress'); setEditingId(null);}}>🎓 Окуучу прогресси</div>
-        <div className={`${styles.menuItem} ${activeTab === 'duel-questions' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('duel-questions'); setEditingId(null);}}>🎮 Ким акылдуу?</div>
-        <div className={`${styles.menuItem} ${activeTab === 'news' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('news'); setEditingId(null);}}>📰 Жаңылыктар</div>
-        <div className={`${styles.menuItem} ${activeTab === 'media-center' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('media-center'); setEditingId(null);}}>🎙️ Медиа-борбор</div>
-        <div className={`${styles.menuItem} ${activeTab === 'online-lessons' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('online-lessons'); setEditingId(null);}}>🎥 Онлайн сабактар</div>
-        <div className={`${styles.menuItem} ${activeTab === 'gallery' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('gallery'); setEditingId(null);}}>📸 Галерея</div>
-        <div className={`${styles.menuItem} ${activeTab === 'library' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('library'); setEditingId(null);}}>📄 Иш пландар</div>
-        <div className={`${styles.menuItem} ${activeTab === 'teachers' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('teachers'); setEditingId(null);}}>👨‍🏫 Мугалимдер</div>
-        <div className={`${styles.menuItem} ${activeTab === 'best-students' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('best-students'); setEditingId(null);}}>🌟 Мыктылар</div>
-        <div className={`${styles.menuItem} ${activeTab === 'schedule' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('schedule'); setEditingId(null);}}>📅 Расписание</div>
-        <div className={`${styles.menuItem} ${activeTab === 'feedback' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('feedback'); setEditingId(null);}}>💬 Пикирлер</div>
-        <div className={`${styles.menuItem} ${activeTab === 'certificate' ? styles.activeMenu : ''}`} onClick={() => {setActiveTab('certificate'); setEditingId(null);}}>📜 Сертификат жасоо</div>
-        <button onClick={() => signOut(auth)} className={styles.logoutBtn}>🚪 Чыгуу</button>
+        <div className={styles.brandBox}>
+          <div className={styles.brandIcon}><School size={22} /></div>
+          <div>
+            <h2>Админ панель</h2>
+            <span className={styles.brandMeta}>З.Ормонов мектеби</span>
+          </div>
+        </div>
+
+        <nav className={styles.menuList}>
+          {MENU_ITEMS.map(({ key, label, icon: Icon }) => (
+            <div
+              key={key}
+              className={`${styles.menuItem} ${activeTab === key ? styles.activeMenu : ''}`}
+              onClick={() => { setActiveTab(key); setEditingId(null); }}
+            >
+              <Icon size={18} className={styles.menuIcon} />
+              <span>{label}</span>
+            </div>
+          ))}
+        </nav>
+
+        <div className={styles.sidebarFooter}>
+          <div className={styles.adminIdentity}>
+            <span className={styles.adminAvatar}>{(auth.currentUser?.email || 'A').charAt(0).toUpperCase()}</span>
+            <div>
+              <strong>{auth.currentUser?.email?.split('@')[0]}</strong>
+              <small>Администратор</small>
+            </div>
+          </div>
+          <button onClick={() => signOut(auth)} className={styles.logoutBtn}><LogOut size={16} /> Чыгуу</button>
+        </div>
       </motion.aside>
 
       <main className={styles.mainContent}>
@@ -478,6 +537,8 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
+              {studentProgressItems.length === 0 && <EmptyState text="Азырынча Google менен кирген окуучу жок." />}
+
               <div className={styles.studentProgressGrid}>
                 {studentProgressItems.map((student) => {
                   const courses = Object.entries(student.courses || {}) as Array<[string, any]>;
@@ -527,9 +588,9 @@ const Dashboard: React.FC = () => {
             <motion.div key="duel-questions" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
               <h1>{editingId ? '✏️ Суроону оңдоо' : '🎮 Жаңы суроо кошуу'}</h1>
 
-              <div className={styles.glassCard} style={{ marginBottom: '20px' }}>
+              <div className={`${styles.glassCard} ${styles.aiGeneratorCard}`} style={{ marginBottom: '20px' }}>
                 <div className={styles.inputGroup}>
-                  <label>🤖 AI менен суроо түзүү (предмет жогорудагы форма менен бирдей — тандаңыз)</label>
+                  <label className={styles.aiLabel}><Sparkles size={16} /> AI менен суроо түзүү (предмет жогорудагы форма менен бирдей — тандаңыз)</label>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <input
                       type="text"
@@ -539,7 +600,7 @@ const Dashboard: React.FC = () => {
                       style={{ flex: 1, minWidth: '200px' }}
                     />
                     <button type="button" onClick={handleGenerateQuiz} disabled={quizGenerating || !quizTopic.trim()} className={styles.submitBtn}>
-                      {quizGenerating ? 'Түзүлүүдө...' : '🤖 AI менен түзүү'}
+                      <Sparkles size={16} /> {quizGenerating ? 'Түзүлүүдө...' : 'AI менен түзүү'}
                     </button>
                   </div>
                   {quizGenError && <div className={styles.formError}>{quizGenError}</div>}
@@ -595,6 +656,7 @@ const Dashboard: React.FC = () => {
                   <h3>Суроолор тизмеси ({filteredItems.length})</h3>
                   <input type="text" placeholder="🔍 Издөө..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
+                {filteredItems.length === 0 && <EmptyState text="Азырынча суроо жок." />}
                 <div className={styles.adminGrid}>
                   {filteredItems.map((item) => (
                     <div key={item.id} className={styles.adminCard} style={{padding: '15px'}}>
@@ -660,6 +722,7 @@ const Dashboard: React.FC = () => {
                    <h3>Каттардын тизмеси ({filteredItems.length})</h3>
                    <input type="text" placeholder="🔍 Издөө..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
+                {filteredItems.length === 0 && <EmptyState text="Азырынча пикир жок." />}
                 <div className={styles.adminGrid}>
                   {filteredItems.map((item) => (
                     <div key={item.id} className={styles.glassCard} style={{padding: '20px', marginBottom: '15px', width: '100%'}}>
@@ -835,7 +898,9 @@ const Dashboard: React.FC = () => {
                   <h3>Тизме ({filteredItems.length})</h3>
                   <input type="text" placeholder="🔍 Издөө..." className={styles.searchInput} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
-                
+
+                {filteredItems.length === 0 && <EmptyState text="Азырынча бул бөлүмдө маалымат жок." />}
+
                 <div className={styles.adminGrid}>
                   {filteredItems.map((item) => (
                     <motion.div layout key={item.id} className={styles.adminCard}>
@@ -904,18 +969,20 @@ const Dashboard: React.FC = () => {
               className={styles.modalOverlay}
               onClick={() => setIsModalOpen(false)}
             >
-              <motion.div 
-                className={styles.modalContent} 
+              <motion.div
+                className={styles.modalContent}
                 onClick={e => e.stopPropagation()}
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
               >
+                <button className={styles.closeBtn} onClick={() => setIsModalOpen(false)} aria-label="Жабуу"><X size={18} /></button>
                 {getItemImages(selectedItem).map((url, index) => (
-                  <img key={url} src={url} alt={`${selectedItem.title} ${index + 1}`} />
+                  <img key={url} src={url} alt={`${selectedItem.title} ${index + 1}`} className={styles.modalImg} />
                 ))}
-                <h2>{selectedItem.title}</h2>
-                <p>{selectedItem.description}</p>
-                <button onClick={() => setIsModalOpen(false)}>Жабуу</button>
+                <div className={styles.modalBody}>
+                  <h2>{selectedItem.title}</h2>
+                  <p className={styles.modalDesc}>{selectedItem.description}</p>
+                </div>
               </motion.div>
             </motion.div>
           )}
