@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Celebration from '../../components/Celebration/Celebration';
+import { auth } from '../../firebase';
+import { addStudentXP } from '../../utils/studentAccount';
+import { playCorrectSound, playWinSound, playWrongSound } from '../../utils/sounds';
 import styles from './ApricotQuiz.module.css';
 
 // СУРООЛОР БАЗАСЫ (Буга каалаганча суроо кошсоңуз болот)
@@ -44,6 +48,7 @@ const ApricotQuiz = () => {
       return newArr.slice(0, 7); // Ар бир оюнда 12 суроонун ичинен 7син гана тандап алат
     };
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShuffledQuestions(shuffle(allQuestions));
 
     const saved = localStorage.getItem('apricot_high_score');
@@ -68,9 +73,11 @@ const ApricotQuiz = () => {
       setHealth(prev => Math.min(prev + 10, 100));
       setScore(prev => prev + 20);
       setFeedback('correct');
+      playCorrectSound();
     } else {
       setHealth(prev => Math.max(prev - 20, 0));
       setFeedback('wrong');
+      playWrongSound();
       const newLeaves = Array.from({ length: 5 }).map((_, i) => ({
         id: Date.now() + i,
         left: Math.random() * 80 + 10 + "%"
@@ -97,6 +104,11 @@ const ApricotQuiz = () => {
       setHighScore(finalScore);
       localStorage.setItem('apricot_high_score', finalScore.toString());
       setShowConfetti(true);
+      playWinSound();
+    }
+    const user = auth.currentUser;
+    if (user && finalScore > 0) {
+      addStudentXP(user, finalScore, 'apricot_quiz').catch(() => undefined);
     }
   };
 
@@ -106,23 +118,7 @@ const ApricotQuiz = () => {
   return (
     <div className={styles.container}>
       {/* ... (Confetti жана StatsBar бөлүгү мурунку бойдон калат) */}
-      <AnimatePresence>
-        {showConfetti && (
-          <div className={styles.confettiOverlay}>
-            {Array.from({ length: 30 }).map((_, i) => (
-              <motion.div
-                key={i}
-                // eslint-disable-next-line react-hooks/purity
-                initial={{ y: -20, x: Math.random() * 100 + "%", opacity: 1 }}
-                animate={{ y: "100vh", rotate: 720 }}
-                transition={{ duration: 3, ease: "linear" }}
-                className={styles.confettiPiece}
-                style={{ backgroundColor: ['#ff0', '#f0f', '#0ff', '#0f0'][i % 4] }}
-              />
-            ))}
-          </div>
-        )}
-      </AnimatePresence>
+      <Celebration active={showConfetti} />
 
       <div className={styles.statsBar}>
          <div className={styles.statItem}>🏆 Рекорд: {highScore}</div>

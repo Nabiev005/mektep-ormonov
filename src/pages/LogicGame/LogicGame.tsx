@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { auth } from '../../firebase';
+import { addStudentXP } from '../../utils/studentAccount';
+import { playCorrectSound, playWrongSound } from '../../utils/sounds';
+import GameLeaderboard from '../../components/GameLeaderboard/GameLeaderboard';
 
 const LogicGame = () => {
   const [problem, setProblem] = useState({ q: '', a: '' });
@@ -6,6 +10,8 @@ const LogicGame = () => {
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
   const [isActive, setIsActive] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [xpAwarded, setXpAwarded] = useState(false);
   const [lives, setLives] = useState(3);
 
   const generateProblem = useCallback(() => {
@@ -26,16 +32,26 @@ const LogicGame = () => {
   }, []);
 
   const handleWrong = useCallback(() => {
-    setLives(prev => prev - 1);
+    playWrongSound();
     if (lives <= 1) {
-      alert("Оюн бүттү! Сиздин упайыңыз: " + score);
+      setLives(0);
       setIsActive(false);
-      setScore(0);
-      setLives(3);
+      setIsGameOver(true);
     } else {
+      setLives(prev => prev - 1);
       generateProblem();
     }
-  }, [generateProblem, lives, score]);
+  }, [generateProblem, lives]);
+
+  useEffect(() => {
+    if (!isGameOver || xpAwarded || score === 0) return;
+    const user = auth.currentUser;
+    if (user) {
+      addStudentXP(user, score, 'logic_game').catch(() => undefined);
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setXpAwarded(true);
+  }, [isGameOver, xpAwarded, score]);
 
   useEffect(() => {
     if (!isActive) return;
@@ -58,12 +74,15 @@ const LogicGame = () => {
     if (val === problem.a) {
       setScore(score + 10);
       setUserInput('');
+      playCorrectSound();
       generateProblem();
     }
   };
 
   const startGame = () => {
     setIsActive(true);
+    setIsGameOver(false);
+    setXpAwarded(false);
     setScore(0);
     setLives(3);
     generateProblem();
@@ -72,8 +91,19 @@ const LogicGame = () => {
   return (
     <div style={containerStyle}>
       <h1 style={headerStyle}>ЛОГИКАЛЫК BATTLE ⚡</h1>
-      
-      {!isActive ? (
+
+      {isGameOver ? (
+        <div style={gameWrapperStyle}>
+          <div style={cardStyle}>
+            <div>
+              <h2 style={questionStyle}>Оюн бүттү! 💀</h2>
+              <p style={{ fontSize: '1.3rem', margin: '12px 0' }}>Упайыңыз: {score}</p>
+              <button onClick={startGame} style={buttonStyle}>Кайра баштоо</button>
+            </div>
+          </div>
+          <GameLeaderboard />
+        </div>
+      ) : !isActive ? (
         <button onClick={startGame} style={buttonStyle}>БАШТОО</button>
       ) : (
         <div style={gameWrapperStyle}>

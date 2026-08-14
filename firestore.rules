@@ -15,13 +15,20 @@ service cloud.firestore {
     }
 
     match /students/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin() || resource.data.isPublic == true;
       allow create, update: if isOwner(userId);
       allow delete: if false;
     }
 
     match /student_progress/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
+      allow read: if isOwner(userId) || isAdmin()
+        || get(/databases/$(database)/documents/students/$(userId)).data.isPublic == true;
+      allow create, update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    match /leaderboard/{userId} {
+      allow read: if true;
       allow create, update: if isOwner(userId);
       allow delete: if false;
     }
@@ -46,6 +53,23 @@ service cloud.firestore {
       allow read: if true;
       allow create, delete: if isAdmin();
       allow update: if isOwner(teacherId) || isAdmin();
+    }
+
+    match /homework/{homeworkId} {
+      allow read: if true;
+      allow create, update: if isOwner(request.resource.data.teacherId) || isAdmin();
+      allow delete: if isOwner(resource.data.teacherId) || isAdmin();
+    }
+
+    match /homework_submissions/{submissionId} {
+      allow read: if isAdmin()
+        || isOwner(resource.data.studentUid)
+        || isOwner(get(/databases/$(database)/documents/homework/$(resource.data.homeworkId)).data.teacherId);
+      allow create: if isOwner(request.resource.data.studentUid);
+      allow update: if isOwner(resource.data.studentUid)
+        || isOwner(get(/databases/$(database)/documents/homework/$(resource.data.homeworkId)).data.teacherId)
+        || isAdmin();
+      allow delete: if false;
     }
 
     match /{document=**} {

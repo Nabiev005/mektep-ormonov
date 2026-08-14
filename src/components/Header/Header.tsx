@@ -27,6 +27,7 @@ import {
   School,
   Trophy,
   Users,
+  Crown,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -379,6 +380,9 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
           <Link to="/community/warm-words" style={s.navLink(isActive('/community/warm-words'))} className={navClass('/community/warm-words')} title="Анонимдүү сөздөр"><span className="nav-icon"><Mail size={20} /></span><span className="nav-label">Анонимдүү сөздөр</span></Link>
           <Link to="/community/duel-game" style={s.navLink(isActive('/community/duel-game'))} className={navClass('/community/duel-game')} title="Ким акылдуу?"><span className="nav-icon"><Brain size={20} /></span><span className="nav-label">Ким акылдуу?</span></Link>
           <Link to="/community/math-sprint" style={s.navLink(isActive('/community/math-sprint'))} className={navClass('/community/math-sprint')} title="Тез Эсепте"><span className="nav-icon"><Calculator size={20} /></span><span className="nav-label">Тез Эсепте</span></Link>
+          <Link to="/community/leaderboard" style={s.navLink(isActive('/community/leaderboard'))} className={navClass('/community/leaderboard')} title="Рейтинг">
+            <span className="nav-icon"><Crown size={20} /></span><span className="nav-label">Рейтинг</span> <span className="nav-badge" style={s.badge('blue')}>ЖАҢЫ</span>
+          </Link>
         </div>
 
         {/* МЕКТЕП */}

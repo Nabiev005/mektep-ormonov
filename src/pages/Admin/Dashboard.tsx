@@ -5,6 +5,7 @@ import { db, auth } from '../../firebase';
 import { collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp, getCountFromServer, updateDoc, } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import { classList } from '../../data/classList';
 import styles from './Admin.module.css';
 
 interface ListItem {
@@ -59,6 +60,13 @@ const Dashboard: React.FC = () => {
   const [answer, setAnswer] = useState('');
   const [subject, setSubject] = useState('math');
 
+  // AI ТЕСТ-ГЕНЕРАТОР ҮЧҮН STATE'ТЕР
+  const [quizTopic, setQuizTopic] = useState('');
+  const [quizGenerating, setQuizGenerating] = useState(false);
+  const [quizGenError, setQuizGenError] = useState('');
+  const [quizSaving, setQuizSaving] = useState(false);
+  const [quizSuggestions, setQuizSuggestions] = useState<{ question: string; answer: string; selected: boolean }[]>([]);
+
   const [stats, setStats] = useState({ 
     news: 0, 
     teachers: 0, 
@@ -84,7 +92,6 @@ const Dashboard: React.FC = () => {
   });
 
   const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY;
-  const classList = ["1-класс", "2-класс", "3-класс", "4-класс", "5-класс", "6-класс", "7-класс", "8-класс", "9-класс", "10-класс", "11-класс"];
   const subjectList = [
     { id: 'math', name: 'Математика' },
     { id: 'history', name: 'Тарых' },
@@ -324,6 +331,63 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleGenerateQuiz = async () => {
+    if (!quizTopic.trim()) return;
+    setQuizGenerating(true);
+    setQuizGenError('');
+    setQuizSuggestions([]);
+    try {
+      const response = await fetch('/api/generate-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: subjectList.find(s => s.id === subject)?.name || subject, topic: quizTopic.trim(), count: 8 }),
+      });
+      const rawText = await response.text();
+      let data: { questions?: { question: string; answer: string }[]; error?: string } | null = null;
+      try {
+        data = rawText ? JSON.parse(rawText) : null;
+      } catch {
+        throw new Error('/api/generate-quiz функциясы иштебей жатат. "vercel dev" колдонуңуз же Vercel\'ге деплой кылып текшериңиз.');
+      }
+      if (!response.ok || !data) {
+        throw new Error(data?.error || 'Ката кетти.');
+      }
+      setQuizSuggestions((data.questions || []).map(q => ({ ...q, selected: true })));
+    } catch (error) {
+      setQuizGenError(error instanceof Error ? error.message : 'Суроолорду түзүүдө ката кетти.');
+    } finally {
+      setQuizGenerating(false);
+    }
+  };
+
+  const toggleQuizSuggestion = (index: number) => {
+    setQuizSuggestions(prev => prev.map((q, i) => i === index ? { ...q, selected: !q.selected } : q));
+  };
+
+  const handleSaveGeneratedQuestions = async () => {
+    const selected = quizSuggestions.filter(q => q.selected);
+    if (selected.length === 0) return;
+    setQuizSaving(true);
+    try {
+      await Promise.all(selected.map(q => addDoc(collection(db, 'duel-questions'), {
+        question: q.question,
+        answer: q.answer.toLowerCase().trim(),
+        subject,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        date: new Date().toLocaleDateString('ky-KG'),
+      })));
+      setQuizSuggestions([]);
+      setQuizTopic('');
+      alert(`${selected.length} суроо база сакталды! ✨`);
+      fetchStats();
+    } catch {
+      alert('Сактоодо ката кетти.');
+    } finally {
+      setQuizSaving(false);
+    }
+  };
+
   const filteredItems = items.filter(item => {
     const searchStr = (item.title || item.className || item.description || item.teacherName || item.author || item.question || '').toLowerCase();
     return searchStr.includes(searchTerm.toLowerCase());
@@ -462,6 +526,49 @@ const Dashboard: React.FC = () => {
           ) : activeTab === 'duel-questions' ? (
             <motion.div key="duel-questions" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }}>
               <h1>{editingId ? '✏️ Суроону оңдоо' : '🎮 Жаңы суроо кошуу'}</h1>
+
+              <div className={styles.glassCard} style={{ marginBottom: '20px' }}>
+                <div className={styles.inputGroup}>
+                  <label>🤖 AI менен суроо түзүү (предмет жогорудагы форма менен бирдей — тандаңыз)</label>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <input
+                      type="text"
+                      value={quizTopic}
+                      onChange={(e) => setQuizTopic(e.target.value)}
+                      placeholder="Мисалы: Кыргызстандын тарыхы, XX кылым"
+                      style={{ flex: 1, minWidth: '200px' }}
+                    />
+                    <button type="button" onClick={handleGenerateQuiz} disabled={quizGenerating || !quizTopic.trim()} className={styles.submitBtn}>
+                      {quizGenerating ? 'Түзүлүүдө...' : '🤖 AI менен түзүү'}
+                    </button>
+                  </div>
+                  {quizGenError && <div className={styles.formError}>{quizGenError}</div>}
+                </div>
+
+                {quizSuggestions.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <p style={{ fontSize: '13px', color: '#718096', marginBottom: '10px' }}>
+                      Керектүүлөрүн тандаңыз, андан кийин базага сактаңыз ({quizSuggestions.filter(q => q.selected).length} тандалды):
+                    </p>
+                    {quizSuggestions.map((q, index) => (
+                      <label key={index} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '10px 0', borderTop: '1px solid rgba(148,163,184,0.18)' }}>
+                        <input type="checkbox" checked={q.selected} onChange={() => toggleQuizSuggestion(index)} style={{ marginTop: '4px' }} />
+                        <span><strong>С:</strong> {q.question} <br /><strong>Ж:</strong> {q.answer}</span>
+                      </label>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={handleSaveGeneratedQuestions}
+                      disabled={quizSaving || quizSuggestions.every(q => !q.selected)}
+                      className={styles.submitBtn}
+                      style={{ marginTop: '12px' }}
+                    >
+                      {quizSaving ? 'Сакталууда...' : 'Тандалгандарды сактоо ✨'}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <form onSubmit={handleSubmit} className={styles.glassCard}>
                 <div className={styles.inputGroup}>
                   <label>Предметти тандаңыз</label>

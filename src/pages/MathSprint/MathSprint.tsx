@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Calculator, Clock3, Medal, Play, Sparkles, Target, Trophy, UserRound, Zap } from 'lucide-react';
+import { Brain, Calculator, Clock3, Medal, Play, Sparkles, Target, UserRound, Zap } from 'lucide-react';
+import { auth } from '../../firebase';
+import { addStudentXP } from '../../utils/studentAccount';
+import { playCorrectSound, playWinSound, playWrongSound } from '../../utils/sounds';
+import GameLeaderboard from '../../components/GameLeaderboard/GameLeaderboard';
 import styles from './MathSprint.module.css';
-
-interface Leader {
-  name: string;
-  score: number;
-}
 
 const MathSprint = () => {
   const [playerName, setPlayerName] = useState(''); // Окуучунун аты
@@ -14,7 +13,6 @@ const MathSprint = () => {
   const [problem, setProblem] = useState({ q: '', a: 0, options: [] as number[] });
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
-  const [leaders, setLeaders] = useState<Leader[]>([]);
   const [timeLeft, setTimeLeft] = useState(15);
   const [isActive, setIsActive] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
@@ -24,9 +22,6 @@ const MathSprint = () => {
     const savedScore = localStorage.getItem('math_sprint_highscore');
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (savedScore) setHighScore(parseInt(savedScore));
-
-    const savedLeaders = localStorage.getItem('math_sprint_leaders');
-    if (savedLeaders) setLeaders(JSON.parse(savedLeaders));
   }, []);
 
   const generateProblem = useCallback(() => {
@@ -67,20 +62,17 @@ const MathSprint = () => {
     setIsActive(false);
     setIsGameOver(true);
 
-    // Рейтингди жаңылоо (автоматтык түрдө playerName колдонулат)
-    const newRecord = { name: playerName, score: score };
-    const updatedLeaders = [...leaders, newRecord]
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3);
-
-    setLeaders(updatedLeaders);
-    localStorage.setItem('math_sprint_leaders', JSON.stringify(updatedLeaders));
-
     if (score > highScore) {
       setHighScore(score);
       localStorage.setItem('math_sprint_highscore', score.toString());
+      playWinSound();
     }
-  }, [score, leaders, highScore, playerName]);
+
+    const user = auth.currentUser;
+    if (user && score > 0) {
+      addStudentXP(user, score, 'math_sprint').catch(() => undefined);
+    }
+  }, [score, highScore]);
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,9 +90,11 @@ const MathSprint = () => {
     if (choice === problem.a) {
       setScore(prev => prev + 10);
       setTimeLeft(prev => Math.min(prev + 2, 20));
+      playCorrectSound();
       generateProblem();
     } else {
       setTimeLeft(prev => Math.max(0, prev - 3));
+      playWrongSound();
       generateProblem();
     }
   };
@@ -116,13 +110,7 @@ const MathSprint = () => {
   return (
     <div className={styles.container}>
       <aside className={styles.sidePanel}>
-        <div className={styles.panelTitle}><Trophy size={20} /> ТОП 3 Мыкты</div>
-        {leaders.length > 0 ? leaders.map((leader, index) => (
-          <div key={index} className={styles.leaderItem}>
-            <span>{index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} {leader.name}</span> 
-            <span className={styles.leaderScore}>{leader.score}</span>
-          </div>
-        )) : <p>Азырынча рекорд жок</p>}
+        <GameLeaderboard limit={5} />
       </aside>
 
       <main className={styles.mainContent}>

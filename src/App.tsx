@@ -56,6 +56,8 @@ const GrammarGame = lazy(() => import('./pages/ORTPrep/GrammarGame'));
 const Tips = lazy(() => import('./pages/ORTPrep/Tips'));
 const Methodology = lazy(() => import('./pages/ORTPrep/Methodology'));
 const SubjectQuiz = lazy(() => import('./pages/ORTPrep/SubjectQuiz'));
+const Portfolio = lazy(() => import('./pages/Portfolio/Portfolio'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard/Leaderboard'));
 const NotFound = lazy(() => import('./pages/NotFound/NotFound'));
 
 const AnimatedRoutes = () => {
@@ -138,6 +140,8 @@ const AnimatedRoutes = () => {
           {/* Панелдер */}
           <Route path="/student-panel" element={<StudentPanel />} />
           <Route path="/teacher-panel" element={<TeacherPanel />} />
+          <Route path="/portfolio/:uid" element={<Portfolio />} />
+          <Route path="/community/leaderboard" element={<Leaderboard />} />
           <Route
             path="/admin-panel"
             element={user && isAdmin ? <Dashboard /> : <Login />}

@@ -1,5 +1,9 @@
 import  { useState, useEffect, useCallback,} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { auth } from '../../firebase';
+import { addStudentXP } from '../../utils/studentAccount';
+import { playCorrectSound, playWrongSound } from '../../utils/sounds';
+import GameLeaderboard from '../../components/GameLeaderboard/GameLeaderboard';
 import styles from './SnakeGame.module.css';
 
 const GRID_SIZE = 15; // Телефонго ыңгайлуу болушу үчүн 15 кылдык
@@ -21,6 +25,16 @@ const SnakeGame = () => {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [foods, setFoods] = useState<{ x: number; y: number; val: number }[]>([]);
+  const [xpAwarded, setXpAwarded] = useState(false);
+
+  const resetGame = () => {
+    setSnake(INITIAL_SNAKE);
+    setDirection(INITIAL_DIRECTION);
+    setCurrentQ(0);
+    setScore(0);
+    setGameOver(false);
+    setXpAwarded(false);
+  };
 
   // Тамактарды (варианттарды) чачыратуу
   const generateFoods = useCallback(() => {
@@ -48,6 +62,7 @@ const SnakeGame = () => {
       if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE ||
           prev.some(s => s.x === head.x && s.y === head.y)) {
         setGameOver(true);
+        playWrongSound();
         return prev;
       }
 
@@ -57,6 +72,7 @@ const SnakeGame = () => {
         const eatenValue = foods[eatenFoodIndex].val;
         if (eatenValue === questions[currentQ].a) {
           setScore(s => s + 10);
+          playCorrectSound();
           if (currentQ < questions.length - 1) {
             setCurrentQ(q => q + 1);
           } else {
@@ -66,6 +82,7 @@ const SnakeGame = () => {
           return [head, ...prev];
         } else {
           setGameOver(true); // Туура эмес жесе оюн бүтөт
+          playWrongSound();
           return prev;
         }
       }
@@ -78,6 +95,16 @@ const SnakeGame = () => {
     const interval = setInterval(moveSnake, 250);
     return () => clearInterval(interval);
   }, [moveSnake]);
+
+  useEffect(() => {
+    if (!gameOver || xpAwarded || score === 0) return;
+    const user = auth.currentUser;
+    if (user) {
+      addStudentXP(user, score, 'snake_game').catch(() => undefined);
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setXpAwarded(true);
+  }, [gameOver, xpAwarded, score]);
 
   // Клавиатура башкаруу
   useEffect(() => {
@@ -117,7 +144,9 @@ const SnakeGame = () => {
           {gameOver && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.overlay}>
               <h2>Оюн бүттү! 🍎</h2>
-              <button onClick={() => window.location.reload()}>Кайра баштоо</button>
+              <p>Упай: {score}</p>
+              <button onClick={resetGame}>Кайра баштоо</button>
+              <GameLeaderboard />
             </motion.div>
           )}
         </AnimatePresence>

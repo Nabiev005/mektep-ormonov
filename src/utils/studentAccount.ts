@@ -52,6 +52,33 @@ export const addStudentXP = async (user: User, amount: number, source: string, m
     },
     { merge: true }
   );
+
+  await setDoc(
+    doc(db, 'leaderboard', user.uid),
+    {
+      uid: user.uid,
+      displayName: user.displayName || 'Окуучу',
+      photoURL: user.photoURL || '',
+      totalXP: increment(amount),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+};
+
+/** Окуучунун классын сактайт (үй тапшырма жана рейтинг үчүн колдонулат). */
+export const setStudentClassName = async (user: User, className: string) => {
+  await setDoc(doc(db, 'students', user.uid), { className, updatedAt: serverTimestamp() }, { merge: true });
+  await setDoc(
+    doc(db, 'leaderboard', user.uid),
+    { uid: user.uid, displayName: user.displayName || 'Окуучу', photoURL: user.photoURL || '', className, updatedAt: serverTimestamp() },
+    { merge: true }
+  );
+};
+
+/** Окуучунун портфолиосун (студенттик прогресс баракчасын) ачык/жабык кылат. */
+export const setStudentPublic = async (user: User, isPublic: boolean) => {
+  await setDoc(doc(db, 'students', user.uid), { isPublic }, { merge: true });
 };
 
 interface StudentCourseProgressPayload {

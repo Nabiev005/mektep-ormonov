@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { Award, BookOpen, Brain, Lock, LogOut, ShieldCheck, Sparkles, UserRound } from 'lucide-react';
+import { collection, doc, onSnapshot, query, serverTimestamp, setDoc, where } from 'firebase/firestore';
+import { Award, BookOpen, Brain, Copy, Lock, LogOut, NotebookPen, Share2, ShieldCheck, Sparkles, UserRound, Users } from 'lucide-react';
 import { auth, db } from '../../firebase';
-import { ensureStudentProfile, signInStudentWithGoogle, signOutStudent } from '../../utils/studentAccount';
+import { classList } from '../../data/classList';
+import { ensureStudentProfile, setStudentClassName, setStudentPublic, signInStudentWithGoogle, signOutStudent } from '../../utils/studentAccount';
 import styles from './StudentPanel.module.css';
 
 interface StudentProgress {
@@ -47,13 +48,38 @@ const getStoredArrayCount = (key: string) => {
   }
 };
 
+interface StudentProfile {
+  className?: string;
+  isPublic?: boolean;
+}
+
+interface Homework {
+  id: string;
+  className: string;
+  subject: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  teacherName?: string;
+  createdAt?: { seconds: number };
+}
+
 const StudentPanel: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [progress, setProgress] = useState<StudentProgress | null>(null);
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
   const [error, setError] = useState('');
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const [classDraft, setClassDraft] = useState('');
+  const [classSaving, setClassSaving] = useState(false);
+  const [publicToggling, setPublicToggling] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [homeworkList, setHomeworkList] = useState<Homework[]>([]);
+  const [submittedIds, setSubmittedIds] = useState<Set<string>>(new Set());
+  const [answerDrafts, setAnswerDrafts] = useState<Record<string, string>>({});
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -70,13 +96,106 @@ const StudentPanel: React.FC = () => {
   useEffect(() => {
     if (!user) {
       setProgress(null);
+      setProfile(null);
       return;
     }
-    const unsubscribe = onSnapshot(doc(db, 'student_progress', user.uid), (snapshot) => {
+    const unsubscribeProgress = onSnapshot(doc(db, 'student_progress', user.uid), (snapshot) => {
       setProgress(snapshot.data() as StudentProgress | null);
+    });
+    const unsubscribeProfile = onSnapshot(doc(db, 'students', user.uid), (snapshot) => {
+      setProfile(snapshot.data() as StudentProfile | null);
+    });
+    return () => {
+      unsubscribeProgress();
+      unsubscribeProfile();
+    };
+  }, [user]);
+
+  useEffect(() => {
+    if (!profile?.className) {
+      setHomeworkList([]);
+      return;
+    }
+    const q = query(collection(db, 'homework'), where('className', '==', profile.className));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as Homework[];
+      data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      setHomeworkList(data);
+    });
+    return () => unsubscribe();
+  }, [profile?.className]);
+
+  useEffect(() => {
+    if (!user) {
+      setSubmittedIds(new Set());
+      return;
+    }
+    const q = query(collection(db, 'homework_submissions'), where('studentUid', '==', user.uid));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setSubmittedIds(new Set(snapshot.docs.map((d) => (d.data() as { homeworkId: string }).homeworkId)));
     });
     return () => unsubscribe();
   }, [user]);
+
+  const handleSubmitHomework = async (hw: Homework) => {
+    if (!user) return;
+    const answerText = (answerDrafts[hw.id] || '').trim();
+    if (!answerText) return;
+    setSubmittingId(hw.id);
+    try {
+      await setDoc(doc(db, 'homework_submissions', `${hw.id}_${user.uid}`), {
+        homeworkId: hw.id,
+        studentUid: user.uid,
+        studentName: user.displayName || user.email?.split('@')[0] || 'Окуучу',
+        answerText,
+        submittedAt: serverTimestamp(),
+      });
+      setAnswerDrafts((prev) => ({ ...prev, [hw.id]: '' }));
+    } finally {
+      setSubmittingId(null);
+    }
+  };
+
+  const handleSaveClassName = async () => {
+    if (!user || !classDraft) return;
+    setClassSaving(true);
+    try {
+      await setStudentClassName(user, classDraft);
+    } finally {
+      setClassSaving(false);
+    }
+  };
+
+  const handleTogglePublic = async () => {
+    if (!user) return;
+    setPublicToggling(true);
+    try {
+      await setStudentPublic(user, !profile?.isPublic);
+    } finally {
+      setPublicToggling(false);
+    }
+  };
+
+  const portfolioUrl = user ? `${window.location.origin}/portfolio/${user.uid}` : '';
+
+  const handleShare = async () => {
+    if (!portfolioUrl) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Менин окуучу портфолиом', url: portfolioUrl });
+        return;
+      } catch {
+        // колдонуучу жокко чыгарса, clipboard'га көчүрүүгө өтөбүз
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(portfolioUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      // clipboard жеткиликсиз болсо, эч нерсе кылбайбыз — колдонуучу шилтемени өзү көчүрөт
+    }
+  };
 
   const localLanguages = useMemo(() => languageStats.map((item) => {
     const cloudCourse = progress?.courses?.[`${item.key}_language`];
@@ -222,6 +341,98 @@ const StudentPanel: React.FC = () => {
             )}
           </div>
         </div>
+
+        <div className={styles.card}>
+          <div className={styles.cardHead}>
+            <span className={styles.badge}><Users size={16} /> Класс жана бөлүшүү</span>
+            <h2>Портфолиом</h2>
+          </div>
+
+          {!profile?.className ? (
+            <div className={styles.languageList}>
+              <p className={styles.securityText}>Рейтинг жана үй тапшырма үчүн классыңызды тандаңыз:</p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <select value={classDraft} onChange={(e) => setClassDraft(e.target.value)}>
+                  <option value="">Классыңызды тандаңыз</option>
+                  {classList.map((cls) => <option key={cls} value={cls}>{cls}</option>)}
+                </select>
+                <button type="button" onClick={handleSaveClassName} disabled={!classDraft || classSaving} className={styles.googleBtn}>
+                  {classSaving ? 'Сакталууда...' : 'Сактоо'}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className={styles.securityText}>Классыңыз: <b>{profile.className}</b></p>
+          )}
+
+          <div className={styles.languageList} style={{ marginTop: '14px' }}>
+            <p className={styles.securityText}>
+              Портфолиоңузду ачык кылсаңыз, ата-энеӊиз же башкалар шилтеме аркылуу XP жана сертификаттарыӊызды көрө алышат (аты, класс, жеке маалымат эмес).
+            </p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <button type="button" onClick={handleTogglePublic} disabled={publicToggling} className={styles.googleBtn}>
+                {publicToggling ? '...' : profile?.isPublic ? '🔓 Ачык (жабуу)' : '🔒 Жабык (ачуу)'}
+              </button>
+              {profile?.isPublic && (
+                <button type="button" onClick={handleShare} className={styles.googleBtn}>
+                  {shareCopied ? '✅ Көчүрүлдү' : <><Share2 size={16} /> Бөлүшүү</>}
+                </button>
+              )}
+            </div>
+            {profile?.isPublic && (
+              <div className={styles.lastActivity}>
+                <Copy size={14} /> <span style={{ wordBreak: 'break-all' }}>{portfolioUrl}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {profile?.className && (
+          <div className={styles.card}>
+            <div className={styles.cardHead}>
+              <span className={styles.badge}><NotebookPen size={16} /> {profile.className}</span>
+              <h2>Үй тапшырмалар</h2>
+            </div>
+            <div className={styles.languageList}>
+              {homeworkList.length === 0 && (
+                <p className={styles.securityText}>Азырынча тапшырма жок.</p>
+              )}
+              {homeworkList.map((hw) => {
+                const isSubmitted = submittedIds.has(hw.id);
+                return (
+                  <div key={hw.id} style={{ gridTemplateColumns: '1fr', alignItems: 'stretch' }}>
+                    <div>
+                      <strong>{hw.title}</strong>
+                      <small>{hw.subject}{hw.dueDate ? ` · Мөөнөтү: ${hw.dueDate}` : ''}{hw.teacherName ? ` · ${hw.teacherName}` : ''}</small>
+                    </div>
+                    <p style={{ margin: '6px 0', color: '#475569' }}>{hw.description}</p>
+                    {isSubmitted ? (
+                      <span style={{ color: '#16a34a', fontWeight: 800 }}>✅ Тапшырылды</span>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <textarea
+                          value={answerDrafts[hw.id] || ''}
+                          onChange={(e) => setAnswerDrafts((prev) => ({ ...prev, [hw.id]: e.target.value }))}
+                          placeholder="Жообуңузду жазыңыз..."
+                          rows={2}
+                          style={{ flex: 1, minWidth: '200px', borderRadius: '10px', border: '1px solid #e2e8f0', padding: '8px' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleSubmitHomework(hw)}
+                          disabled={submittingId === hw.id || !(answerDrafts[hw.id] || '').trim()}
+                          className={styles.googleBtn}
+                        >
+                          {submittingId === hw.id ? '...' : 'Тапшыруу'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className={styles.card}>
           <div className={styles.cardHead}>

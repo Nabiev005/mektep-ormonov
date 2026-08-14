@@ -1,10 +1,81 @@
 .container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  gap: 24px;
   min-height: 80vh;
   padding: 20px;
   background: #f4f7f6;
+}
+
+.homeworkSection {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  max-width: 640px;
+  width: 100%;
+}
+
+.homeworkForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.homeworkForm input,
+.homeworkForm select,
+.homeworkForm textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.homeworkList h3 {
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.homeworkCard {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.homeworkCardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  cursor: pointer;
+  background: #f9fafb;
+}
+
+.homeworkCardHead div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.homeworkCardHead span {
+  color: #718096;
+  font-size: 13px;
+}
+
+.submissionList {
+  padding: 14px;
+  border-top: 1px solid #eee;
+}
+
+.submissionItem {
+  padding: 10px;
+  background: #f4f7f6;
+  border-radius: 8px;
+  margin-top: 8px;
 }
 
 .profileCard {
