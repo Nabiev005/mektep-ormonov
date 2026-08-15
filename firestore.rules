@@ -61,6 +61,13 @@ service cloud.firestore {
       allow delete: if isOwner(resource.data.teacherId) || isAdmin();
     }
 
+    match /warm_words/{noteId} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.ownerUid == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.ownerUid == request.auth.uid || isAdmin());
+      allow update: if false;
+    }
+
     match /homework_submissions/{submissionId} {
       allow read: if isAdmin()
         || isOwner(resource.data.studentUid)

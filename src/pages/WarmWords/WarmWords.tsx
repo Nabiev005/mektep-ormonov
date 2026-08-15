@@ -1,14 +1,17 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
 import styles from './WarmWords.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircleHeart, PenLine, Send, ShieldCheck, Sparkles, Trash2, UsersRound } from 'lucide-react';
+import { onAuthStateChanged, signInAnonymously, type User } from 'firebase/auth';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '../../firebase';
 
 interface Compliment {
   id: string;
   text: string;
   date: string;
   color: string;
+  ownerUid?: string;
 }
 
 const forbiddenWords = ["жаман", "начар", "акмак"]; // Фильтр
@@ -16,59 +19,66 @@ const forbiddenWords = ["жаман", "начар", "акмак"]; // Фильт
 const WarmWords: React.FC = () => {
   const [text, setText] = useState("");
   const [compliments, setCompliments] = useState<Compliment[]>([]);
-  const [myNotes, setMyNotes] = useState<string[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [sending, setSending] = useState(false);
   const remainingChars = 200 - text.length;
-  const myNotesCount = compliments.filter(note => myNotes.includes(note.id)).length;
+  const myNotesCount = user ? compliments.filter(note => note.ownerUid === user.uid).length : 0;
 
-  // 1. Маалыматты жүктөө
+  // Атыңыз эч жерде көрүнбөйт — бул тек "менин жазганым" деп аныктоо үчүн үнсүз анонимдүү сессия.
   useEffect(() => {
-    const saved = localStorage.getItem('school_compliments');
-    const savedMyNotes = localStorage.getItem('my_notes_ids');
-    if (saved) setCompliments(JSON.parse(saved));
-    if (savedMyNotes) setMyNotes(JSON.parse(savedMyNotes));
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        signInAnonymously(auth).catch(() => undefined);
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
-  // 2. Жаңы билдирүү кошуу
-  const handleSend = () => {
+  useEffect(() => {
+    const q = query(collection(db, 'warm_words'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setCompliments(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as Compliment[]);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSend = async () => {
     const hasForbidden = forbiddenWords.some(word => text.toLowerCase().includes(word));
     if (text.length < 5 || hasForbidden) {
       alert("Сураныч, жылуу сөз жазыңыз!");
       return;
     }
+    if (!user) {
+      alert("Бир аз күтүп, кайра аракет кылыңыз — байланыш даярдалууда.");
+      return;
+    }
 
     const colors = ['#FFADAD', '#FFD6A5', '#FDFFB6', '#CAFFBF', '#9BF6FF', '#A0C4FF', '#BDB2FF', '#FFC6FF'];
-    const newNote: Compliment = {
-      id: Date.now().toString(),
-      text: text,
-      date: new Date().toLocaleDateString(),
-      color: colors[Math.floor(Math.random() * colors.length)]
-    };
-
-    const updated = [newNote, ...compliments];
-    setCompliments(updated);
-    
-    // Өзүнүн жазганын белгилөө үчүн ID-ни сактоо
-    const updatedMyNotes = [...myNotes, newNote.id];
-    setMyNotes(updatedMyNotes);
-
-    localStorage.setItem('school_compliments', JSON.stringify(updated));
-    localStorage.setItem('my_notes_ids', JSON.stringify(updatedMyNotes));
-    setText("");
+    setSending(true);
+    try {
+      await addDoc(collection(db, 'warm_words'), {
+        text,
+        date: new Date().toLocaleDateString(),
+        color: colors[Math.floor(Math.random() * colors.length)],
+        ownerUid: user.uid,
+        createdAt: serverTimestamp(),
+      });
+      setText("");
+    } catch {
+      alert("Жөнөтүүдө ката кетти. Кайра аракет кылыңыз.");
+    } finally {
+      setSending(false);
+    }
   };
 
-  // 3. Өчүрүү (ТОЛУКТАЛДЫ: Эми дароо экрандан жана эстен өчүрөт)
-  const deleteNote = (id: string) => {
-    // Стикерлердин тизмесин жаңыртуу
-    const filteredCompliments = compliments.filter(note => note.id !== id);
-    setCompliments(filteredCompliments);
-
-    // "Менин жазгандарым" тизмесинен да өчүрүү
-    const filteredMyIds = myNotes.filter(myId => myId !== id);
-    setMyNotes(filteredMyIds);
-
-    // Браузердин эсине сактоо
-    localStorage.setItem('school_compliments', JSON.stringify(filteredCompliments));
-    localStorage.setItem('my_notes_ids', JSON.stringify(filteredMyIds));
+  const deleteNote = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'warm_words', id));
+    } catch {
+      alert("Өчүрүүдө ката кетти.");
+    }
   };
 
   return (
@@ -127,8 +137,8 @@ const WarmWords: React.FC = () => {
           />
           <div className={styles.composerFooter}>
             <span className={remainingChars < 25 ? styles.warningCount : ''}>{remainingChars} белги калды</span>
-            <button onClick={handleSend} className={styles.sendBtn}>
-              <Send size={19} /> Жөнөтүү
+            <button onClick={handleSend} className={styles.sendBtn} disabled={sending}>
+              <Send size={19} /> {sending ? 'Жөнөтүлүүдө...' : 'Жөнөтүү'}
             </button>
           </div>
         </motion.div>
@@ -149,14 +159,14 @@ const WarmWords: React.FC = () => {
           )}
 
           {compliments.map((note, index) => (
-            <motion.div 
+            <motion.div
               key={note.id}
               layout
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ 
-                scale: 1, 
+              animate={{
+                scale: 1,
                 opacity: 1,
-                rotate: (parseInt(note.id.slice(-1)) % 6) - 3 // Туруктуу рандомдук rotate
+                rotate: (parseInt(note.id.slice(-1), 36) % 6) - 3 // Туруктуу рандомдук rotate
               }}
               exit={{ scale: 0, opacity: 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -168,10 +178,10 @@ const WarmWords: React.FC = () => {
               <p className={styles.noteText}>{note.text}</p>
               <div className={styles.footer}>
                 <span className={styles.date}>{note.date}</span>
-                {/* Өчүрүү баскычы: Эгер ID "myNotes" ичинде болсо гана көрүнөт */}
-                {myNotes.includes(note.id) && (
-                  <button 
-                    onClick={() => deleteNote(note.id)} 
+                {/* Өчүрүү баскычы: Эгер өзүң жазган болсоң гана көрүнөт */}
+                {user && note.ownerUid === user.uid && (
+                  <button
+                    onClick={() => deleteNote(note.id)}
                     className={styles.deleteBtn}
                     title="Өчүрүү"
                   >
