@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './TypingGame.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Keyboard } from 'lucide-react';
 import { WORDS_DATA, type LanguageType } from './wordData';
+import { auth } from '../../firebase';
+import { addStudentXP } from '../../utils/studentAccount';
 
 const TypingGame: React.FC = () => {
   const [language, setLanguage] = useState<LanguageType>('kg');
@@ -15,6 +18,7 @@ const TypingGame: React.FC = () => {
   const [correctChars, setCorrectChars] = useState(0);
   const [totalAttempts, setTotalAttempts] = useState(0);
   const [isError, setIsError] = useState(false);
+  const [xpAwarded, setXpAwarded] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -30,6 +34,7 @@ const TypingGame: React.FC = () => {
     setCorrectChars(0);
     setTotalAttempts(0);
     setIsError(false);
+    setXpAwarded(false);
   };
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -50,6 +55,16 @@ const TypingGame: React.FC = () => {
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft, correctChars]);
+
+  useEffect(() => {
+    if (timeLeft !== 0 || xpAwarded || wpm === 0) return;
+    const user = auth.currentUser;
+    if (user) {
+      addStudentXP(user, wpm, 'typing_game').catch(() => undefined);
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setXpAwarded(true);
+  }, [timeLeft, xpAwarded, wpm]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isActive && timeLeft > 0) setIsActive(true);
@@ -135,7 +150,7 @@ const TypingGame: React.FC = () => {
         <AnimatePresence>
           {timeLeft === 0 && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className={styles.result}>
-              <p>Оюн бүттү! Сиздин ылдамдык: {wpm} WPM</p>
+              <p><Keyboard size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} /> Оюн бүттү! Сиздин ылдамдык: {wpm} WPM</p>
               <button className={styles.restartBtn} onClick={() => initGame(language)}>
                 КАЙРА БАШТОО
               </button>

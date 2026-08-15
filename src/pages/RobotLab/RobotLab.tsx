@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './RobotLab.module.css';
 import { robotLevels } from './levels'; // levels.ts файлын импорттоо
+import { ArrowLeft, ArrowRight, Cpu, Flag, Play, RotateCcw } from 'lucide-react';
+import { auth } from '../../firebase';
+import { recordStudentCourseProgress } from '../../utils/studentAccount';
 
 interface Position {
   x: number;
@@ -23,7 +26,8 @@ const RobotLab: React.FC = () => {
   });
   const [logs, setLogs] = useState<string[]>([]);
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
-  
+  const [maxLevelReached, setMaxLevelReached] = useState(0);
+
   const robotRef = useRef(robot);
   robotRef.current = robot;
 
@@ -31,8 +35,21 @@ const RobotLab: React.FC = () => {
   useEffect(() => {
     setCode(currentLevel.initialCode);
     resetRobot();
+    setMaxLevelReached((prev) => Math.max(prev, currentLevelIdx));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLevelIdx]);
+
+  useEffect(() => {
+    const progressPercent = Math.round(((maxLevelReached + 1) / robotLevels.length) * 100);
+    recordStudentCourseProgress(auth.currentUser, {
+      source: 'robot_lab',
+      title: 'Робот лаборатория',
+      progressPercent,
+      completed: maxLevelReached + 1,
+      total: robotLevels.length,
+      score: maxLevelReached + 1,
+    }).catch(() => undefined);
+  }, [maxLevelReached]);
 
   const addLog = (msg: string) => setLogs(prev => [...prev, `> ${msg}`].slice(-5));
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -110,8 +127,11 @@ const RobotLab: React.FC = () => {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.levelBadge}>{currentLevel.category} | Level {currentLevel.id} / 40</div>
+        <div className={styles.levelBadge}><Cpu size={14} /> {currentLevel.category} · Level {currentLevel.id} / {robotLevels.length}</div>
         <h1>ОРМОНОВ РОБОТОТЕХНИКАСЫ</h1>
+        <div className={styles.progressBar}>
+          <div className={styles.progressFill} style={{ width: `${((currentLevelIdx + 1) / robotLevels.length) * 100}%` }} />
+        </div>
       </header>
 
       <div className={styles.mainLayout}>
@@ -129,15 +149,15 @@ const RobotLab: React.FC = () => {
           </div>
           
           <div className={styles.levelNav}>
-            <button 
+            <button
               disabled={currentLevelIdx === 0}
               onClick={() => setCurrentLevelIdx(prev => prev - 1)}
-            >◀ Артка</button>
-            <span>{currentLevelIdx + 1} / 40</span>
-            <button 
+            ><ArrowLeft size={15} /> Артка</button>
+            <span>{currentLevelIdx + 1} / {robotLevels.length}</span>
+            <button
               disabled={currentLevelIdx === robotLevels.length - 1}
               onClick={() => setCurrentLevelIdx(prev => prev + 1)}
-            >Кийинки ▶</button>
+            >Кийинки <ArrowRight size={15} /></button>
           </div>
         </aside>
 
@@ -160,7 +180,7 @@ const RobotLab: React.FC = () => {
 
             <div className={styles.targetZone} style={{ left: currentLevel.targetPos.x, top: currentLevel.targetPos.y }}>
               <div className={styles.targetPulse}></div>
-              🏁
+              <Flag size={16} />
             </div>
           </div>
           <div className={styles.terminal}>
@@ -179,9 +199,9 @@ const RobotLab: React.FC = () => {
           />
           <div className={styles.controls}>
             <button className={styles.runBtn} onClick={runCode} disabled={isExecuting}>
-              {isExecuting ? "ЖҮКТӨЛҮҮДӨ..." : "КОДДУ ИШТЕТҮҮ"}
+              <Play size={15} /> {isExecuting ? "ЖҮКТӨЛҮҮДӨ..." : "КОДДУ ИШТЕТҮҮ"}
             </button>
-            <button className={styles.resetBtn} onClick={resetRobot}>🔄</button>
+            <button className={styles.resetBtn} onClick={resetRobot}><RotateCcw size={15} /></button>
           </div>
         </section>
       </div>

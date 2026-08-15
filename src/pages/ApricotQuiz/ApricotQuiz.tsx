@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Celebration from '../../components/Celebration/Celebration';
+import GameLeaderboard from '../../components/GameLeaderboard/GameLeaderboard';
 import { auth } from '../../firebase';
 import { addStudentXP } from '../../utils/studentAccount';
 import { playCorrectSound, playWinSound, playWrongSound } from '../../utils/sounds';
@@ -196,6 +197,7 @@ const ApricotQuiz = () => {
                 {score + health >= highScore && highScore !== 0 && <p className={styles.newRecord}>Жаңы рекорд! 🎉</p>}
              </div>
              <button onClick={() => window.location.reload()} className={styles.restartBtn}>Кайра баштоо</button>
+             <GameLeaderboard />
           </motion.div>
         )}
       </div>

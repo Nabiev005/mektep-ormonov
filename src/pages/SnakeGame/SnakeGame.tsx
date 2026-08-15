@@ -1,5 +1,6 @@
 import  { useState, useEffect, useCallback,} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Trophy } from 'lucide-react';
 import { auth } from '../../firebase';
 import { addStudentXP } from '../../utils/studentAccount';
 import { playCorrectSound, playWrongSound } from '../../utils/sounds';
@@ -143,7 +144,8 @@ const SnakeGame = () => {
         <AnimatePresence>
           {gameOver && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.overlay}>
-              <h2>Оюн бүттү! 🍎</h2>
+              <Trophy size={32} color="#4ade80" />
+              <h2>Оюн бүттү!</h2>
               <p>Упай: {score}</p>
               <button onClick={resetGame}>Кайра баштоо</button>
               <GameLeaderboard />
@@ -154,12 +156,12 @@ const SnakeGame = () => {
 
       {/* Мобилдик башкаруу */}
       <div className={styles.joystick}>
-        <button onClick={() => setDirection({ x: 0, y: -1 })} className={styles.up}>▲</button>
+        <button onClick={() => setDirection({ x: 0, y: -1 })} className={styles.up}><ArrowUp size={20} /></button>
         <div className={styles.mid}>
-          <button onClick={() => setDirection({ x: -1, y: 0 })}>◀</button>
-          <button onClick={() => setDirection({ x: 1, y: 0 })}>▶</button>
+          <button onClick={() => setDirection({ x: -1, y: 0 })}><ArrowLeft size={20} /></button>
+          <button onClick={() => setDirection({ x: 1, y: 0 })}><ArrowRight size={20} /></button>
         </div>
-        <button onClick={() => setDirection({ x: 0, y: 1 })} className={styles.down}>▼</button>
+        <button onClick={() => setDirection({ x: 0, y: 1 })} className={styles.down}><ArrowDown size={20} /></button>
       </div>
     </div>
   );

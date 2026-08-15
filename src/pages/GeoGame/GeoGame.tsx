@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import styles from './GeoGame.module.css';
 import mapImg from '../../assets/kyrgyzstan-map.png';
+import { Globe2, MapPin, Trophy } from 'lucide-react';
 import { auth } from '../../firebase';
 import { addStudentXP } from '../../utils/studentAccount';
 import { playCorrectSound, playWrongSound } from '../../utils/sounds';
@@ -8,7 +9,18 @@ import GameLeaderboard from '../../components/GameLeaderboard/GameLeaderboard';
 
 const TOTAL_ROUNDS = 7;
 
-const regions = [
+// Толук дүйнө картасы (NASA Blue Marble, -180..180 / -90..90 so чекитти
+// координата боюнча эсептеп коюуга болот): x% = (lon+180)/360*100, y% = (90-lat)/180*100
+const WORLD_MAP_URL = 'https://upload.wikimedia.org/wikipedia/commons/8/83/Equirectangular_projection_SW.jpg';
+
+interface GeoPoint {
+  id: string;
+  name: string;
+  top: string;
+  left: string;
+}
+
+const kyrgyzstanRegions: GeoPoint[] = [
   { id: 'batken', name: 'Баткен облусу', top: '75%', left: '12%' },
   { id: 'osh', name: 'Ош облусу', top: '72%', left: '32%' },
   { id: 'jalalabad', name: 'Жалал-Абад облусу', top: '48%', left: '28%' },
@@ -18,20 +30,45 @@ const regions = [
   { id: 'issyk-kul', name: 'Ысык-Көл облусу', top: '38%', left: '80%' },
 ];
 
+// Ар бир мамлекеттин борбор шаарынын координатасы боюнча эсептелген
+const worldCountries: GeoPoint[] = [
+  { id: 'kg', name: 'Кыргызстан', top: '26.2%', left: '70.7%' },
+  { id: 'ru', name: 'Россия', top: '19.0%', left: '60.5%' },
+  { id: 'cn', name: 'Кытай', top: '27.8%', left: '82.3%' },
+  { id: 'us', name: 'АКШ', top: '28.4%', left: '28.6%' },
+  { id: 'tr', name: 'Түркия', top: '27.8%', left: '59.1%' },
+  { id: 'kz', name: 'Казакстан', top: '21.6%', left: '69.9%' },
+  { id: 'uz', name: 'Өзбекстан', top: '27.1%', left: '69.2%' },
+  { id: 'de', name: 'Германия', top: '20.8%', left: '53.7%' },
+  { id: 'fr', name: 'Франция', top: '22.9%', left: '50.7%' },
+  { id: 'gb', name: 'Улуу Британия', top: '21.4%', left: '50.0%' },
+  { id: 'jp', name: 'Япония', top: '30.2%', left: '88.8%' },
+  { id: 'eg', name: 'Египет', top: '33.3%', left: '58.7%' },
+  { id: 'br', name: 'Бразилия', top: '58.8%', left: '36.7%' },
+  { id: 'in', name: 'Индия', top: '34.1%', left: '71.5%' },
+];
+
+type MapMode = 'kyrgyzstan' | 'world';
+
 const GeoGame = () => {
-  // eslint-disable-next-line react-hooks/purity
-  const [target, setTarget] = useState(regions[Math.floor(Math.random() * regions.length)]);
+  const [mode, setMode] = useState<MapMode>('kyrgyzstan');
+  const points = mode === 'kyrgyzstan' ? kyrgyzstanRegions : worldCountries;
+  const mapUrl = mode === 'kyrgyzstan' ? mapImg : WORLD_MAP_URL;
+  const totalRounds = Math.min(TOTAL_ROUNDS, points.length);
+
+  const pickNewTarget = (list: GeoPoint[]) => list[Math.floor(Math.random() * list.length)];
+
+  const [target, setTarget] = useState<GeoPoint>(() => pickNewTarget(kyrgyzstanRegions));
   const [score, setScore] = useState(0);
   const [round, setRound] = useState(1);
   const [clickedId, setClickedId] = useState<string | null>(null);
   const [isFinished, setIsFinished] = useState(false);
   const [xpAwarded, setXpAwarded] = useState(false);
 
-  // eslint-disable-next-line react-hooks/purity
-  const pickNewTarget = () => regions[Math.floor(Math.random() * regions.length)];
-
-  const resetGame = () => {
-    setTarget(pickNewTarget());
+  const resetGame = (nextMode: MapMode = mode) => {
+    const list = nextMode === 'kyrgyzstan' ? kyrgyzstanRegions : worldCountries;
+    setMode(nextMode);
+    setTarget(pickNewTarget(list));
     setScore(0);
     setRound(1);
     setClickedId(null);
@@ -46,11 +83,11 @@ const GeoGame = () => {
       setScore(score + 10);
       playCorrectSound();
       setTimeout(() => {
-        if (round >= TOTAL_ROUNDS) {
+        if (round >= totalRounds) {
           setIsFinished(true);
         } else {
           setRound((r) => r + 1);
-          setTarget(pickNewTarget());
+          setTarget(pickNewTarget(points));
         }
         setClickedId(null);
       }, 1500);
@@ -66,20 +103,38 @@ const GeoGame = () => {
     if (user) {
       addStudentXP(user, score, 'geo_game').catch(() => undefined);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setXpAwarded(true);
   }, [isFinished, xpAwarded, score]);
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>🌍 Geo Master</h2>
-        <div className={styles.stats}>Упай: {score} · Раунд {Math.min(round, TOTAL_ROUNDS)}/{TOTAL_ROUNDS}</div>
+        <h2 className={styles.title}><Globe2 size={26} style={{ verticalAlign: 'middle', marginRight: 8 }} /> Geo Master</h2>
+
+        <div className={styles.modeSwitch}>
+          <button
+            className={mode === 'kyrgyzstan' ? styles.modeBtnActive : styles.modeBtn}
+            onClick={() => resetGame('kyrgyzstan')}
+          >
+            <MapPin size={15} /> Кыргызстан
+          </button>
+          <button
+            className={mode === 'world' ? styles.modeBtnActive : styles.modeBtn}
+            onClick={() => resetGame('world')}
+          >
+            <Globe2 size={15} /> Дүйнө
+          </button>
+        </div>
+
+        <div className={styles.stats}>Упай: {score} · Раунд {Math.min(round, totalRounds)}/{totalRounds}</div>
 
         {isFinished ? (
           <div className={styles.finishBox}>
-            <h3>🏆 Оюн бүттү!</h3>
+            <Trophy size={32} color="#60a5fa" />
+            <h3>Оюн бүттү!</h3>
             <p>Жыйынтык упай: {score}</p>
-            <button className={styles.restartBtn} onClick={resetGame}>Кайра баштоо</button>
+            <button className={styles.restartBtn} onClick={() => resetGame()}>Кайра баштоо</button>
             <GameLeaderboard />
           </div>
         ) : (
@@ -87,18 +142,18 @@ const GeoGame = () => {
             <p className={styles.quest}>Тап: <strong>{target.name}</strong></p>
 
             <div className={styles.mapContainer}>
-              <img src={mapImg} alt="Карта" className={styles.mapBackground} />
+              <img src={mapUrl} alt="Карта" className={styles.mapBackground} />
 
-              {regions.map((reg) => (
+              {points.map((point) => (
                 <button
-                  key={reg.id}
+                  key={point.id}
                   className={`
                     ${styles.regionPoint}
-                    ${clickedId === reg.id && reg.id === target.id ? styles.correct : ''}
-                    ${clickedId === reg.id && reg.id !== target.id ? styles.wrong : ''}
+                    ${clickedId === point.id && point.id === target.id ? styles.correct : ''}
+                    ${clickedId === point.id && point.id !== target.id ? styles.wrong : ''}
                   `}
-                  style={{ top: reg.top, left: reg.left }}
-                  onClick={() => handleRegionClick(reg.id)}
+                  style={{ top: point.top, left: point.left }}
+                  onClick={() => handleRegionClick(point.id)}
                 >
                   <span className={styles.ripple}></span>
                 </button>

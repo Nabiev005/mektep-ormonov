@@ -131,12 +131,19 @@
 .resultIcon { font-size: 4rem; margin-bottom: 10px; display: block; }
 .restartBtn {
   margin-top: 15px;
-  padding: 10px 25px;
-  background: #3b82f6;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #3b82f6, #2dd4bf);
   border: none;
-  border-radius: 10px;
+  border-radius: 999px;
   color: white;
+  font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.restartBtn:hover {
+  transform: translateY(-2px);
 }
 .confettiOverlay { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
 .confettiPiece { position: absolute; width: 8px; height: 8px; border-radius: 2px; }

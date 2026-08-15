@@ -9,24 +9,32 @@ import {
   Calculator,
   CalendarDays,
   Code2,
+  Cpu,
   FlaskConical,
   FileCode2,
   FileText,
+  Gamepad2,
   GraduationCap,
+  Heart,
   Home,
   Images,
+  Keyboard,
   Languages,
   Library,
   Sparkles,
   BookOpen,
   Link2,
   Mail,
+  MapPin,
   Menu,
   Newspaper,
   Phone,
+  Puzzle,
   School,
+  TreeDeciduous,
   Trophy,
   Users,
+  Video,
   Crown,
 } from 'lucide-react';
 
@@ -368,7 +376,31 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
           <Link to="/community/russian-course" style={s.navLink(isActive('/community/russian-course'))} className={navClass('/community/russian-course')} title="Орус тили">
             <span className="nav-icon"><Languages size={20} /></span><span className="nav-label">Орус тили</span> <span className="nav-badge" style={s.badge('blue')}>КУРС</span>
           </Link>
+          <Link to="/community/gamedev" style={s.navLink(isActive('/community/gamedev'))} className={navClass('/community/gamedev')} title="Оюн түзүү">
+            <span className="nav-icon"><Gamepad2 size={20} /></span><span className="nav-label">Оюн түзүү</span> <span className="nav-badge" style={s.badge('blue')}>КУРС</span>
+          </Link>
+          <Link to="/community/robot-lab" style={s.navLink(isActive('/community/robot-lab'))} className={navClass('/community/robot-lab')} title="Робот лаборатория">
+            <span className="nav-icon"><Cpu size={20} /></span><span className="nav-label">Робот лаборатория</span>
+          </Link>
+          <Link to="/online-lessons" style={s.navLink(isActive('/online-lessons'))} className={navClass('/online-lessons')} title="Онлайн сабактар">
+            <span className="nav-icon"><Video size={20} /></span><span className="nav-label">Онлайн сабактар</span>
+          </Link>
           <Link to="/resources" style={s.navLink(isActive('/resources'))} className={navClass('/resources')} title="Пайдалуу ресурстар"><span className="nav-icon"><Link2 size={20} /></span><span className="nav-label">Пайдалуу ресурстар</span></Link>
+        </div>
+
+        {/* ОЮНДАР */}
+        <div style={s.menuSection}>
+          <span style={s.sectionTitle} className="section-title">Оюндар</span>
+          <Link to="/community/duel-game" style={s.navLink(isActive('/community/duel-game'))} className={navClass('/community/duel-game')} title="Ким акылдуу?"><span className="nav-icon"><Brain size={20} /></span><span className="nav-label">Ким акылдуу?</span></Link>
+          <Link to="/community/math-sprint" style={s.navLink(isActive('/community/math-sprint'))} className={navClass('/community/math-sprint')} title="Тез Эсепте"><span className="nav-icon"><Calculator size={20} /></span><span className="nav-label">Тез Эсепте</span></Link>
+          <Link to="/community/apricot-tree" style={s.navLink(isActive('/community/apricot-tree'))} className={navClass('/community/apricot-tree')} title="Өрүк дарагын сакта"><span className="nav-icon"><TreeDeciduous size={20} /></span><span className="nav-label">Өрүк дарагын сакта</span></Link>
+          <Link to="/community/snake-game" style={s.navLink(isActive('/community/snake-game'))} className={navClass('/community/snake-game')} title="Жылан оюну"><span className="nav-icon"><Puzzle size={20} /></span><span className="nav-label">Жылан оюну</span></Link>
+          <Link to="/community/games/geo-master" style={s.navLink(isActive('/community/games/geo-master'))} className={navClass('/community/games/geo-master')} title="Geo Master"><span className="nav-icon"><MapPin size={20} /></span><span className="nav-label">Geo Master</span></Link>
+          <Link to="/community/typing-game" style={s.navLink(isActive('/community/typing-game'))} className={navClass('/community/typing-game')} title="Тез басуу"><span className="nav-icon"><Keyboard size={20} /></span><span className="nav-label">Тез басуу</span></Link>
+          <Link to="/community/logic-game" style={s.navLink(isActive('/community/logic-game'))} className={navClass('/community/logic-game')} title="Логика Battle"><span className="nav-icon"><Brain size={20} /></span><span className="nav-label">Логика Battle</span></Link>
+          <Link to="/community/leaderboard" style={s.navLink(isActive('/community/leaderboard'))} className={navClass('/community/leaderboard')} title="Рейтинг">
+            <span className="nav-icon"><Crown size={20} /></span><span className="nav-label">Рейтинг</span> <span className="nav-badge" style={s.badge('blue')}>ЖАҢЫ</span>
+          </Link>
         </div>
 
         {/* КООМЧУЛУК */}
@@ -378,17 +410,14 @@ const Header: React.FC<HeaderProps> = ({ onExpandedChange }) => {
             <span className="nav-icon"><GraduationCap size={20} /></span><span className="nav-label">Окуучу панели</span> <span className="nav-badge" style={s.badge('blue')}>GOOGLE</span>
           </Link>
           <Link to="/community/warm-words" style={s.navLink(isActive('/community/warm-words'))} className={navClass('/community/warm-words')} title="Анонимдүү сөздөр"><span className="nav-icon"><Mail size={20} /></span><span className="nav-label">Анонимдүү сөздөр</span></Link>
-          <Link to="/community/duel-game" style={s.navLink(isActive('/community/duel-game'))} className={navClass('/community/duel-game')} title="Ким акылдуу?"><span className="nav-icon"><Brain size={20} /></span><span className="nav-label">Ким акылдуу?</span></Link>
-          <Link to="/community/math-sprint" style={s.navLink(isActive('/community/math-sprint'))} className={navClass('/community/math-sprint')} title="Тез Эсепте"><span className="nav-icon"><Calculator size={20} /></span><span className="nav-label">Тез Эсепте</span></Link>
-          <Link to="/community/leaderboard" style={s.navLink(isActive('/community/leaderboard'))} className={navClass('/community/leaderboard')} title="Рейтинг">
-            <span className="nav-icon"><Crown size={20} /></span><span className="nav-label">Рейтинг</span> <span className="nav-badge" style={s.badge('blue')}>ЖАҢЫ</span>
-          </Link>
+          <Link to="/parents-corner" style={s.navLink(isActive('/parents-corner'))} className={navClass('/parents-corner')} title="Ата-энелер бурчу"><span className="nav-icon"><Heart size={20} /></span><span className="nav-label">Ата-энелер бурчу</span></Link>
         </div>
 
         {/* МЕКТЕП */}
         <div style={s.menuSection}>
           <span style={s.sectionTitle} className="section-title">Мектеп</span>
           <Link to="/teachers" style={s.navLink(isActive('/teachers'))} className={navClass('/teachers')} title="Мугалимдер"><span className="nav-icon"><Users size={20} /></span><span className="nav-label">Мугалимдер</span></Link>
+          <Link to="/teacher-panel" style={s.navLink(isActive('/teacher-panel'))} className={navClass('/teacher-panel')} title="Мугалим панели"><span className="nav-icon"><GraduationCap size={20} /></span><span className="nav-label">Мугалим панели</span></Link>
           <Link to="/best-students" style={s.navLink(isActive('/best-students'))} className={navClass('/best-students')} title="Мыкты окуучулар"><span className="nav-icon"><Trophy size={20} /></span><span className="nav-label">Мыкты окуучулар</span></Link>
           <Link to="/gallery" style={s.navLink(isActive('/gallery'))} className={navClass('/gallery')} title="Галерея"><span className="nav-icon"><Images size={20} /></span><span className="nav-label">Галерея</span></Link>
           <Link to="/library" style={s.navLink(isActive('/library'))} className={navClass('/library')} title="Иш пландар"><span className="nav-icon"><FileText size={20} /></span><span className="nav-label">Иш пландар</span></Link>
