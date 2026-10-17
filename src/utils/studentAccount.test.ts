@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { User } from 'firebase/auth';
-import { recordStudentCourseProgress } from './studentAccount';
+import { addStudentXP, MAX_XP_PER_ACTION, recordStudentCourseProgress } from './studentAccount';
 
 const setDocMock = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 
@@ -78,5 +78,25 @@ describe('recordStudentCourseProgress', () => {
     });
     const payload = setDocMock.mock.calls[0][1];
     expect(payload['courses.python'].record).toBe(90);
+  });
+});
+
+describe('addStudentXP', () => {
+  beforeEach(() => {
+    setDocMock.mockClear();
+  });
+
+  it('caps a single award at MAX_XP_PER_ACTION so Firestore rules accept it', async () => {
+    await addStudentXP(user, 999, 'typing_game');
+    const progressPayload = setDocMock.mock.calls[0][1];
+    const leaderboardPayload = setDocMock.mock.calls[1][1];
+    expect(progressPayload.totalXP).toEqual({ __increment: MAX_XP_PER_ACTION });
+    expect(leaderboardPayload.totalXP).toEqual({ __increment: MAX_XP_PER_ACTION });
+  });
+
+  it('skips writing when there is nothing to award', async () => {
+    await addStudentXP(user, 0, 'snake_game');
+    await addStudentXP(user, -5, 'snake_game');
+    expect(setDocMock).not.toHaveBeenCalled();
   });
 });

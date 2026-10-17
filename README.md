@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# Зайил Ормонов атындагы мектептин сайты
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Баткен району, Кан айылындагы мектептин расмий санарип порталы: жаңылыктар, расписание, мугалимдер,
+окуучу/мугалим панелдери, ЖРТга даярдык, IT жана тил курстары, билим оюндары жана AI жардамчы.
 
-Currently, two official plugins are available:
+## Технологиялар
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19 + TypeScript + Vite
+- Firebase: Authentication (Google — окуучулар, email — админ), Firestore, Storage
+- Vercel: хостинг жана `api/` ичиндеги serverless функциялар (Claude API)
 
-## React Compiler
+## Иштетүү
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # фронтенд гана (http://localhost:5173)
+vercel dev         # /api функциялары менен бирге (AI түшүндүрмө, AI тест)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Текшерүүлөр: `npm run lint`, `npm test`, `npm run build`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Чөйрө өзгөрмөлөрү
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+`.env.example` караңыз. Vercel'де орнотулушу керек:
+
+| Өзгөрмө | Каякта колдонулат |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | `api/explain.js`, `api/generate-quiz.js` |
+| `VITE_IMGBB_API_KEY` | Админ панелде сүрөт жүктөө |
+
+## Түзүлүшү
+
+- `src/components/Layout/` — сайдбар, топбар, мобилдик меню. Меню пункттары `navigation.ts` ичинде.
+- `src/index.css` — дизайн токендери (`--primary`, `--surface`, `--border` ж.б.). Жаңы баракчалар ушуларды колдонсун.
+- `src/pages/` — баракчалар, ар бири өз CSS модулу менен.
+- `src/utils/studentAccount.ts` — окуучунун профили, XP жана курс прогресси.
+- `api/` — Vercel функциялары. `_auth.js` Firebase ID токенин текшерет: AI түшүндүрмөгө кирген колдонуучу гана, AI тест түзүүгө админ гана кире алат.
+- `firestore.rules` — коопсуздук эрежелери.
+
+## Firestore эрежелерин жүктөө
+
+Эрежелер өзгөргөндөн кийин:
+
+```bash
+firebase deploy --only firestore:rules
 ```
+
+Админ кошуу: Firestore'до `admins/{uid}` документин кол менен түзүңүз.
+Мугалим кошуу: админ панелден же `teachers/{uid}` документи аркылуу.

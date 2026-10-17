@@ -1,32 +1,71 @@
+/* Сайттын бирдиктүү дизайн токендери. Баракчалардын CSS модулдары ушул өзгөрмөлөрдү колдонушу керек. */
 :root {
-  --primary-color: #1a5f7a; /* Мектептин негизги түсү (мисалы, көк) */
-  --secondary-color: #f8f9fa;
-  --text-color: #333;
-  --accent-color: #ffcc00;
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-hover: #f1f4f9;
+  --border: #e6eaf1;
+  --border-strong: #d3d9e3;
+
+  --text: #0f172a;
+  --text-secondary: #334155;
+  --muted: #64748b;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eef4ff;
+
+  --success: #16a34a;
+  --success-soft: #ecfdf3;
+  --warning: #d97706;
+  --warning-soft: #fff7e8;
+  --danger: #dc2626;
+  --danger-soft: #fef1f1;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --topbar-height: 72px;
+
+  /* Эски баракчалар колдонгон аттар */
+  --primary-color: var(--primary);
+  --secondary-color: var(--bg);
+  --text-color: var(--text);
+  --accent-color: #f59e0b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-color);
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
-.appWrapper {
-  display: flex;
-  min-height: 100vh;
+img {
+  max-width: 100%;
 }
 
-.mainContent {
-  flex: 1;
-  margin-left: 260px; /* Компьютерде меню үчүн орун */
-  width: calc(100% - 260px);
-  transition: all 0.3s ease;
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
 }
 
-/* МОБИЛДИК ТЕЛЕФОНДОР ҮЧҮН */
-@media (max-width: 1023px) {
-  .mainContent {
-    margin-left: 0; /* Телефондо контентти солго жылдырбайбыз */
-    width: 100%;
-  }
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

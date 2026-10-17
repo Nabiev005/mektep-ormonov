@@ -1,0 +1,575 @@
+.shell {
+  --sidebar-width: 268px;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.shellCollapsed {
+  --sidebar-width: 76px;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  transition: width 0.2s ease, transform 0.25s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--topbar-height);
+  padding: 0 18px;
+  border-bottom: 1px solid var(--border);
+  flex: 0 0 auto;
+}
+
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brandMark {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.brandText strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.brandText small {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.closeMobile {
+  display: none;
+}
+
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+  scrollbar-width: thin;
+}
+
+.group {
+  margin-top: 14px;
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.groupTitle svg {
+  transition: transform 0.2s ease;
+}
+
+.chevronClosed {
+  transform: rotate(-90deg);
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  margin: 2px 0;
+  padding: 0 12px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navItem:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.navItemActive,
+.navItemActive:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.navIcon {
+  flex: 0 0 auto;
+}
+
+.navLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navBadge {
+  margin-left: auto;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.sidebarFooter {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.collapseButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 10px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.collapseButton:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+/* Жыйыштырылган сайдбар: иконкалар гана */
+.shellCollapsed .brandText,
+.shellCollapsed .navLabel,
+.shellCollapsed .navBadge,
+.shellCollapsed .groupTitle span,
+.shellCollapsed .collapseButton span {
+  display: none;
+}
+
+.shellCollapsed .brand {
+  justify-content: center;
+  padding: 0;
+}
+
+.shellCollapsed .navItem,
+.shellCollapsed .groupTitle {
+  justify-content: center;
+  padding: 0;
+}
+
+.shellCollapsed .groupTitle {
+  height: 1px;
+  margin: 10px 0;
+  background: var(--border);
+}
+
+.shellCollapsed .groupTitle svg {
+  display: none;
+}
+
+/* ---------- MAIN ---------- */
+.main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.2s ease;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--topbar-height);
+  padding: 0 28px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.menuButton,
+.mobileTitle {
+  display: none;
+}
+
+.search {
+  position: relative;
+  flex: 0 1 440px;
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px 0 42px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.search input:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.searchResults {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.searchResult {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.searchResult:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.searchEmpty {
+  margin: 0;
+  padding: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.topbarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  background: var(--surface);
+}
+
+.iconButton:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.primaryButton:hover {
+  background: var(--primary-hover);
+}
+
+.userChip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 14px 0 5px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.userChip:hover {
+  border-color: var(--border-strong);
+}
+
+.userChip img,
+.userInitial {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userInitial {
+  display: grid;
+  place-items: center;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.userText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.userText strong {
+  max-width: 140px;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 13.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userText small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.tabbar,
+.backdrop {
+  display: none;
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 1023px) {
+  .shell,
+  .shellCollapsed {
+    --sidebar-width: 0px;
+  }
+
+  .sidebar {
+    width: 288px;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  /* Мобилдик менюда жыйыштыруу режими колдонулбайт */
+  .shellCollapsed .brandText,
+  .shellCollapsed .navLabel,
+  .shellCollapsed .navBadge,
+  .shellCollapsed .groupTitle span {
+    display: revert;
+  }
+
+  .shellCollapsed .navItem,
+  .shellCollapsed .groupTitle {
+    justify-content: flex-start;
+    padding: 0 12px;
+  }
+
+  .shellCollapsed .groupTitle {
+    height: auto;
+    margin: 0;
+    padding: 6px 12px;
+    justify-content: space-between;
+    background: none;
+  }
+
+  .shellCollapsed .brand {
+    justify-content: space-between;
+    padding: 0 18px;
+  }
+
+  .sidebarFooter {
+    display: none;
+  }
+
+  .closeMobile {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--surface-hover);
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(15, 23, 42, 0.45);
+  }
+
+  .topbar {
+    gap: 10px;
+    height: 60px;
+    padding: 0 16px;
+  }
+
+  .menuButton {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .mobileTitle {
+    display: block;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .search,
+  .iconButton,
+  .userText {
+    display: none;
+  }
+
+  .userChip {
+    height: 40px;
+    padding: 2px;
+  }
+
+  .primaryButton {
+    height: 40px;
+    padding: 0 14px;
+  }
+
+  .content {
+    padding: 16px 16px 24px;
+  }
+
+  .tabbar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 40;
+    display: flex;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 64px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .tabActive {
+    color: var(--primary);
+  }
+}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Bot } from 'lucide-react';
 import { auth } from '../../firebase';
-import { recordStudentCourseProgress } from '../../utils/studentAccount';
+import { recordStudentCourseProgress, signInStudentWithGoogle } from '../../utils/studentAccount';
 import styles from './AITutor.module.css';
 
 type Level = 'simple' | 'standard' | 'deep';
@@ -44,9 +44,12 @@ const AITutor: React.FC = () => {
     setLevel('simple');
 
     try {
+      // API акчаны текке кетирбеш үчүн кирген колдонуучуларга гана иштейт.
+      const user = auth.currentUser ?? await signInStudentWithGoogle();
+      const idToken = await user.getIdToken();
       const response = await fetch('/api/explain', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
         body: JSON.stringify({ topic: topic.trim(), subject: subject.trim() }),
       });
 

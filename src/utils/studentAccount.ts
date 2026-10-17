@@ -32,7 +32,12 @@ export const ensureStudentProfile = async (user: User) => {
   );
 };
 
-export const addStudentXP = async (user: User, amount: number, source: string, meta: Record<string, unknown> = {}) => {
+/** Firestore эрежелери бир жазууда ушундан көп XP кошууга уруксат бербейт (firestore.rules: validXPChange). */
+export const MAX_XP_PER_ACTION = 150;
+
+export const addStudentXP = async (user: User, rawAmount: number, source: string, meta: Record<string, unknown> = {}) => {
+  const amount = Math.max(0, Math.min(MAX_XP_PER_ACTION, Math.round(rawAmount)));
+  if (amount === 0) return;
   const progressRef = doc(db, 'student_progress', user.uid);
   await setDoc(
     progressRef,

@@ -373,9 +373,10 @@ const Dashboard: React.FC = () => {
     setQuizGenError('');
     setQuizSuggestions([]);
     try {
+      const idToken = await auth.currentUser?.getIdToken();
       const response = await fetch('/api/generate-quiz', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken || ''}` },
         body: JSON.stringify({ subject: subjectList.find(s => s.id === subject)?.name || subject, topic: quizTopic.trim(), count: 8 }),
       });
       const rawText = await response.text();

@@ -14,29 +14,68 @@ service cloud.firestore {
       return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    function isTeacher() {
+      return signedIn() && exists(/databases/$(database)/documents/teachers/$(request.auth.uid));
+    }
+
+    function isShortString(value, maxLength) {
+      return value is string && value.size() <= maxLength;
+    }
+
+    // Бир жазууда XP канча өсө аларын жана жазуулардын ортосундагы минималдуу убакытты чектейт.
+    // Мындай чек кылбаса, окуучу консолдон өзүнө каалаган XP жазып алат.
+    function validXPChange() {
+      let oldXP = resource == null ? 0 : resource.data.get('totalXP', 0);
+      let newXP = request.resource.data.get('totalXP', 0);
+      let lastUpdate = resource == null ? timestamp.value(0) : resource.data.get('updatedAt', timestamp.value(0));
+      return newXP is number
+        && (newXP == oldXP
+          || (newXP > oldXP && newXP - oldXP <= 150 && request.time > lastUpdate + duration.value(2, 's')));
+    }
+
     match /students/{userId} {
       allow read: if isOwner(userId) || isAdmin() || resource.data.isPublic == true;
-      allow create, update: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data.get('role', 'student') == 'student';
       allow delete: if false;
     }
 
     match /student_progress/{userId} {
       allow read: if isOwner(userId) || isAdmin()
         || get(/databases/$(database)/documents/students/$(userId)).data.isPublic == true;
-      allow create, update: if isOwner(userId);
+      allow create, update: if isOwner(userId) && validXPChange();
       allow delete: if false;
     }
 
     match /leaderboard/{userId} {
       allow read: if true;
-      allow create, update: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['uid', 'displayName', 'photoURL', 'totalXP', 'className', 'updatedAt'])
+        && validXPChange();
       allow delete: if false;
     }
 
     match /math_arena/{arenaId} {
       allow read: if true;
-      allow create, update: if signedIn();
-      allow delete: if false;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['id', 'status', 'subject', 'createdAt'])
+        && request.resource.data.status == 'active';
+      allow update, delete: if isAdmin();
+
+      // Ар бир оюнчу өз документине гана жазат, упай бир жолу +10 гана өсөт.
+      match /players/{playerId} {
+        allow read: if true;
+        allow create: if isOwner(playerId)
+          && request.resource.data.keys().hasOnly(['uid', 'name', 'avatar', 'score', 'updatedAt'])
+          && request.resource.data.uid == playerId
+          && request.resource.data.score == 0
+          && isShortString(request.resource.data.name, 80);
+        allow update: if isOwner(playerId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['score', 'updatedAt'])
+          && request.resource.data.score == resource.data.score + 10
+          && request.time > resource.data.updatedAt + duration.value(1, 's');
+        allow delete: if isAdmin();
+      }
     }
 
     match /duel-questions/{questionId} {
@@ -57,7 +96,9 @@ service cloud.firestore {
 
     match /homework/{homeworkId} {
       allow read: if true;
-      allow create, update: if isOwner(request.resource.data.teacherId) || isAdmin();
+      allow create: if (isTeacher() && request.resource.data.teacherId == request.auth.uid) || isAdmin();
+      allow update: if (isOwner(resource.data.teacherId) && request.resource.data.teacherId == resource.data.teacherId)
+        || isAdmin();
       allow delete: if isOwner(resource.data.teacherId) || isAdmin();
     }
 
@@ -77,6 +118,30 @@ service cloud.firestore {
         || isOwner(get(/databases/$(database)/documents/homework/$(resource.data.homeworkId)).data.teacherId)
         || isAdmin();
       allow delete: if false;
+    }
+
+    // Байланыш формасынан келген кайрылуулар: ар ким жөнөтө алат, админ гана окуйт.
+    match /feedback/{feedbackId} {
+      allow create: if request.resource.data.keys().hasOnly(['title', 'email', 'description', 'date', 'createdAt', 'updatedAt'])
+        && isShortString(request.resource.data.title, 100)
+        && isShortString(request.resource.data.email, 120)
+        && isShortString(request.resource.data.description, 2000)
+        && request.resource.data.title.size() > 0
+        && request.resource.data.description.size() > 0;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Ата-энелер бурчундагы пикирлер: ар ким жаза алат, баары окуйт, админ өчүрөт.
+    match /parent_comments/{commentId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['name', 'text', 'createdAt'])
+        && isShortString(request.resource.data.name, 60)
+        && isShortString(request.resource.data.text, 1000)
+        && request.resource.data.name.size() > 0
+        && request.resource.data.text.size() > 0
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if isAdmin();
     }
 
     match /{document=**} {

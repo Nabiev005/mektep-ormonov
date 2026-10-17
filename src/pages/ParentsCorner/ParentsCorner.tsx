@@ -1,49 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { onAuthStateChanged } from 'firebase/auth';
+import { addDoc, collection, deleteDoc, doc, getDoc, limit, onSnapshot, orderBy, query, serverTimestamp, type Timestamp } from 'firebase/firestore';
+import { auth, db } from '../../firebase';
 import styles from './ParentsCorner.module.css';
+
+interface ParentComment {
+  id: string;
+  name: string;
+  text: string;
+  createdAt?: Timestamp | null;
+}
 
 const ParentsCorner: React.FC = () => {
   const [name, setName] = useState('');
   const [comment, setComment] = useState('');
-
-  // Админ экенин текшерүү (Сиз текшерүү үчүн localStorage'га isAdmin: true деп жазып койсоңуз болот)
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [comments, setComments] = useState<any[]>(() => {
-    const saved = localStorage.getItem('school_comments');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return [
-      { id: 1, name: "Айнура Маматова", text: "Мектептин жаңы имараты абдан жагат, балдарга жакшы шарттар түзүлгөн.", date: "15.01.2026", timestamp: Date.now() - 86400000 },
-      { id: 2, name: "Бакыт Токтосунов", text: "Мугалимдерге чоң рахмат, билим берүү деңгээли жогору.", date: "17.01.2026", timestamp: Date.now() - 43200000 }
-    ];
-  });
+  const [comments, setComments] = useState<ParentComment[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    localStorage.setItem('school_comments', JSON.stringify(comments));
-  }, [comments]);
+    const q = query(collection(db, 'parent_comments'), orderBy('createdAt', 'desc'), limit(50));
+    return onSnapshot(q, (snap) => {
+      setComments(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<ParentComment, 'id'>) })));
+    });
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Админ укугу Firestore'догу admins коллекциясынан текшерилет (localStorage'га ишенбейбиз).
+  useEffect(() => {
+    return onAuthStateChanged(auth, async (user) => {
+      setIsAdmin(user ? (await getDoc(doc(db, 'admins', user.uid))).exists() : false);
+    });
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim() && comment.trim()) {
-      const newComment = {
-        id: Date.now(),
-        name: name,
-        text: comment,
-        date: new Date().toLocaleDateString(),
-        timestamp: Date.now() // Жазылган убактысын сактайбыз
-      };
-      setComments([newComment, ...comments]);
+    if (!name.trim() || !comment.trim()) return;
+    setSending(true);
+    setError('');
+    try {
+      await addDoc(collection(db, 'parent_comments'), {
+        name: name.trim().slice(0, 60),
+        text: comment.trim().slice(0, 1000),
+        createdAt: serverTimestamp(),
+      });
       setName('');
       setComment('');
+    } catch {
+      setError('Пикирди жөнөтүүдө ката кетти. Кайра аракет кылыңыз.');
+    } finally {
+      setSending(false);
     }
   };
 
-  const deleteComment = (id: number) => {
-    if (window.confirm("Бул пикирди өчүрүүнү каалайсызбы?")) {
-      setComments(comments.filter(c => c.id !== id));
+  const deleteComment = async (id: string) => {
+    if (!window.confirm("Бул пикирди өчүрүүнү каалайсызбы?")) return;
+    try {
+      await deleteDoc(doc(db, 'parent_comments', id));
+    } catch {
+      alert('Өчүрүүдө ката кетти.');
     }
   };
 
@@ -102,28 +118,26 @@ const ParentsCorner: React.FC = () => {
                 className={styles.textArea}
               />
             </div>
-            <button type="submit" className={styles.submitBtn}>
-              Жөнөтүү <span>→</span>
+            <button type="submit" className={styles.submitBtn} disabled={sending}>
+              {sending ? 'Жөнөтүлүүдө...' : <>Жөнөтүү <span>→</span></>}
             </button>
+            {error && <p role="alert">{error}</p>}
           </form>
 
           <div className={styles.commentsList}>
             <AnimatePresence mode="popLayout">
+              {comments.length === 0 && <p>Азырынча пикир жок. Биринчи болуп жазыңыз.</p>}
               {comments.map((c) => {
-                // Жазганына 5 мүнөт боло элекпи же бул Админби?
-                // eslint-disable-next-line react-hooks/purity
-                const isNew = Date.now() - c.timestamp < 5 * 60 * 1000;
-                const showDelete = isAdmin || isNew;
+                const showDelete = isAdmin;
 
                 return (
-                  <motion.div 
-                    key={c.id} 
+                  <motion.div
+                    key={c.id}
                     layout
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     className={styles.commentCard}
-                    onDoubleClick={() => showDelete && deleteComment(c.id)}
                   >
                     <div className={styles.commentAvatar}>
                       {c.name.charAt(0)}
@@ -132,7 +146,7 @@ const ParentsCorner: React.FC = () => {
                       <div className={styles.commentHeader}>
                         <div className={styles.userInfo}>
                           <h4>{c.name}</h4>
-                          <span className={styles.date}>{c.date}</span>
+                          <span className={styles.date}>{c.createdAt ? c.createdAt.toDate().toLocaleDateString('ky-KG') : 'Азыр'}</span>
                         </div>
                         
                         {/* Өчүрүү баскычы */}

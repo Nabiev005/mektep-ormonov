@@ -12,6 +12,27 @@ import styles from './JSGame.module.css';
 
 type GameMode = 'JS' | 'HTML' | 'CSS';
 
+// Worker ичинде иштеген код: адегенде туюнтма катары (`2 + 2`), болбосо операторлор катары (`let x = 1; console.log(x)`) иштетет.
+const JS_RUNNER_SOURCE = `
+self.onmessage = (event) => {
+  const code = event.data;
+  const logs = [];
+  const mockConsole = { log: (...args) => logs.push(args.map((a) => String(a)).join(' ')) };
+  let result;
+  try {
+    let fn;
+    try { fn = new Function('console', 'return (' + code + '\\n)'); }
+    catch { fn = new Function('console', code); }
+    result = fn(mockConsole);
+  } catch {
+    self.postMessage(logs.length ? logs.join('\\n') : '...');
+    return;
+  }
+  self.postMessage(logs.length ? logs.join('\\n') : (result !== undefined ? String(result) : ''));
+};
+`;
+let jsRunnerUrl: string | null = null;
+
 const modeMeta = {
   HTML: {
     title: 'HTML',
@@ -91,24 +112,35 @@ const JSGame: React.FC = () => {
   }, [progress]);
 
   // ЖАҢЫ КОШУЛДУ: JavaScript кодун реалдуу убакытта текшерүү
+  // Код өзүнчө Worker'де иштейт: `while(true)` сыяктуу чексиз цикл баракчаны катырбайт, 1 секунддан кийин токтотулат.
   useEffect(() => {
-    if (mode === 'JS' && code.trim()) {
-      try {
-        const logs: string[] = [];
-        const mockConsole = {
-          log: (...args: any[]) => logs.push(args.map(a => String(a)).join(' '))
-        };
-        // Коопсуз иштетүү
-        const result = new Function('console', `try { return ${code} } catch(e) { ${code} }`)(mockConsole);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setJsOutput(logs.length > 0 ? logs.join('\n') : (result !== undefined ? String(result) : ''));
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (e) {
-        setJsOutput('...'); // Код жазылып жатканда
-      }
-    } else {
+    if (mode !== 'JS' || !code.trim()) {
       setJsOutput('');
+      return;
     }
+
+    let worker: Worker | null = null;
+    let killTimer: ReturnType<typeof setTimeout> | undefined;
+    const debounce = setTimeout(() => {
+      jsRunnerUrl ??= URL.createObjectURL(new Blob([JS_RUNNER_SOURCE], { type: 'text/javascript' }));
+      worker = new Worker(jsRunnerUrl);
+      worker.onmessage = (event: MessageEvent<string>) => {
+        setJsOutput(event.data);
+        clearTimeout(killTimer);
+        worker?.terminate();
+      };
+      killTimer = setTimeout(() => {
+        worker?.terminate();
+        setJsOutput('⏱ Код өтө узак иштеди (чексиз цикл болушу мүмкүн).');
+      }, 1000);
+      worker.postMessage(code);
+    }, 300);
+
+    return () => {
+      clearTimeout(debounce);
+      clearTimeout(killTimer);
+      worker?.terminate();
+    };
   }, [code, mode]);
 
   // Бардык курстардын бүткөнүн текшерүү

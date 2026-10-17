@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { isFirebaseAdmin, isRateLimited, verifyFirebaseToken } from './_auth.js';
 
 const MAX_TOPIC_LENGTH = 200;
 const MIN_COUNT = 3;
@@ -33,6 +34,16 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     res.status(500).json({ error: 'ANTHROPIC_API_KEY орнотулган эмес. Vercel environment variables текшериңиз.' });
+    return;
+  }
+
+  const session = await verifyFirebaseToken(req);
+  if (!session || !(await isFirebaseAdmin(session))) {
+    res.status(403).json({ error: 'Суроо түзүү админдер үчүн гана.' });
+    return;
+  }
+  if (isRateLimited(session.uid, 10)) {
+    res.status(429).json({ error: 'Өтө көп суроо жөнөттүңүз. Бир мүнөттөн кийин кайра аракет кылыңыз.' });
     return;
   }
 
@@ -92,7 +103,6 @@ export default async function handler(req, res) {
     res.status(200).json(data);
   } catch (error) {
     console.error('Claude API ката (generate-quiz):', error);
-    const detail = error instanceof Error ? error.message : String(error);
-    res.status(502).json({ error: `Суроолорду түзүүдө ката кетти: ${detail}` });
+    res.status(502).json({ error: 'Суроолорду түзүүдө ката кетти. Бир аздан кийин кайра аракет кылыңыз.' });
   }
 }

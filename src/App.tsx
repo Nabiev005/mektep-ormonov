@@ -7,7 +7,7 @@ import { auth, db } from './firebase';
 import { AnimatePresence } from 'framer-motion';
 
 // КОМПОНЕНТТЕР
-import Header from './components/Header/Header';
+import AppLayout from './components/Layout/AppLayout';
 import Footer from './components/Footer/Footer';
 import AIChatBot from './components/AIChatBot/AIChatBot'; 
 
@@ -154,52 +154,12 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
-  const [isHeaderExpanded, setIsHeaderExpanded] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const layoutStyles = {
-    appWrapper: {
-      display: 'flex',
-      minHeight: '100vh',
-      background: '#f8fafc',
-    },
-    contentArea: {
-      // Телефондо сол жактагы боштукту (margin) алып салат
-      marginLeft: isMobile ? '0' : isHeaderExpanded ? '292px' : '76px',
-      flex: 1,
-      display: 'flex',
-      // eslint-disable-next-line @typescript-eslint/prefer-as-const
-      flexDirection: 'column' as 'column',
-      width: isMobile ? '100%' : isHeaderExpanded ? 'calc(100% - 292px)' : 'calc(100% - 76px)',
-      transition: 'margin-left 0.3s ease',
-    },
-    main: {
-      flex: 1,
-      // Телефондо ылдыйкы таб-бар үчүн астынан, туткасы бар түзмөктөр үчүн коопсуз аймактан боштук
-      padding: isMobile ? '14px 15px calc(86px + env(safe-area-inset-bottom, 0px)) 15px' : '20px',
-    }
-  };
-
   return (
     <Router>
-      <div style={layoutStyles.appWrapper}>
-        <Header onExpandedChange={setIsHeaderExpanded} />
-        
-        <div style={layoutStyles.contentArea}>
-          <main style={layoutStyles.main}>
-            <AnimatedRoutes />
-          </main>
-          <Footer />
-        </div>
-
-        <AIChatBot />
-      </div>
+      <AppLayout footer={<Footer />}>
+        <AnimatedRoutes />
+      </AppLayout>
+      <AIChatBot />
     </Router>
   );
 }

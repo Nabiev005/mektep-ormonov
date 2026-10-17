@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import type { User } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { db, auth } from '../../../firebase';
-import { 
-  collection, doc, onSnapshot, setDoc, updateDoc, 
-  getDocs, query, where, arrayUnion, orderBy, limit 
-} from 'firebase/firestore'; 
+import {
+  collection, doc, onSnapshot, setDoc, updateDoc, getDoc,
+  getDocs, query, where, orderBy, limit, increment, serverTimestamp
+} from 'firebase/firestore';
 import { ArrowLeft, Brain, CheckCircle2, Crown, Loader2, Lock, Send, Sparkles, Trophy, XCircle } from 'lucide-react';
 import { addStudentXP, ensureStudentProfile, signInStudentWithGoogle } from '../../../utils/studentAccount';
 import styles from './DuelGame.module.css';
@@ -24,7 +24,7 @@ const DuelGame: React.FC = () => {
   const [authLoading, setAuthLoading] = useState(true);
   const [loginLoading, setLoginLoading] = useState(false);
   const [gameId, setGameId] = useState<string | null>(null);
-  const [gameState, setGameState] = useState<any>(null);
+  const [players, setPlayers] = useState<any[]>([]);
   const [currentSubject, setCurrentSubject] = useState<any>(null);
   const [problem, setProblem] = useState({ q: '', a: '' });
   const [userAnswer, setUserAnswer] = useState('');
@@ -66,17 +66,9 @@ const DuelGame: React.FC = () => {
 
   // 1. Лидерлер тактасы (Баардык оюндардагы мыкты оюнчулар)
   useEffect(() => {
-    const q = query(collection(db, 'math_arena'), orderBy('createdAt', 'desc'), limit(10));
+    const q = query(collection(db, 'leaderboard'), orderBy('totalXP', 'desc'), limit(5));
     const unsub = onSnapshot(q, (snap) => {
-      const allPlayers: any[] = [];
-      snap.docs.forEach(d => {
-        if (d.data().players) allPlayers.push(...d.data().players);
-      });
-      const sorted = allPlayers
-        .sort((a, b) => b.score - a.score)
-        .filter((v, i, a) => a.findIndex(t => t.name === v.name) === i)
-        .slice(0, 5);
-      setLeaders(sorted);
+      setLeaders(snap.docs.map((d) => ({ name: d.data().displayName || 'Окуучу', score: d.data().totalXP || 0 })));
     });
     return () => unsub();
   }, []);
@@ -141,24 +133,27 @@ const DuelGame: React.FC = () => {
       // Аренага (Duel Mode) кошулуу же түзүү
       const qArena = query(collection(db, 'math_arena'), where('status', '==', 'active'), where('subject', '==', subject.id));
       const snapArena = await getDocs(qArena);
-      const playerObj = {
-        uid: student.uid,
-        name: userName,
-        email: student.email || '',
-        score: 0,
-        avatar: student.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${student.uid}`,
-        subject: subject.id
-      };
-
+      let arenaId: string;
       if (snapArena.empty) {
         const newRef = doc(collection(db, 'math_arena'));
-        await setDoc(newRef, { id: newRef.id, players: [playerObj], status: 'active', subject: subject.id, createdAt: Date.now() });
-        setGameId(newRef.id);
+        await setDoc(newRef, { id: newRef.id, status: 'active', subject: subject.id, createdAt: Date.now() });
+        arenaId = newRef.id;
       } else {
-        const gameDoc = snapArena.docs[0];
-        await updateDoc(doc(db, 'math_arena', gameDoc.id), { players: arrayUnion(playerObj) });
-        setGameId(gameDoc.id);
+        arenaId = snapArena.docs[0].id;
       }
+
+      // Оюнчу өз документин гана түзөт; кайра кирсе мурунку упайы сакталат.
+      const playerRef = doc(db, 'math_arena', arenaId, 'players', student.uid);
+      if (!(await getDoc(playerRef)).exists()) {
+        await setDoc(playerRef, {
+          uid: student.uid,
+          name: userName,
+          avatar: student.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${student.uid}`,
+          score: 0,
+          updatedAt: serverTimestamp(),
+        });
+      }
+      setGameId(arenaId);
     } finally {
       setStarting(false);
     }
@@ -166,21 +161,24 @@ const DuelGame: React.FC = () => {
 
   useEffect(() => {
     if (!gameId) return;
-    const unsub = onSnapshot(doc(db, 'math_arena', gameId), (s) => setGameState(s.data()));
+    const q = query(collection(db, 'math_arena', gameId, 'players'), orderBy('score', 'desc'), limit(20));
+    const unsub = onSnapshot(q, (snap) => setPlayers(snap.docs.map((d) => d.data())));
     return () => unsub();
   }, [gameId]);
 
   const handleAnswer = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userAnswer || !gameId) return;
+    if (!userAnswer || !gameId || !student) return;
 
     if (userAnswer.toLowerCase().trim() === problem.a) {
-      const updatedPlayers = gameState.players.map((p: any) => 
-        p.uid === student?.uid || p.name === userName ? { ...p, score: (p.score || 0) + 10 } : p
-      );
-      await updateDoc(doc(db, 'math_arena', gameId), { players: updatedPlayers });
-      if (student) {
+      try {
+        await updateDoc(doc(db, 'math_arena', gameId, 'players', student.uid), {
+          score: increment(10),
+          updatedAt: serverTimestamp(),
+        });
         await addStudentXP(student, 10, 'duel_game', { subject: currentSubject?.id || 'unknown' });
+      } catch {
+        // Өтө тез жооп берсе Firestore эрежеси жазууну четке кагат — оюн улана берет.
       }
       setAnswerStatus('correct');
       setUserAnswer('');
@@ -255,7 +253,7 @@ const DuelGame: React.FC = () => {
   return (
     <div className={styles.arena}>
        <div className={styles.arenaHeader}>
-          <button onClick={() => {setGameId(null); setCurrentSubject(null); setAnswerStatus('idle');}} className={styles.backBtn}><ArrowLeft size={18} /> Артка</button>
+          <button onClick={() => {setGameId(null); setPlayers([]); setCurrentSubject(null); setAnswerStatus('idle');}} className={styles.backBtn}><ArrowLeft size={18} /> Артка</button>
           <div>
             <span className={styles.arenaKicker}>Онлайн дуэль</span>
             <h2>{currentSubject.name} аренасы</h2>
@@ -283,8 +281,8 @@ const DuelGame: React.FC = () => {
 
           <div className={styles.liveScore}>
              <h4><Trophy size={18} /> Учурдагы упайлар</h4>
-             {gameState?.players?.length ? gameState.players.map((p: any, i: number) => (
-               <div key={i} className={`${styles.pScoreRow} ${p.uid === student?.uid || p.name === userName ? styles.isMe : ''}`}>
+             {players.length ? players.map((p: any) => (
+               <div key={p.uid} className={`${styles.pScoreRow} ${p.uid === student?.uid ? styles.isMe : ''}`}>
                   <div className={styles.pInfo}>
                     <span>{p.name}</span>
                     <b>{p.score}</b>

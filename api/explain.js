@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { isRateLimited, verifyFirebaseToken } from './_auth.js';
 
 const MAX_TOPIC_LENGTH = 200;
 
@@ -24,6 +25,16 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     res.status(500).json({ error: 'ANTHROPIC_API_KEY орнотулган эмес. Vercel environment variables текшериңиз.' });
+    return;
+  }
+
+  const session = await verifyFirebaseToken(req);
+  if (!session) {
+    res.status(401).json({ error: 'AI түшүндүрмө алуу үчүн Google аккаунт менен кириңиз.' });
+    return;
+  }
+  if (isRateLimited(session.uid, 10)) {
+    res.status(429).json({ error: 'Өтө көп суроо жөнөттүңүз. Бир мүнөттөн кийин кайра аракет кылыңыз.' });
     return;
   }
 
@@ -78,7 +89,6 @@ export default async function handler(req, res) {
     res.status(200).json(data);
   } catch (error) {
     console.error('Claude API ката:', error);
-    const detail = error instanceof Error ? error.message : String(error);
-    res.status(502).json({ error: `Түшүндүрмө алууда ката кетти: ${detail}` });
+    res.status(502).json({ error: 'Түшүндүрмө алууда ката кетти. Бир аздан кийин кайра аракет кылыңыз.' });
   }
 }
